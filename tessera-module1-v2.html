@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera — Project Context Intake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay: #C4A882;
+      --clay-light: #E8D9C4;
+      --clay-dark: #8B7355;
+      --ink: #1C1A17;
+      --ink-soft: #4A4640;
+      --ink-muted: #8A8480;
+      --surface: #F7F3ED;
+      --surface-raised: #FDFAF6;
+      --tile-1: #C4A882;
+      --tile-2: #7B9E87;
+      --tile-3: #8B7BA8;
+      --tile-4: #C4826A;
+      --border: rgba(28,26,23,0.12);
+      --radius: 2px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+    .app { max-width: 820px; margin: 0 auto; padding: 0 0 100px; background: var(--surface-raised); min-height: 100vh; box-shadow: 0 0 60px rgba(0,0,0,0.06); }
+
+    .header { padding: 48px 48px 36px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .mosaic-accent { position: absolute; top: 0; right: 0; display: grid; grid-template-columns: repeat(8, 14px); grid-template-rows: repeat(5, 14px); gap: 2px; padding: 14px; opacity: 0.55; }
+    .mosaic-tile { border-radius: 1px; opacity: 0; animation: tileIn 0.4s forwards; }
+    @keyframes tileIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+    .wordmark { font-family: 'DM Serif Display', serif; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--clay-dark); margin-bottom: 18px; }
+    .header h1 { font-family: 'DM Serif Display', serif; font-size: 36px; font-weight: 400; color: var(--ink); line-height: 1.15; margin-bottom: 10px; }
+    .header h1 em { font-style: italic; color: var(--clay-dark); }
+    .header p { font-size: 14px; color: var(--ink-muted); font-weight: 300; line-height: 1.7; max-width: 500px; }
+
+    .progress-bar { padding: 20px 48px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0; background: var(--surface); }
+    .progress-step { display: flex; align-items: center; gap: 8px; flex: 1; cursor: pointer; padding: 6px 0; opacity: 0.4; transition: opacity 0.2s; }
+    .progress-step.active { opacity: 1; }
+    .progress-step.done { opacity: 0.75; }
+    .progress-step.done:hover { opacity: 1; }
+    .step-dot { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--ink-muted); flex-shrink: 0; transition: all 0.25s; background: var(--surface-raised); }
+    .progress-step.active .step-dot { background: var(--clay); border-color: var(--clay); color: white; }
+    .progress-step.done .step-dot { background: var(--tile-2); border-color: var(--tile-2); color: white; }
+    .step-label { font-size: 11px; font-weight: 500; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-soft); }
+    .step-connector { width: 20px; height: 1px; background: var(--border); flex-shrink: 0; }
+
+    .section { padding: 40px 48px; border-bottom: 1px solid var(--border); display: none; animation: fadeUp 0.3s ease forwards; }
+    .section.active { display: block; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .section-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 32px; }
+    .section-tile { width: 36px; height: 36px; border-radius: 2px; flex-shrink: 0; margin-top: 3px; }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; color: var(--ink); line-height: 1.2; }
+    .section-subtitle { font-size: 14px; color: var(--ink-muted); font-weight: 300; margin-top: 5px; line-height: 1.6; }
+
+    .field-group { margin-bottom: 28px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+    .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+
+    label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
+    .field-hint { font-size: 12px; color: var(--ink-muted); font-weight: 300; margin-bottom: 10px; font-style: italic; letter-spacing: 0; text-transform: none; line-height: 1.5; }
+
+    input[type="text"], input[type="date"], select, textarea {
+      width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 11px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+      font-weight: 300; transition: border-color 0.15s, background 0.15s; appearance: none; -webkit-appearance: none;
+    }
+    input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--clay); background: var(--surface-raised); }
+    textarea { resize: vertical; line-height: 1.65; min-height: 90px; }
+
+    .pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { padding: 7px 16px; border: 1px solid var(--border); border-radius: 24px; font-size: 13px; font-weight: 400; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; background: var(--surface); user-select: none; }
+    .pill:hover { border-color: var(--clay); color: var(--clay-dark); background: #FBF6EF; }
+    .pill.selected { background: var(--clay); border-color: var(--clay); color: white; }
+    .pill.other-pill { border-style: dashed; }
+
+    .other-input-wrap { display: none; margin-top: 12px; }
+    .other-input-wrap.visible { display: block; }
+    .other-input-wrap input { max-width: 360px; }
+
+    .signal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .signal-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; cursor: pointer; transition: all 0.15s; background: var(--surface); position: relative; }
+    .signal-card:hover { border-color: var(--clay-light); background: #FBF6EF; }
+    .signal-card.selected { border-color: var(--clay); background: #FAF5EE; }
+    .signal-card.selected::after { content: '✓'; position: absolute; top: 12px; right: 14px; font-size: 11px; color: var(--clay-dark); font-weight: 500; }
+    .signal-label { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 5px; }
+    .signal-desc { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.5; }
+
+    .slider-field { margin-bottom: 8px; }
+    .slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-muted); margin-top: 8px; }
+    input[type="range"] { width: 100%; accent-color: var(--clay); height: 4px; cursor: pointer; }
+
+    .saturation-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .sat-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; cursor: pointer; transition: all 0.15s; background: var(--surface); position: relative; text-align: center; }
+    .sat-card:hover { border-color: var(--clay-light); background: #FBF6EF; }
+    .sat-card.selected { border-color: var(--clay); background: #FAF5EE; }
+    .sat-card.selected::after { content: '✓'; position: absolute; top: 8px; right: 10px; font-size: 10px; color: var(--clay-dark); font-weight: 500; }
+    .sat-label { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+    .sat-desc { font-size: 11px; color: var(--ink-muted); font-weight: 300; line-height: 1.4; }
+
+    .tension-box { background: #FEF8F0; border: 1px solid #E8D4B8; border-left: 3px solid var(--clay); border-radius: var(--radius); padding: 16px 18px; margin-top: 24px; display: none; }
+    .tension-box.visible { display: block; }
+    .tension-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clay-dark); margin-bottom: 7px; }
+    .tension-text { font-size: 13px; color: var(--ink-soft); font-weight: 300; line-height: 1.6; }
+
+    .info-box { background: #F2F7F4; border: 1px solid #C4DBC9; border-left: 3px solid var(--tile-2); border-radius: var(--radius); padding: 14px 18px; margin-bottom: 24px; }
+    .info-box p { font-size: 13px; color: var(--ink-soft); font-weight: 300; line-height: 1.6; }
+
+    .reflection-prompt { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--tile-2); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 28px; }
+    .reflection-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tile-2); margin-bottom: 6px; }
+    .reflection-q { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--ink); font-style: italic; line-height: 1.5; }
+
+    .nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 820px; padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; background: var(--surface-raised); border-top: 1px solid var(--border); z-index: 100; }
+    .btn { padding: 11px 28px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; }
+    .btn-ghost { background: transparent; border-color: var(--border); color: var(--ink-muted); }
+    .btn-ghost:hover { border-color: var(--clay); color: var(--clay-dark); }
+    .btn-primary { background: var(--clay); color: white; border-color: var(--clay); }
+    .btn-primary:hover { background: var(--clay-dark); border-color: var(--clay-dark); }
+    .btn-complete { background: var(--tile-2); color: white; border-color: var(--tile-2); }
+    .btn-complete:hover { background: #5d8269; }
+    .step-counter { font-size: 12px; color: var(--ink-muted); font-weight: 300; }
+
+    .summary-grid { display: grid; gap: 14px; }
+    .summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+    .summary-card-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .summary-card-label::before { content: ''; width: 8px; height: 8px; border-radius: 1px; background: var(--clay); flex-shrink: 0; }
+    .summary-value { font-size: 14px; color: var(--ink); font-weight: 300; line-height: 1.65; }
+    .anchor-flag { background: #F0F7F2; border: 1px solid #C4DBC9; border-left: 3px solid var(--tile-2); border-radius: var(--radius); padding: 18px 20px; margin-top: 20px; }
+    .anchor-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--tile-2); margin-bottom: 10px; }
+    .anchor-item { font-size: 13px; color: var(--ink-soft); font-weight: 300; line-height: 1.6; padding: 6px 0; border-bottom: 1px solid rgba(123,158,135,0.2); }
+    .anchor-item:last-child { border-bottom: none; }
+    .anchor-item::before { content: '— '; color: var(--tile-2); }
+
+    .version-tag { font-size: 11px; color: var(--ink-muted); font-weight: 300; margin-top: 6px; }
+    .print-btn { display: block; margin: 24px auto 0; padding: 10px 24px; background: transparent; border: 1px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink-muted); cursor: pointer; letter-spacing: 0.05em; transition: all 0.15s; }
+    .print-btn:hover { border-color: var(--clay); color: var(--clay-dark); }
+
+    @media print { .nav, .print-btn { display: none; } .section { display: block !important; page-break-inside: avoid; } .app { box-shadow: none; } }
+    @media (max-width: 640px) { .header, .section, .nav, .progress-bar { padding-left: 24px; padding-right: 24px; } .field-row, .field-row-3, .signal-grid, .saturation-grid { grid-template-columns: 1fr; } .step-label { display: none; } }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+    <h1>Project <em>Context</em></h1>
+    <p>Before we meet the people, we understand the landscape. Every signal captured here shapes how we listen, what we notice, and what we design.</p>
+    <div class="version-tag">Module 1 of 5 &nbsp;·&nbsp; v1.1</div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-step active" id="step-btn-1" onclick="goToStep(1)">
+      <div class="step-dot">1</div><span class="step-label">Landscape</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step" id="step-btn-2" onclick="goToStep(2)">
+      <div class="step-dot">2</div><span class="step-label">Pressure</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step" id="step-btn-3" onclick="goToStep(3)">
+      <div class="step-dot">3</div><span class="step-label">Culture</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step" id="step-btn-4" onclick="goToStep(4)">
+      <div class="step-dot">4</div><span class="step-label">Entry point</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step" id="step-btn-5" onclick="goToStep(5)">
+      <div class="step-dot">5</div><span class="step-label">Review</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1: Landscape -->
+  <div class="section active" id="section-1">
+    <div class="section-header">
+      <div class="section-tile" style="background:var(--tile-1)"></div>
+      <div>
+        <div class="section-title">The landscape</div>
+        <div class="section-subtitle">What is changing, for whom, and why it matters to this organization.</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Project name</label>
+        <input type="text" id="proj-name" placeholder="e.g. Project Horizon">
+      </div>
+      <div>
+        <label>Organization</label>
+        <input type="text" id="proj-client" placeholder="Organization name">
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Primary location / headquarters</label>
+        <input type="text" id="proj-location" placeholder="e.g. London, UK / São Paulo, Brazil">
+      </div>
+      <div>
+        <label>Primary working language(s)</label>
+        <input type="text" id="proj-language" placeholder="e.g. English, French, Mandarin">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Nature of this change</label>
+      <div class="field-hint">Select all that apply. If nothing fits, use Other to describe it in your own words.</div>
+      <div class="pill-group" id="change-type">
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Technology / system</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Process redesign</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Organisational restructure</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Merger / acquisition</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Culture shift</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Policy or regulatory compliance</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Leadership transition</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Digital / AI transformation</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Workforce / role changes</div>
+        <div class="pill" onclick="togglePill(this, 'checkTension1')">Ways of working</div>
+        <div class="pill other-pill" onclick="toggleOther(this)">+ Other</div>
+      </div>
+      <div class="other-input-wrap" id="other-change-wrap">
+        <input type="text" id="other-change-text" placeholder="Describe the nature of this change in your own words...">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Change saturation</label>
+      <div class="field-hint">What else is this population absorbing right now? In an AI-accelerated environment, people are rarely experiencing just one change. This signal shapes everything downstream.</div>
+      <div class="saturation-grid" id="change-saturation">
+        <div class="sat-card" onclick="selectOne(this, 'change-saturation', 'checkTension1')">
+          <div class="sat-label">This change only</div>
+          <div class="sat-desc">Single transformation. Relatively clear focus for the population.</div>
+        </div>
+        <div class="sat-card" onclick="selectOne(this, 'change-saturation', 'checkTension1')">
+          <div class="sat-label">2–3 concurrent changes</div>
+          <div class="sat-desc">Competing priorities. Attention and energy are being divided.</div>
+        </div>
+        <div class="sat-card" onclick="selectOne(this, 'change-saturation', 'checkTension1')">
+          <div class="sat-label">High saturation</div>
+          <div class="sat-desc">Multiple major changes running simultaneously. Fatigue is a real risk regardless of readiness.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Strategic intent</label>
+      <div class="field-hint">In plain language — what is the organisation trying to achieve or protect? Avoid project language. What is the human purpose of this change?</div>
+      <textarea id="strategic-intent" rows="3" placeholder="e.g. Give our people the tools and confidence to work across borders without barriers. Reduce the operational drag that is burning out our frontline teams..." oninput="checkTension1()"></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>What does success look like 12 months after go-live?</label>
+      <div class="field-hint">Describe behavioral outcomes — what will people be doing differently, feeling differently, or no longer struggling with?</div>
+      <textarea id="success-def" rows="3" placeholder="e.g. Managers in every region are running their teams with confidence in the new system. Manual workarounds have stopped. People are spending less time on process and more time on the work that matters to them..."></textarea>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Engagement start</label>
+        <input type="date" id="eng-start" oninput="checkTension1()">
+      </div>
+      <div>
+        <label>Target go-live</label>
+        <input type="date" id="go-live" oninput="checkTension1()">
+      </div>
+    </div>
+
+    <div class="tension-box" id="tension-1">
+      <div class="tension-label">Signal noted</div>
+      <div class="tension-text" id="tension-1-text"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Pressure -->
+  <div class="section" id="section-2">
+    <div class="section-header">
+      <div class="section-tile" style="background:var(--tile-4)"></div>
+      <div>
+        <div class="section-title">Pressure & conditions</div>
+        <div class="section-subtitle">The forces shaping how this change is being managed — and what is realistically designable within those constraints.</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Where are we in this engagement?</label>
+      <div class="field-hint">Entry point shapes everything. Be honest — a recovery engagement needs a different design than a discovery one.</div>
+      <div class="signal-grid" id="entry-timing">
+        <div class="signal-card" onclick="selectOne(this, 'entry-timing', 'checkTension2')">
+          <div class="signal-label">Discovery</div>
+          <div class="signal-desc">Change strategy is still being shaped. Room to influence the approach and sequencing.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'entry-timing', 'checkTension2')">
+          <div class="signal-label">Planning</div>
+          <div class="signal-desc">Direction is set. Designing the how — stakeholders, plans, communications, learning.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'entry-timing', 'checkTension2')">
+          <div class="signal-label">Execution</div>
+          <div class="signal-desc">Change is underway. Managing adoption and surfacing resistance in real time.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'entry-timing', 'checkTension2')">
+          <div class="signal-label">Recovery</div>
+          <div class="signal-desc">Something has stalled or broken. Rebuilding trust and momentum before anything else.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Timeline pressure</label>
+      <div class="field-hint">How much control does the team realistically have over pace and sequencing?</div>
+      <div class="slider-field">
+        <input type="range" min="1" max="5" value="3" id="timeline-pressure" oninput="checkTension2()">
+        <div class="slider-labels">
+          <span>Flexible — we set the pace</span>
+          <span>Fixed — date is immovable</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>What is driving the urgency?</label>
+      <div class="field-hint">Select all that apply</div>
+      <div class="pill-group">
+        <div class="pill" onclick="togglePill(this)">Regulatory or legal deadline</div>
+        <div class="pill" onclick="togglePill(this)">Board or executive mandate</div>
+        <div class="pill" onclick="togglePill(this)">Competitive pressure</div>
+        <div class="pill" onclick="togglePill(this)">Contract or vendor commitment</div>
+        <div class="pill" onclick="togglePill(this)">Financial or budget cycle</div>
+        <div class="pill" onclick="togglePill(this)">AI / technology disruption</div>
+        <div class="pill" onclick="togglePill(this)">Internal readiness and momentum</div>
+        <div class="pill" onclick="togglePill(this)">No clear external driver</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Sponsor visibility and engagement</label>
+      <div class="field-hint">Sponsor health is one of the strongest predictors of adoption outcomes — Prosci research consistently places it as the number one success factor across transformation types.</div>
+      <div class="signal-grid" id="sponsor-level">
+        <div class="signal-card" onclick="selectOne(this, 'sponsor-level', 'checkTension2')">
+          <div class="signal-label">Active and visible</div>
+          <div class="signal-desc">Engaged, communicating, and actively clearing blockers across the organisation.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'sponsor-level', 'checkTension2')">
+          <div class="signal-label">Present but passive</div>
+          <div class="signal-desc">Aware but not actively driving. Available but needs activation and support.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'sponsor-level', 'checkTension2')">
+          <div class="signal-label">Fragmented</div>
+          <div class="signal-desc">Multiple sponsors with misaligned messages or competing priorities creating confusion.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'sponsor-level', 'checkTension2')">
+          <div class="signal-label">Not yet identified</div>
+          <div class="signal-desc">Critical gap. No plan survives without someone to champion and protect it.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tension-box" id="tension-2">
+      <div class="tension-label">Signal noted</div>
+      <div class="tension-text" id="tension-2-text"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Culture -->
+  <div class="section" id="section-3">
+    <div class="section-header">
+      <div class="section-tile" style="background:var(--tile-3)"></div>
+      <div>
+        <div class="section-title">Culture signals</div>
+        <div class="section-subtitle">Two cultures matter here — the project team's and the organisation's. Both shape what is possible to design and deliver.</div>
+      </div>
+    </div>
+
+    <div class="reflection-prompt">
+      <div class="reflection-label">Practitioner reflection</div>
+      <div class="reflection-q">"How has this organisation responded to change in the past — and does the project team know that history well enough to design for it?"</div>
+    </div>
+
+    <div class="field-group">
+      <label>Organisational change history</label>
+      <div class="field-hint">A starting hypothesis — not a fixed label. This will be tested and refined in the listening tour. Based on Bridges' Transition Model framing of organisational memory and endings.</div>
+      <div class="signal-grid" id="change-history">
+        <div class="signal-card" onclick="selectOne(this, 'change-history', 'checkTension3')">
+          <div class="signal-label">Change-experienced</div>
+          <div class="signal-desc">Has navigated multiple transformations. Has muscle memory — which can accelerate or create unhelpful shortcuts.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'change-history', 'checkTension3')">
+          <div class="signal-label">Change-fatigued</div>
+          <div class="signal-desc">Too much change, too fast. Skepticism and low energy are likely early signals regardless of the quality of this initiative.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'change-history', 'checkTension3')">
+          <div class="signal-label">Change-naive</div>
+          <div class="signal-desc">Limited transformation experience. May underestimate what transition actually costs people.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'change-history', 'checkTension3')">
+          <div class="signal-label">Change-scarred</div>
+          <div class="signal-desc">A past change went badly. Trust in the process, leadership, or both is carrying damage.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>How does this organisation relate to decisions made above them?</label>
+      <div class="field-hint">This shapes how top-down messaging lands — and what genuine buy-in actually requires. Informed by Hofstede's power distance dimension and Meyer's leading scale.</div>
+      <div class="pill-group">
+        <div class="pill" onclick="togglePill(this)">High deference — decisions are followed</div>
+        <div class="pill" onclick="togglePill(this)">Questions expected before acting</div>
+        <div class="pill" onclick="togglePill(this)">Informal influence matters more than title</div>
+        <div class="pill" onclick="togglePill(this)">Resistance surfaces quietly, not openly</div>
+        <div class="pill" onclick="togglePill(this)">Vocal dissent is normalised</div>
+        <div class="pill" onclick="togglePill(this)">Varies significantly by region or team</div>
+        <div class="pill" onclick="togglePill(this)">Unclear — needs surfacing in listening</div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Project team health</label>
+      <div class="field-hint">The team delivering this change is also experiencing it. Their culture, cohesion, and psychological safety directly influence quality of outputs. Grounded in Edmondson's team safety research.</div>
+      <div class="signal-grid" id="team-health">
+        <div class="signal-card" onclick="selectOne(this, 'team-health')">
+          <div class="signal-label">Aligned and energised</div>
+          <div class="signal-desc">Shared purpose, clear roles, good momentum. People are able to raise concerns safely.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'team-health')">
+          <div class="signal-label">Functional but siloed</div>
+          <div class="signal-desc">Each lane is working but integration is weak. Gaps appear at the handoffs.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'team-health')">
+          <div class="signal-label">Under pressure</div>
+          <div class="signal-desc">Stretched thin. Risk of reactive decisions over considered design.</div>
+        </div>
+        <div class="signal-card" onclick="selectOne(this, 'team-health')">
+          <div class="signal-label">Fractured</div>
+          <div class="signal-desc">Conflict or misalignment present. Needs direct attention before the design work can produce quality output.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Geographic and cultural reach</label>
+      <div class="field-hint">Where are the people affected by this change located? Select all that apply.</div>
+      <div class="pill-group" id="geo-scope">
+        <div class="pill" onclick="togglePill(this)">Single site</div>
+        <div class="pill" onclick="togglePill(this)">Multiple sites, same country</div>
+        <div class="pill" onclick="togglePill(this)">Multiple countries, same region</div>
+        <div class="pill" onclick="togglePill(this)">Multi-regional</div>
+        <div class="pill" onclick="togglePill(this)">Global</div>
+        <div class="pill" onclick="togglePill(this)">Remote / fully distributed</div>
+        <div class="pill" onclick="togglePill(this)">Hybrid — mix of on-site and remote</div>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div>
+        <label>Languages across the affected population</label>
+        <div class="field-hint">Shapes communication design, translation needs, and training modality</div>
+        <input type="text" id="languages" placeholder="e.g. English, French, Spanish, Mandarin, Arabic...">
+      </div>
+      <div>
+        <label>Approximate number of people affected</label>
+        <div class="field-hint">Order of magnitude is fine — helps calibrate scope of the listening tour</div>
+        <input type="text" id="pop-size" placeholder="e.g. 200 / ~2,000 / 15,000+">
+      </div>
+    </div>
+
+    <div class="tension-box" id="tension-3">
+      <div class="tension-label">Signal noted</div>
+      <div class="tension-text" id="tension-3-text"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Entry Point -->
+  <div class="section" id="section-4">
+    <div class="section-header">
+      <div class="section-tile" style="background:var(--tile-2)"></div>
+      <div>
+        <div class="section-title">Where we enter</div>
+        <div class="section-subtitle">What the practitioner knows, what is uncertain, and what needs to be surfaced before anything is designed.</div>
+      </div>
+    </div>
+
+    <div class="reflection-prompt">
+      <div class="reflection-label">Practitioner reflection</div>
+      <div class="reflection-q">"What do I know for certain — and what am I assuming? Naming assumptions before the listening tour is what separates outcomes-driven practice from well-intentioned guesswork."</div>
+    </div>
+
+    <div class="field-group">
+      <label>What do we know with confidence going in?</label>
+      <div class="field-hint">Confirmed inputs only — scope locked, key stakeholders identified, go-live fixed, leadership aligned, etc.</div>
+      <textarea id="known-inputs" rows="3" placeholder="e.g. Scope confirmed across three regions. Executive sponsor identified and briefed. Go-live fixed at end of Q3. High-level stakeholder groups mapped by the project team..."></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>What are we uncertain about?</label>
+      <div class="field-hint">Be specific. Vague uncertainty produces vague listening questions — and vague listening questions produce vague data.</div>
+      <textarea id="unknowns" rows="3" placeholder="e.g. Do not yet know how middle management in the APAC region actually feels about this. Frontline readiness is assumed but not tested. Cultural dynamics in the newly acquired team are unclear..."></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>What assumptions are we at risk of bringing into this engagement?</label>
+      <div class="field-hint">Name them now. Grounded in Lily Zheng's outcomes-over-intentions principle — good intentions with unchecked assumptions consistently produce poor outcomes for the people most affected.</div>
+      <textarea id="assumptions" rows="3" placeholder="e.g. Assuming European teams will follow the same adoption curve as US teams. Assuming prior change fatigue has cleared. Assuming middle managers are aligned because senior leadership is. Assuming the translated materials will land the same way..."></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>What must the listening tour answer before we design anything?</label>
+      <div class="field-hint">3–5 specific questions. These become the frame for every interview conversation — the practitioner's north star through the listening phase.</div>
+      <textarea id="listening-goals" rows="5" placeholder="e.g. 1. What is the current awareness and sentiment across each stakeholder group?&#10;2. Where does trust in leadership sit right now — and why?&#10;3. What informal networks will amplify or resist this change?&#10;4. What does each group think is changing — and how accurate is that picture?&#10;5. What are the groups most at risk of being left behind, and what do they need?"></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Review -->
+  <div class="section" id="section-5">
+    <div class="section-header">
+      <div class="section-tile" style="background:var(--clay)"></div>
+      <div>
+        <div class="section-title">Project snapshot</div>
+        <div class="section-subtitle">What Tessera has captured. Review before moving to the listening tour and person profiles.</div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p>This snapshot is your shared reference point. It should be reviewed by the full project team — including the note-taker — before the first listening conversation begins. Anything that feels wrong here should be corrected now, not mid-tour.</p>
+    </div>
+
+    <div class="summary-grid" id="summary-content"></div>
+
+    <div class="anchor-flag" id="anchor-flags" style="display:none">
+      <div class="anchor-label">Early anchors — stable regardless of what listening reveals</div>
+      <div id="anchor-items"></div>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+  <div class="nav">
+    <button class="btn btn-ghost" id="btn-back" onclick="navigate(-1)">Back</button>
+    <span class="step-counter" id="step-counter">Step 1 of 5</span>
+    <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">Continue</button>
+  </div>
+
+</div>
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 5;
+
+  // Build mosaic
+  const colors = ['#C4A882','#7B9E87','#8B7BA8','#C4826A','#F7F3ED','#C4A882','#7B9E87','#E8D9C4'];
+  const mosaic = document.getElementById('mosaic');
+  for (let i = 0; i < 40; i++) {
+    const t = document.createElement('div');
+    t.className = 'mosaic-tile';
+    t.style.background = colors[Math.floor(Math.random() * colors.length)];
+    t.style.animationDelay = (0.05 + i * 0.02) + 's';
+    mosaic.appendChild(t);
+  }
+
+  function goToStep(n) {
+    if (n >= currentStep) return;
+    currentStep = n;
+    render();
+  }
+
+  function navigate(dir) {
+    if (dir === 1 && currentStep === totalSteps - 1) buildSummary();
+    currentStep = Math.max(1, Math.min(totalSteps, currentStep + dir));
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function render() {
+    document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i + 1 === currentStep));
+    document.querySelectorAll('.progress-step').forEach((s, i) => {
+      s.classList.remove('active', 'done');
+      if (i + 1 === currentStep) s.classList.add('active');
+      else if (i + 1 < currentStep) s.classList.add('done');
+    });
+    const back = document.getElementById('btn-back');
+    const next = document.getElementById('btn-next');
+    back.style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+    if (currentStep === totalSteps) {
+      next.textContent = 'Begin listening tour →';
+      next.className = 'btn btn-complete';
+      next.onclick = () => alert('Module 2 — Person Profiles — is the next step. Save this file and bring it to your first listening session.');
+    } else if (currentStep === totalSteps - 1) {
+      next.textContent = 'Review snapshot';
+      next.className = 'btn btn-primary';
+      next.onclick = () => navigate(1);
+    } else {
+      next.textContent = 'Continue';
+      next.className = 'btn btn-primary';
+      next.onclick = () => navigate(1);
+    }
+    document.getElementById('step-counter').textContent = 'Step ' + currentStep + ' of ' + totalSteps;
+  }
+
+  function togglePill(el, callback) {
+    el.classList.toggle('selected');
+    if (callback) window[callback] && window[callback]();
+    else { checkTension1(); checkTension2(); checkTension3(); }
+  }
+
+  function toggleOther(el) {
+    el.classList.toggle('selected');
+    document.getElementById('other-change-wrap').classList.toggle('visible', el.classList.contains('selected'));
+  }
+
+  function selectOne(el, groupId, callback) {
+    el.closest('#' + groupId).querySelectorAll('.signal-card, .sat-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    if (callback) window[callback] && window[callback]();
+  }
+
+  function getSelected(groupId) {
+    return [...document.querySelectorAll('#' + groupId + ' .pill.selected, #' + groupId + ' .signal-card.selected, #' + groupId + ' .sat-card.selected')]
+      .map(el => (el.querySelector('.signal-label, .sat-label') || el).textContent.trim());
+  }
+
+  function checkTension1() {
+    const intent = document.getElementById('strategic-intent').value.trim();
+    const goLive = document.getElementById('go-live').value;
+    const start = document.getElementById('eng-start').value;
+    const types = getSelected('change-type');
+    const saturation = getSelected('change-saturation')[0] || '';
+    const msgs = [];
+
+    if (intent.length > 20 && goLive && start) {
+      const days = Math.round((new Date(goLive) - new Date(start)) / 86400000);
+      if (days > 0 && days < 90) msgs.push('A timeline under 90 days is short for a transformation of this scope. Listening design and intervention priorities will need to be triaged carefully — not everything can be addressed before go-live.');
+      else if (days > 365) msgs.push('Extended timeline noted. Sustaining momentum, sponsor visibility, and stakeholder engagement over this period needs to be built into the design — not assumed.');
+    }
+    if (saturation === 'High saturation') msgs.push('High change saturation is one of the strongest predictors of disengagement and resistance — independent of how well this specific change is managed. The experience design must explicitly acknowledge and address what people are already carrying.');
+    if (saturation === '2–3 concurrent changes') msgs.push('Multiple concurrent changes noted. Communications and engagement design should acknowledge competing demands on people\'s attention — and be sequenced to avoid overload at critical moments.');
+    if (types.includes('Organisational restructure') && (types.includes('Technology / system') || types.includes('Digital / AI transformation'))) msgs.push('Simultaneous structural and technology change is high complexity. Consider whether sequencing is possible — or flag this as a leading design risk.');
+    if (types.includes('Culture shift') || types.includes('Leadership transition')) msgs.push('Changes touching identity, role, or leadership require additional trust-building time. Bridges\' Transition Model reminds us the internal transition lags behind the external change — often by months.');
+    if (types.includes('Merger / acquisition')) msgs.push('M&A context means two organisational cultures are in play. The listening tour must surface how each group perceives the other — not just how they perceive the change.');
+
+    const box = document.getElementById('tension-1');
+    box.classList.toggle('visible', msgs.length > 0);
+    document.getElementById('tension-1-text').innerHTML = msgs.join('<br><br>');
+  }
+
+  function checkTension2() {
+    const pressure = parseInt(document.getElementById('timeline-pressure').value);
+    const sponsorEl = document.querySelector('#sponsor-level .signal-card.selected');
+    const timingEl = document.querySelector('#entry-timing .signal-card.selected');
+    const sponsorLabel = sponsorEl?.querySelector('.signal-label')?.textContent;
+    const timingLabel = timingEl?.querySelector('.signal-label')?.textContent;
+    const msgs = [];
+
+    if (pressure >= 4 && sponsorLabel && sponsorLabel !== 'Active and visible') msgs.push('High timeline pressure combined with passive or fragmented sponsorship is a significant risk combination. Sponsor activation should be an early priority — before listening tour design is finalised.');
+    if (timingLabel === 'Recovery') msgs.push('Entering in recovery mode means trust is already damaged. Psychological safety must be established before diagnostic goals can be pursued honestly. People need to feel heard before they will be truthful.');
+    if (pressure >= 4 && timingLabel === 'Discovery') msgs.push('High pressure but still in discovery — the window to influence the approach is closing. Strategic context capture and stakeholder identification need to move fast.');
+    if (sponsorLabel === 'Not yet identified') msgs.push('No sponsor identified. This is the highest-risk signal in this section. Design work without sponsorship produces plans with no one to champion or protect them.');
+
+    const box = document.getElementById('tension-2');
+    box.classList.toggle('visible', msgs.length > 0);
+    document.getElementById('tension-2-text').innerHTML = msgs.join('<br><br>');
+  }
+
+  function checkTension3() {
+    const histEl = document.querySelector('#change-history .signal-card.selected');
+    const histLabel = histEl?.querySelector('.signal-label')?.textContent;
+    const geos = getSelected('geo-scope');
+    const msgs = [];
+
+    if (histLabel === 'Change-scarred') msgs.push('Change-scarred organisations require trust-building as a design prerequisite — not a nice-to-have. Communications that acknowledge past failures honestly outperform those that simply promote what\'s new and different.');
+    if (histLabel === 'Change-fatigued') msgs.push('Change fatigue means the population\'s capacity for enthusiasm is genuinely depleted. Early communications must acknowledge what people are already carrying before introducing anything new.');
+    if (geos.includes('Global') || geos.includes('Multi-regional')) msgs.push('Global or multi-regional scope means a single communication or training approach will not serve the full population. Cultural calibration by region is a design requirement, not an enhancement.');
+
+    const box = document.getElementById('tension-3');
+    box.classList.toggle('visible', msgs.length > 0);
+    document.getElementById('tension-3-text').innerHTML = msgs.join('<br><br>');
+  }
+
+  function buildSummary() {
+    const name = document.getElementById('proj-name').value || '—';
+    const client = document.getElementById('proj-client').value || '—';
+    const location = document.getElementById('proj-location').value || '—';
+    const projLang = document.getElementById('proj-language').value || '—';
+    const intent = document.getElementById('strategic-intent').value || '—';
+    const success = document.getElementById('success-def').value || '—';
+    const start = document.getElementById('eng-start').value || '—';
+    const goLive = document.getElementById('go-live').value || '—';
+    const changeTypes = getSelected('change-type').join(', ') || '—';
+    const otherChange = document.getElementById('other-change-text').value;
+    const allChangeTypes = otherChange ? changeTypes + (changeTypes !== '—' ? ', ' : '') + otherChange : changeTypes;
+    const saturation = getSelected('change-saturation')[0] || '—';
+    const timing = document.querySelector('#entry-timing .signal-card.selected')?.querySelector('.signal-label')?.textContent || '—';
+    const pressure = document.getElementById('timeline-pressure').value;
+    const pressureLabels = ['','Flexible','Mostly flexible','Moderate','High','Fixed / immovable'];
+    const sponsor = document.querySelector('#sponsor-level .signal-card.selected')?.querySelector('.signal-label')?.textContent || '—';
+    const changeHist = document.querySelector('#change-history .signal-card.selected')?.querySelector('.signal-label')?.textContent || '—';
+    const teamHealth = document.querySelector('#team-health .signal-card.selected')?.querySelector('.signal-label')?.textContent || '—';
+    const geos = getSelected('geo-scope').join(', ') || '—';
+    const langs = document.getElementById('languages').value || '—';
+    const popSize = document.getElementById('pop-size').value || '—';
+    const known = document.getElementById('known-inputs').value || '—';
+    const unknowns = document.getElementById('unknowns').value || '—';
+    const assumptions = document.getElementById('assumptions').value || '—';
+    const listening = document.getElementById('listening-goals').value || '—';
+
+    const rows = [
+      ['Project', name + (client !== '—' ? ' — ' + client : '')],
+      ['Primary location', location + ' &nbsp;·&nbsp; ' + projLang],
+      ['Engagement dates', start + ' → ' + goLive],
+      ['Nature of change', allChangeTypes],
+      ['Change saturation', saturation],
+      ['Strategic intent', intent],
+      ['Definition of success', success],
+      ['Engagement stage', timing],
+      ['Timeline pressure', pressureLabels[pressure] || pressure],
+      ['Sponsor status', sponsor],
+      ['Org change history', changeHist],
+      ['Project team health', teamHealth],
+      ['Geographic reach', geos],
+      ['Languages', langs],
+      ['Population size', popSize],
+      ['Known with confidence', known],
+      ['Key uncertainties', unknowns],
+      ['Assumptions to watch', assumptions],
+      ['Listening tour goals', listening],
+    ];
+
+    document.getElementById('summary-content').innerHTML = rows.map(([label, val]) => `
+      <div class="summary-card">
+        <div class="summary-card-label">${label}</div>
+        <div class="summary-value">${val.replace(/\n/g, '<br>')}</div>
+      </div>`).join('');
+
+    const anchors = [];
+    if (sponsor === 'Not yet identified') anchors.push('Sponsor identification must happen before stakeholder mapping proceeds. No plan survives without someone to champion and protect it.');
+    if (changeHist === 'Change-scarred') anchors.push('Trust restoration must precede any training or communication design. Rushing to content before rebuilding trust produces low engagement regardless of quality.');
+    if (geos.includes('Global') || geos.includes('Multi-regional')) anchors.push('A single communications or training approach will not serve this population. Cultural calibration by region is a design requirement.');
+    if (parseInt(pressure) >= 4) anchors.push('High timeline pressure means the listening tour scope must be triaged. Explicit choices about depth vs breadth are required — not everything can be heard before design begins.');
+    if (changeHist === 'Change-fatigued') anchors.push('Change fatigue is present. Early communications must honestly acknowledge what people are already carrying before introducing what is new.');
+    if (getSelected('change-saturation')[0] === 'High saturation') anchors.push('High change saturation detected. The experience design must explicitly account for what else this population is absorbing — and sequence demands accordingly.');
+
+    const anchorEl = document.getElementById('anchor-flags');
+    const anchorItems = document.getElementById('anchor-items');
+    if (anchors.length > 0) {
+      anchorEl.style.display = 'block';
+      anchorItems.innerHTML = anchors.map(a => `<div class="anchor-item">${a}</div>`).join('');
+    } else {
+      anchorEl.style.display = 'none';
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
