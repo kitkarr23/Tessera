@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera — Diagnostic Output & Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay: #C4A882;
+      --clay-light: #E8D9C4;
+      --clay-dark: #8B7355;
+      --ink: #1C1A17;
+      --ink-soft: #4A4640;
+      --ink-muted: #8A8480;
+      --surface: #F7F3ED;
+      --surface-raised: #FDFAF6;
+      --tile-1: #C4A882;
+      --tile-2: #7B9E87;
+      --tile-3: #8B7BA8;
+      --tile-4: #C4826A;
+      --tile-5: #4A8FA8;
+      --border: rgba(28,26,23,0.12);
+      --radius: 2px;
+      --risk-high: #C4826A;
+      --risk-high-bg: #FDF2EE;
+      --risk-mod: #C4A840;
+      --risk-mod-bg: #FDFAEE;
+      --risk-low: #7B9E87;
+      --risk-low-bg: #F0F7F2;
+      /* Client brand — editable */
+      --brand-primary: #1A3A5C;
+      --brand-secondary: #E8612A;
+      --brand-light: #EEF3F8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); }
+    .app { max-width: 1060px; margin: 0 auto; background: var(--surface-raised); min-height: 100vh; box-shadow: 0 0 80px rgba(0,0,0,.07); padding-bottom: 80px; }
+
+    /* ── Header ── */
+    .header { padding: 40px 48px 28px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .mosaic-accent { position: absolute; top: 0; right: 0; display: grid; grid-template-columns: repeat(9,13px); grid-template-rows: repeat(4,13px); gap: 2px; padding: 10px; opacity: 0.45; pointer-events: none; }
+    .mosaic-tile { border-radius: 1px; opacity: 0; animation: tileIn .4s forwards; }
+    @keyframes tileIn { from{opacity:0;transform:scale(.4)} to{opacity:1;transform:scale(1)} }
+    .wordmark { font-family:'DM Serif Display',serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--clay-dark); margin-bottom:14px; }
+    .header-row { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+    .header h1 { font-family:'DM Serif Display',serif; font-size:32px; font-weight:400; color:var(--ink); line-height:1.15; margin-bottom:6px; }
+    .header h1 em { font-style:italic; color:var(--clay-dark); }
+    .header p { font-size:13px; color:var(--ink-muted); font-weight:300; line-height:1.7; max-width:520px; }
+    .version-tag { font-size:10px; color:var(--ink-muted); font-weight:300; margin-top:5px; }
+
+    /* Brand badge */
+    .brand-badge { display:flex; align-items:center; gap:10px; padding:10px 16px; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); cursor:pointer; transition:all .15s; flex-shrink:0; }
+    .brand-badge:hover { border-color:var(--clay); }
+    .brand-swatch { width:20px; height:20px; border-radius:2px; background:var(--brand-primary); }
+    .brand-swatch-2 { width:20px; height:20px; border-radius:2px; background:var(--brand-secondary); margin-left:-6px; }
+    .brand-badge-text { font-size:12px; color:var(--ink-soft); font-weight:400; }
+
+    /* Brand configurator */
+    .brand-panel { display:none; position:fixed; top:0;right:0;bottom:0; width:320px; background:white; box-shadow:-8px 0 40px rgba(0,0,0,.12); z-index:200; padding:32px; overflow-y:auto; }
+    .brand-panel.open { display:block; animation:slideIn .25s ease; }
+    @keyframes slideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
+    .brand-panel-title { font-family:'DM Serif Display',serif; font-size:22px; font-weight:400; margin-bottom:6px; }
+    .brand-panel-sub { font-size:13px; color:var(--ink-muted); font-weight:300; line-height:1.6; margin-bottom:24px; }
+    .brand-input-group { margin-bottom:20px; }
+    .brand-label { font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px; display:block; }
+    .brand-input { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:14px; color:var(--ink); background:var(--surface); }
+    .brand-input:focus { outline:none; border-color:var(--clay); }
+    .color-row { display:flex; gap:10px; align-items:center; }
+    .color-preview { width:36px; height:36px; border-radius:var(--radius); border:1px solid var(--border); flex-shrink:0; }
+    .brand-method-tabs { display:flex; gap:6px; margin-bottom:16px; }
+    .brand-method-tab { flex:1; padding:8px; text-align:center; font-size:11px; font-weight:500; cursor:pointer; border:1px solid var(--border); border-radius:var(--radius); color:var(--ink-muted); }
+    .brand-method-tab.active { background:var(--clay); border-color:var(--clay); color:white; }
+    .brand-apply-btn { width:100%; padding:11px; background:var(--brand-primary); color:white; border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; margin-top:8px; }
+    .brand-close { position:absolute; top:20px; right:20px; background:none; border:none; font-size:18px; cursor:pointer; color:var(--ink-muted); }
+
+    /* Mock banner */
+    .mock-banner { background:var(--ink); padding:10px 48px; display:flex; align-items:center; gap:12px; }
+    .mock-dot { width:7px;height:7px;border-radius:50%;background:var(--clay);flex-shrink:0;animation:pulse 2s infinite; }
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .mock-text { font-size:12px; color:rgba(255,255,255,.55); font-weight:300; }
+    .mock-text strong { color:var(--clay); font-weight:500; }
+
+    /* Output tabs */
+    .output-bar { display:flex; border-bottom:1px solid var(--border); background:var(--surface); overflow-x:auto; }
+    .output-tab { padding:14px 22px; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; flex-shrink:0; }
+    .output-tab.active { border-bottom-color:var(--clay); background:var(--surface-raised); }
+    .output-tab-label { font-size:10px; font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:2px; }
+    .output-tab.active .output-tab-label { color:var(--clay-dark); }
+    .output-tab-title { font-size:13px; color:var(--ink-soft); }
+    .output-tab.active .output-tab-title { color:var(--ink); font-weight:500; }
+
+    /* Views */
+    .view { display:none; animation:fadeUp .3s ease forwards; }
+    .view.active { display:block; }
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Shared layout */
+    .view-pad { padding:28px 48px; }
+    .view-title { font-family:'DM Serif Display',serif; font-size:22px; font-weight:400; margin-bottom:4px; }
+    .view-sub { font-size:13px; color:var(--ink-muted); font-weight:300; margin-bottom:24px; line-height:1.6; }
+
+    /* ── CLIENT HEADER (branded) ── */
+    .client-header { margin:24px 48px; border-radius:4px; overflow:hidden; }
+    .client-header-top { background:var(--brand-primary); padding:28px 32px; display:flex; align-items:center; justify-content:space-between; }
+    .client-logo-area { display:flex; align-items:center; gap:14px; }
+    .client-logo-box { width:48px; height:48px; background:white; border-radius:4px; display:flex; align-items:center; justify-content:center; font-family:'DM Serif Display',serif; font-size:18px; color:var(--brand-primary); font-weight:400; }
+    .client-name { font-family:'DM Serif Display',serif; font-size:22px; color:white; font-weight:400; }
+    .client-project { font-size:13px; color:rgba(255,255,255,.6); font-weight:300; margin-top:2px; }
+    .client-date { font-size:12px; color:rgba(255,255,255,.5); font-weight:300; }
+    .client-header-bottom { background:var(--brand-secondary); padding:10px 32px; }
+    .client-tagline { font-size:12px; color:white; font-weight:300; letter-spacing:.04em; opacity:.9; }
+
+    /* ── STAT CARDS ── */
+    .stat-row { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:20px; }
+    .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 16px; text-align:center; }
+    .stat-card.brand { background:var(--brand-primary); border-color:var(--brand-primary); }
+    .stat-num { font-family:'DM Serif Display',serif; font-size:32px; color:var(--ink); line-height:1; margin-bottom:4px; }
+    .stat-card.brand .stat-num { color:white; }
+    .stat-label { font-size:10px; color:var(--ink-muted); font-weight:300; text-transform:uppercase; letter-spacing:.06em; }
+    .stat-card.brand .stat-label { color:rgba(255,255,255,.6); }
+    .stat-sub { font-size:11px; color:var(--ink-muted); font-weight:300; margin-top:3px; }
+
+    /* ── CHARTS ── */
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+    .chart-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; margin-bottom:20px; }
+    .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+    .chart-card.full { grid-column:1/-1; }
+    .chart-title { font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:16px; }
+    .chart-canvas { width:100%; }
+
+    /* Donut */
+    .donut-wrap { display:flex; align-items:center; gap:20px; }
+    .donut-svg { flex-shrink:0; }
+    .donut-legend { flex:1; }
+    .legend-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+    .legend-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+    .legend-text { font-size:12px; color:var(--ink-soft); font-weight:300; flex:1; }
+    .legend-val { font-size:12px; color:var(--ink); font-weight:500; }
+
+    /* Horizontal bars */
+    .hbar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .hbar-label { font-size:12px; color:var(--ink-soft); font-weight:300; width:160px; flex-shrink:0; font-size:11px; }
+    .hbar-track { flex:1; height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+    .hbar-fill { height:100%; border-radius:4px; transition:width .8s ease; }
+    .hbar-val { font-size:11px; color:var(--ink-muted); width:32px; text-align:right; }
+
+    /* Signal heat strip */
+    .heat-strip { display:grid; grid-template-columns:180px 1fr 1fr 1fr 1fr 1fr 80px; gap:2px; align-items:center; margin-bottom:4px; }
+    .heat-strip.header { margin-bottom:8px; }
+    .heat-group-name { font-size:12px; color:var(--ink-soft); font-weight:300; padding-right:8px; }
+    .heat-dim-header { font-size:9px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); text-align:center; }
+    .heat-cell-mini { height:28px; border-radius:2px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; }
+    .h-high { background:var(--risk-low-bg); color:var(--risk-low); }
+    .h-mid { background:var(--risk-mod-bg); color:var(--risk-mod); }
+    .h-low { background:var(--risk-high-bg); color:var(--risk-high); }
+    .heat-risk { font-size:10px; font-weight:500; text-align:center; }
+
+    /* Influence/Energy map */
+    .influence-map { position:relative; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; margin-bottom:16px; }
+    .influence-canvas { width:100%; height:340px; position:relative; }
+    .influence-axes { position:absolute; inset:30px; pointer-events:none; }
+    .influence-axis-x { position:absolute; bottom:0; left:0; right:0; border-top:1px dashed var(--border); }
+    .influence-axis-y { position:absolute; top:0; bottom:0; left:50%; border-left:1px dashed var(--border); }
+    .axis-label { position:absolute; font-size:10px; color:var(--ink-muted); font-weight:300; letter-spacing:.04em; text-transform:uppercase; }
+    .quadrant-label { position:absolute; font-size:10px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; opacity:.5; }
+    .influence-bubble { position:absolute; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; border:2px solid white; box-shadow:0 2px 8px rgba(0,0,0,.12); }
+    .influence-bubble:hover { transform:scale(1.1); z-index:10; box-shadow:0 4px 16px rgba(0,0,0,.2); }
+    .bubble-label { font-size:9px; font-weight:500; color:white; text-align:center; line-height:1.2; padding:2px; }
+    .bubble-tooltip { display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:var(--ink); color:white; font-size:11px; font-weight:300; padding:8px 12px; border-radius:2px; white-space:nowrap; z-index:20; line-height:1.5; }
+    .influence-bubble:hover .bubble-tooltip { display:block; }
+    .champion-zone { position:absolute; right:0; top:0; width:50%; height:50%; background:rgba(123,158,135,.05); border-radius:0 var(--radius) 0 0; pointer-events:none; }
+    .priority-zone { position:absolute; right:0; bottom:0; width:50%; height:50%; background:rgba(196,130,106,.05); border-radius:0 0 var(--radius) 0; pointer-events:none; }
+
+    /* Posture breakdown */
+    .posture-stack { display:flex; height:32px; border-radius:4px; overflow:hidden; gap:1px; margin-bottom:8px; }
+    .posture-seg { display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; color:white; transition:width .6s ease; cursor:pointer; position:relative; }
+    .posture-seg-tooltip { display:none; position:absolute; bottom:calc(100%+6px); left:50%; transform:translateX(-50%); background:var(--ink); color:white; font-size:11px; padding:6px 10px; border-radius:2px; white-space:nowrap; z-index:10; }
+    .posture-seg:hover .posture-seg-tooltip { display:block; }
+
+    /* Saturation timeline */
+    .timeline-wrap { position:relative; padding:16px 0; }
+    .timeline-track { position:relative; height:4px; background:var(--border); border-radius:2px; margin:40px 0 20px; }
+    .timeline-event { position:absolute; top:50%; transform:translateY(-50%); }
+    .t-dot { width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 0 2px var(--border); cursor:pointer; transition:all .15s; }
+    .t-dot:hover { transform:scale(1.3); }
+    .t-label { position:absolute; font-size:10px; font-weight:300; color:var(--ink-muted); white-space:nowrap; text-align:center; transform:translateX(-50%); }
+    .t-label.above { bottom:16px; }
+    .t-label.below { top:16px; }
+    .t-label strong { display:block; font-weight:500; color:var(--ink-soft); font-size:11px; }
+    .timeline-now { position:absolute; top:-14px; bottom:-14px; width:2px; background:var(--brand-secondary); border-radius:1px; }
+    .timeline-now-label { position:absolute; top:-28px; left:50%; transform:translateX(-50%); font-size:9px; font-weight:500; color:var(--brand-secondary); white-space:nowrap; letter-spacing:.04em; }
+
+    /* Cultural complexity */
+    .culture-matrix { display:grid; grid-template-columns:120px 1fr; gap:0; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+    .culture-row { display:contents; }
+    .culture-row-label { padding:14px 16px; background:var(--surface); border-bottom:1px solid var(--border); font-size:12px; font-weight:500; color:var(--ink-soft); display:flex; align-items:center; }
+    .culture-row-label.header { background:var(--ink); color:white; font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+    .culture-cells { display:grid; grid-template-columns:repeat(4,1fr); border-bottom:1px solid var(--border); }
+    .culture-cell { padding:14px 12px; border-left:1px solid var(--border); font-size:11px; font-weight:300; color:var(--ink-muted); line-height:1.5; }
+    .culture-cell.header { background:var(--ink); color:rgba(255,255,255,.7); font-size:10px; letter-spacing:.06em; text-transform:uppercase; font-weight:400; }
+    .culture-cell.risk-flag { background:var(--risk-high-bg); color:var(--risk-high); font-weight:400; }
+    .culture-cell.ok { background:var(--risk-low-bg); color:var(--risk-low); }
+
+    /* Coverage confidence */
+    .confidence-row { display:flex; align-items:center; gap:14px; margin-bottom:12px; padding:12px 16px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+    .confidence-group { font-size:13px; font-weight:400; color:var(--ink); width:200px; flex-shrink:0; }
+    .confidence-bar-wrap { flex:1; height:8px; background:var(--border); border-radius:4px; overflow:hidden; }
+    .confidence-bar { height:100%; border-radius:4px; }
+    .confidence-pct { font-size:12px; color:var(--ink-muted); width:40px; text-align:right; }
+    .confidence-flag { font-size:11px; font-weight:500; padding:2px 8px; border-radius:8px; flex-shrink:0; }
+    .conf-strong { background:var(--risk-low-bg); color:var(--risk-low); }
+    .conf-partial { background:var(--risk-mod-bg); color:var(--risk-mod); }
+    .conf-weak { background:var(--risk-high-bg); color:var(--risk-high); }
+
+    /* ── NARRATIVE ── */
+    .narrative-toolbar { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+    .narr-btn { padding:7px 16px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); transition:all .15s; }
+    .narr-btn:hover { border-color:var(--clay); color:var(--clay-dark); }
+    .narr-btn.active { background:var(--clay); border-color:var(--clay); color:white; }
+
+    .narrative-body { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:32px; }
+    .narr-section { margin-bottom:32px; }
+    .narr-section:last-child { margin-bottom:0; }
+    .narr-section-title { font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; color:var(--ink); margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .narr-section-title em { font-style:italic; color:var(--clay-dark); }
+    .narr-p { font-size:14px; color:var(--ink-soft); font-weight:300; line-height:1.9; margin-bottom:14px; }
+    .narr-p strong { font-weight:500; color:var(--ink); }
+    .narr-callout { background:var(--surface-raised); border:1px solid var(--border); border-left:3px solid var(--clay); border-radius:var(--radius); padding:16px 20px; margin:16px 0; }
+    .narr-callout-label { font-size:10px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--clay-dark); margin-bottom:6px; }
+    .narr-callout-text { font-size:13px; color:var(--ink-soft); font-weight:300; line-height:1.7; }
+    .narr-culture-flag { background:#F5F0FB; border:1px solid #D4C4EF; border-left:3px solid var(--tile-3); border-radius:var(--radius); padding:16px 20px; margin:16px 0; }
+    .narr-culture-label { font-size:10px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--tile-3); margin-bottom:6px; }
+
+    [contenteditable="true"]:focus { outline:2px dashed var(--clay-light); outline-offset:4px; border-radius:2px; }
+
+    /* ── PLAN ── */
+    .plan-timeline { padding:0 0 20px; }
+    .plan-months { display:flex; gap:2px; margin-bottom:4px; }
+    .plan-month { flex:1; text-align:center; font-size:10px; font-weight:500; color:var(--ink-muted); letter-spacing:.04em; padding:6px 2px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); }
+    .plan-month.now { background:var(--brand-primary); color:white; border-color:var(--brand-primary); }
+
+    .workstream { margin-bottom:16px; }
+    .ws-label { font-size:11px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+    .ws-dot { width:8px; height:8px; border-radius:1px; flex-shrink:0; }
+    .ws-track { display:flex; gap:2px; }
+    .ws-block { flex:1; height:28px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:500; color:white; cursor:pointer; transition:opacity .15s; position:relative; overflow:hidden; }
+    .ws-block:hover { opacity:.85; }
+    .ws-block.empty { background:transparent; cursor:default; }
+    .ws-block-tooltip { display:none; position:absolute; bottom:calc(100%+4px); left:50%; transform:translateX(-50%); background:var(--ink); color:white; font-size:11px; padding:8px 12px; border-radius:2px; white-space:nowrap; z-index:10; line-height:1.5; font-weight:300; }
+    .ws-block:hover .ws-block-tooltip { display:block; }
+
+    .plan-legend { display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; }
+    .plan-legend-item { display:flex; align-items:center; gap:6px; font-size:11px; color:var(--ink-muted); font-weight:300; }
+    .plan-legend-dot { width:10px; height:10px; border-radius:1px; }
+
+    .group-plan-cards { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
+    .gp-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
+    .gp-card-top { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+    .gp-color { width:4px; height:32px; border-radius:2px; flex-shrink:0; }
+    .gp-name { font-size:13px; font-weight:500; color:var(--ink); }
+    .gp-meta { font-size:11px; color:var(--ink-muted); font-weight:300; }
+    .gp-priorities { display:flex; flex-direction:column; gap:6px; }
+    .gp-item { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink-soft); font-weight:300; line-height:1.5; }
+    .gp-item-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+
+    /* ── PRESENTATION BUILDER ── */
+    .pres-toolbar { display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
+    .pres-btn { padding:8px 18px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); transition:all .15s; }
+    .pres-btn:hover { border-color:var(--clay); color:var(--clay-dark); }
+    .pres-btn.export { background:var(--brand-primary); border-color:var(--brand-primary); color:white; }
+    .pres-btn.export:hover { opacity:.9; }
+
+    .slide-selector { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:24px; }
+    .slide-option { border:2px solid var(--border); border-radius:4px; padding:14px; cursor:pointer; transition:all .15s; text-align:center; }
+    .slide-option.selected { border-color:var(--brand-primary); background:var(--brand-light); }
+    .slide-option:hover:not(.selected) { border-color:var(--clay); }
+    .slide-option-icon { font-size:20px; margin-bottom:6px; }
+    .slide-option-label { font-size:11px; font-weight:500; color:var(--ink-soft); }
+
+    .slide-preview { background:var(--surface); border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+    .slide { display:none; }
+    .slide.active { display:block; }
+    .slide-inner { background:white; margin:16px; border-radius:2px; box-shadow:0 2px 12px rgba(0,0,0,.08); min-height:400px; overflow:hidden; }
+    .slide-top-bar { height:6px; background:var(--brand-primary); }
+    .slide-accent { height:3px; background:var(--brand-secondary); }
+    .slide-content { padding:32px; }
+    .slide-eyebrow { font-size:10px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--brand-secondary); margin-bottom:8px; }
+    .slide-title { font-family:'DM Serif Display',serif; font-size:26px; font-weight:400; color:var(--brand-primary); margin-bottom:16px; line-height:1.2; }
+    .slide-body { font-size:13px; color:var(--ink-soft); font-weight:300; line-height:1.8; }
+    .slide-data-row { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:20px; }
+    .slide-stat { text-align:center; padding:14px; background:var(--brand-light); border-radius:2px; }
+    .slide-stat-num { font-family:'DM Serif Display',serif; font-size:28px; color:var(--brand-primary); line-height:1; }
+    .slide-stat-label { font-size:10px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+
+    /* ── DECISION GUIDE ── */
+    .guide-intro { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-bottom:20px; }
+    .guide-intro-title { font-family:'DM Serif Display',serif; font-size:18px; font-weight:400; margin-bottom:6px; }
+    .guide-intro-text { font-size:13px; color:var(--ink-muted); font-weight:300; line-height:1.7; }
+
+    .prompt-card { background:var(--surface-raised); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; }
+    .prompt-header { padding:16px 20px; cursor:pointer; display:flex; align-items:flex-start; gap:14px; }
+    .prompt-header:hover { background:var(--surface); }
+    .prompt-if { flex-shrink:0; padding:3px 10px; border-radius:10px; font-size:10px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; background:var(--brand-light); color:var(--brand-primary); margin-top:2px; }
+    .prompt-scenario { font-size:13px; font-weight:500; color:var(--ink); flex:1; line-height:1.4; }
+    .prompt-caret { font-size:10px; color:var(--ink-muted); transition:transform .2s; flex-shrink:0; margin-top:4px; }
+    .prompt-card.open .prompt-caret { transform:rotate(180deg); }
+    .prompt-body { display:none; padding:0 20px 20px; border-top:1px solid var(--border); }
+    .prompt-card.open .prompt-body { display:block; }
+    .prompt-body-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding-top:16px; }
+    .prompt-col-label { font-size:10px; font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:8px; }
+    .prompt-action { font-size:13px; color:var(--ink-soft); font-weight:300; line-height:1.7; margin-bottom:10px; }
+    .prompt-action strong { font-weight:500; color:var(--ink); }
+    .prompt-updates { display:flex; flex-direction:column; gap:6px; }
+    .prompt-update-item { display:flex; align-items:flex-start; gap:8px; font-size:12px; color:var(--ink-soft); font-weight:300; line-height:1.5; }
+    .prompt-update-dot { width:6px; height:6px; border-radius:50%; background:var(--brand-secondary); flex-shrink:0; margin-top:5px; }
+    .prompt-decision { margin-top:12px; background:var(--brand-light); border:1px solid rgba(26,58,92,.15); border-radius:var(--radius); padding:12px 14px; font-size:12px; color:var(--brand-primary); font-weight:300; line-height:1.6; }
+    .prompt-decision strong { font-weight:500; }
+
+    /* Ad-hoc chart request */
+    .adhoc-bar { display:flex; gap:10px; align-items:center; padding:16px 0; border-top:1px solid var(--border); margin-top:20px; }
+    .adhoc-input { flex:1; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:13px; color:var(--ink); background:var(--surface); font-weight:300; }
+    .adhoc-input:focus { outline:none; border-color:var(--clay); }
+    .adhoc-btn { padding:10px 20px; background:var(--clay); color:white; border:none; border-radius:var(--radius); font-family:'DM Sans',sans-serif; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap; }
+    .adhoc-hint { font-size:11px; color:var(--ink-muted); font-weight:300; font-style:italic; }
+    .adhoc-examples { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+    .adhoc-example { padding:4px 10px; border-radius:10px; font-size:11px; border:1px solid var(--border); color:var(--ink-muted); cursor:pointer; background:var(--surface); }
+    .adhoc-example:hover { border-color:var(--clay); color:var(--clay-dark); }
+
+    @media print {
+      .output-bar,.mock-banner,.narr-btn,.narr-toolbar,.pres-toolbar,.adhoc-bar,.adhoc-examples,.brand-badge { display:none; }
+      .view { display:block !important; page-break-before:always; }
+      .app { box-shadow:none; }
+    }
+    @media(max-width:700px) {
+      .header,.view-pad,.mock-banner { padding-left:20px;padding-right:20px; }
+      .client-header { margin:16px 20px; }
+      .stat-row { grid-template-columns:repeat(3,1fr); }
+      .chart-grid,.chart-grid-3,.group-plan-cards,.prompt-body-grid,.slide-selector { grid-template-columns:1fr; }
+      .slide-data-row { grid-template-columns:repeat(2,1fr); }
+      .culture-matrix { grid-template-columns:80px 1fr; }
+    }
+  </style>
+  <style>
+    .t-nav{background:#1C1A17;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:200;flex-wrap:wrap;min-height:48px;}
+    .t-nav-brand{font-family:"DM Serif Display",serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#C4A882;text-decoration:none;padding:14px 0;flex-shrink:0;}
+    .t-nav-modules{display:flex;gap:2px;flex-wrap:wrap;}
+    .t-nav-module{padding:6px 12px;font-size:11px;font-weight:400;color:rgba(255,255,255,.45);text-decoration:none;border-radius:2px;transition:all .15s;white-space:nowrap;}
+    .t-nav-module:hover{color:white;background:rgba(255,255,255,.08);}
+    .t-nav-module.active{color:#C4A882;font-weight:500;}
+    .t-demo-badge{padding:4px 10px;border-radius:10px;font-size:10px;font-weight:500;background:#C4A882;color:white;letter-spacing:.06em;text-transform:uppercase;display:none;}
+    .t-demo-badge.visible{display:inline-block;}
+    .t-demo-banner{background:#8B7355;padding:10px 48px;font-size:12px;color:white;font-weight:300;display:none;align-items:center;gap:12px;}
+    .t-demo-banner.visible{display:flex;}
+    .t-demo-banner strong{font-weight:500;}
+    .t-demo-dot{width:6px;height:6px;border-radius:50%;background:white;opacity:.7;flex-shrink:0;animation:tdpulse 2s infinite;}
+    @keyframes tdpulse{0%,100%{opacity:.7}50%{opacity:.3}}
+    @media(max-width:640px){.t-nav{padding:0 20px;}.t-nav-modules{display:none;}.t-demo-banner{padding-left:20px;padding-right:20px;}}
+  </style>
+  <!-- Nav styles injected -->
+</head>
+<body>
+  <nav class="t-nav">
+    <a href="index.html" class="t-nav-brand">Tessera</a>
+    <div class="t-nav-modules">
+      <a href="tessera-module1.html" class="t-nav-module" id="nav-m1">1 &nbsp;·&nbsp; Project context</a>
+      <a href="tessera-module2.html" class="t-nav-module" id="nav-m2">2 &nbsp;·&nbsp; Listening tour</a>
+      <a href="tessera-module3.html" class="t-nav-module" id="nav-m3">3 &nbsp;·&nbsp; Stakeholder map</a>
+      <a href="tessera-module4.html" class="t-nav-module" id="nav-m4">4 &nbsp;·&nbsp; Experience design</a>
+      <a href="tessera-module5.html" class="t-nav-module" id="nav-m5">5 &nbsp;·&nbsp; Diagnostic output</a>
+    </div>
+    <div class="t-nav-right">
+      <span class="t-demo-badge" id="demo-badge">Demo</span>
+    </div>
+  </nav>
+  <div class="t-demo-banner" id="demo-banner">
+    <div class="t-demo-dot"></div>
+    <div><strong>Demo mode active</strong> &nbsp;·&nbsp; All data is fictional and for illustration only. <a href="index.html" style="color:#E8D9C4;text-decoration:underline;">Return to home &rarr;</a></div>
+  </div>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header" style="position:relative;">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+    <div class="header-row">
+      <div>
+        <h1>Diagnostic Output &amp; <em>Dashboard</em></h1>
+        <p>Five outputs from one data source — dashboard, narrative, plan, presentation, and decision guide. Edit here, not in separate files. Everything stays in sync.</p>
+        <div class="version-tag">Unit 1 &nbsp;·&nbsp; Unit 1 · Module 5 of 5 &nbsp;·&nbsp; v1.0</div>
+      </div>
+      <div class="brand-badge" onclick="toggleBrandPanel()">
+        <div class="brand-swatch"></div>
+        <div class="brand-swatch-2"></div>
+        <div class="brand-badge-text">Client brand &nbsp;▾</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Brand panel -->
+  <div class="brand-panel" id="brand-panel">
+    <button class="brand-close" onclick="toggleBrandPanel()">✕</button>
+    <div class="brand-panel-title">Client branding</div>
+    <div class="brand-panel-sub">Set the client's brand colours and name. All outputs update automatically — presentations, charts, and headers reflect the client's identity.</div>
+
+    <div class="brand-method-tabs">
+      <div class="brand-method-tab active">Manual</div>
+      <div class="brand-method-tab">URL import</div>
+      <div class="brand-method-tab">File upload</div>
+    </div>
+
+    <div class="brand-input-group">
+      <label class="brand-label">Client name</label>
+      <input type="text" class="brand-input" id="brand-name" value="Meridian Global" oninput="updateBrand()">
+    </div>
+    <div class="brand-input-group">
+      <label class="brand-label">Project name</label>
+      <input type="text" class="brand-input" id="brand-project" value="Project Meridian — ERP &amp; Restructure" oninput="updateBrand()">
+    </div>
+    <div class="brand-input-group">
+      <label class="brand-label">Primary colour</label>
+      <div class="color-row">
+        <input type="color" value="#1A3A5C" id="brand-primary-color" onchange="applyBrandColors()" style="width:44px;height:36px;border:1px solid var(--border);border-radius:2px;cursor:pointer;padding:2px;">
+        <input type="text" class="brand-input" id="brand-primary-hex" value="#1A3A5C" oninput="syncColorFromHex('primary')" style="flex:1;">
+        <div class="color-preview" id="primary-preview" style="background:#1A3A5C;"></div>
+      </div>
+    </div>
+    <div class="brand-input-group">
+      <label class="brand-label">Secondary / accent colour</label>
+      <div class="color-row">
+        <input type="color" value="#E8612A" id="brand-secondary-color" onchange="applyBrandColors()" style="width:44px;height:36px;border:1px solid var(--border);border-radius:2px;cursor:pointer;padding:2px;">
+        <input type="text" class="brand-input" id="brand-secondary-hex" value="#E8612A" oninput="syncColorFromHex('secondary')" style="flex:1;">
+        <div class="color-preview" id="secondary-preview" style="background:#E8612A;"></div>
+      </div>
+    </div>
+    <div class="brand-input-group">
+      <label class="brand-label">Logo initials (until logo upload is available)</label>
+      <input type="text" class="brand-input" id="brand-initials" value="MG" maxlength="3" oninput="updateBrand()">
+    </div>
+    <button class="brand-apply-btn" onclick="applyBrandColors();toggleBrandPanel()">Apply branding →</button>
+  </div>
+
+  <div class="mock-banner">
+    <div class="mock-dot"></div>
+    <div class="mock-text"><strong>Mock data active</strong> — Project Meridian &nbsp;·&nbsp; 340 people &nbsp;·&nbsp; 6 stakeholder groups &nbsp;·&nbsp; 28 interviews &nbsp;·&nbsp; 4 countries</div>
+  </div>
+
+  <!-- Output tabs -->
+  <div class="output-bar">
+    <div class="output-tab active" onclick="switchOutput('dashboard')">
+      <div class="output-tab-label">Output A</div>
+      <div class="output-tab-title">Dashboard</div>
+    </div>
+    <div class="output-tab" onclick="switchOutput('narrative')">
+      <div class="output-tab-label">Output B</div>
+      <div class="output-tab-title">Diagnostic narrative</div>
+    </div>
+    <div class="output-tab" onclick="switchOutput('plan')">
+      <div class="output-tab-label">Output C</div>
+      <div class="output-tab-title">Programme plan</div>
+    </div>
+    <div class="output-tab" onclick="switchOutput('presentation')">
+      <div class="output-tab-label">Output D</div>
+      <div class="output-tab-title">Presentation builder</div>
+    </div>
+    <div class="output-tab" onclick="switchOutput('guide')">
+      <div class="output-tab-label">Output E</div>
+      <div class="output-tab-title">Decision guide</div>
+    </div>
+  </div>
+
+  <!-- ══════════ OUTPUT A: DASHBOARD ══════════ -->
+  <div class="view active" id="view-dashboard">
+
+    <div class="client-header" id="client-header">
+      <div class="client-header-top">
+        <div class="client-logo-area">
+          <div class="client-logo-box" id="client-logo">MG</div>
+          <div>
+            <div class="client-name" id="client-name-display">Meridian Global</div>
+            <div class="client-project" id="client-project-display">Project Meridian — ERP &amp; Restructure</div>
+          </div>
+        </div>
+        <div class="client-date">Diagnostic snapshot &nbsp;·&nbsp; May 2026</div>
+      </div>
+      <div class="client-header-bottom">
+        <div class="client-tagline">Change experience design &nbsp;·&nbsp; Unit 1 diagnostic &nbsp;·&nbsp; Prepared by Mosaic Bridge Advisory</div>
+      </div>
+    </div>
+
+    <div class="view-pad">
+
+      <!-- Stat row -->
+      <div class="stat-row">
+        <div class="stat-card brand"><div class="stat-num">340</div><div class="stat-label">Total population</div></div>
+        <div class="stat-card"><div class="stat-num">28</div><div class="stat-label">Interviewed</div><div class="stat-sub">8% coverage</div></div>
+        <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Stakeholder groups</div></div>
+        <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Countries</div></div>
+        <div class="stat-card" style="border-left:3px solid var(--risk-high);"><div class="stat-num" style="color:var(--risk-high);">2</div><div class="stat-label">High risk groups</div><div class="stat-sub">Action required now</div></div>
+      </div>
+
+      <!-- Chart grid row 1 -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Posture distribution — full population</div>
+          <div class="posture-stack" id="posture-stack-full"></div>
+          <div id="posture-legend-full"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Risk distribution by group</div>
+          <div class="hbar-row"><div class="hbar-label">High risk</div><div class="hbar-track"><div class="hbar-fill" style="width:33%;background:var(--risk-high)"></div></div><div class="hbar-val">2</div></div>
+          <div class="hbar-row"><div class="hbar-label">Moderate risk</div><div class="hbar-track"><div class="hbar-fill" style="width:50%;background:var(--risk-mod)"></div></div><div class="hbar-val">3</div></div>
+          <div class="hbar-row"><div class="hbar-label">Manageable risk</div><div class="hbar-track"><div class="hbar-fill" style="width:17%;background:var(--risk-low)"></div></div><div class="hbar-val">1</div></div>
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+            <div class="chart-title">Population by risk level</div>
+            <div class="hbar-row"><div class="hbar-label">High risk (102 people)</div><div class="hbar-track"><div class="hbar-fill" style="width:30%;background:var(--risk-high)"></div></div><div class="hbar-val">30%</div></div>
+            <div class="hbar-row"><div class="hbar-label">Moderate (230 people)</div><div class="hbar-track"><div class="hbar-fill" style="width:68%;background:var(--risk-mod)"></div></div><div class="hbar-val">68%</div></div>
+            <div class="hbar-row"><div class="hbar-label">Manageable (8 people)</div><div class="hbar-track"><div class="hbar-fill" style="width:2%;background:var(--risk-low)"></div></div><div class="hbar-val">2%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Influence & Energy map -->
+      <div class="chart-card" style="margin-bottom:16px;">
+        <div class="chart-title">Influence &amp; energy map — where to invest first</div>
+        <div style="font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:16px;line-height:1.6;">Plots each stakeholder group by change posture (horizontal) and organisational influence (vertical). Top-right quadrant are your natural champions. Bottom-right are your priority interventions — high influence, resistant posture shapes everyone around them. Hover any bubble for detail.</div>
+        <div class="influence-canvas" id="influence-map">
+          <div class="champion-zone"></div>
+          <div class="priority-zone"></div>
+          <!-- Axis labels -->
+          <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--ink-muted);letter-spacing:.06em;text-transform:uppercase;">← Resistant &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Champion →</div>
+          <div style="position:absolute;top:50%;left:8px;transform:translateY(-50%) rotate(-90deg);font-size:10px;color:var(--ink-muted);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;">← Low influence &nbsp;&nbsp; High influence →</div>
+          <div style="position:absolute;top:8px;right:12px;font-size:10px;font-weight:500;color:var(--risk-low);letter-spacing:.06em;text-transform:uppercase;">Activate now ↗</div>
+          <div style="position:absolute;bottom:32px;right:12px;font-size:10px;font-weight:500;color:var(--risk-high);letter-spacing:.06em;text-transform:uppercase;">Priority intervention ↘</div>
+        </div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);font-weight:300;"><div style="width:10px;height:10px;border-radius:50%;background:var(--risk-low);"></div>Champion or cautiously open</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);font-weight:300;"><div style="width:10px;height:10px;border-radius:50%;background:var(--risk-mod);"></div>Uncertain</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);font-weight:300;"><div style="width:10px;height:10px;border-radius:50%;background:var(--risk-high);"></div>Resistant or disengaged</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);font-weight:300;"><div style="width:10px;height:10px;border-radius:50%;background:var(--ink-muted);opacity:.4;"></div>Insufficient data</div>
+        </div>
+      </div>
+
+      <!-- Signal heat map -->
+      <div class="chart-card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div class="chart-title" style="margin-bottom:0;">Signal heat map by group</div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:.08em;color:var(--ink-muted);border:1px solid var(--border);padding:3px 8px;border-radius:8px;" id="signal-method-badge">Default — Signal framework</div>
+        </div>
+        <div class="heat-strip header">
+          <div></div>
+          <div class="heat-dim-header">Clarity</div>
+          <div class="heat-dim-header">Commitment</div>
+          <div class="heat-dim-header">Capability</div>
+          <div class="heat-dim-header">Practice</div>
+          <div class="heat-dim-header">Sustain</div>
+          <div class="heat-dim-header">Risk</div>
+        </div>
+        <div id="heat-rows"></div>
+      </div>
+
+      <!-- Coverage confidence & Cultural complexity -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Listening confidence by group</div>
+          <div id="confidence-rows"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Change saturation — concurrent demands</div>
+          <div class="timeline-wrap">
+            <div style="font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:16px;line-height:1.6;">What this population is absorbing simultaneously alongside Project Meridian. Each overlap point is a design risk for engagement and training timing.</div>
+            <div class="timeline-track" id="saturation-track">
+              <div class="timeline-now"><div class="timeline-now-label">Today</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cultural tension map -->
+      <div class="chart-card" style="margin-bottom:16px;">
+        <div style="margin-bottom:6px;">
+          <div class="chart-title" style="margin-bottom:4px;">The human infrastructure</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:16px;color:var(--ink-soft);font-style:italic;font-weight:400;margin-bottom:12px;line-height:1.5;">"We can build the perfect system and still fail. What we are looking at here is the human infrastructure — the unwritten rules, the trust patterns, the way information actually moves in this organization. If we do not account for that, we are designing for an org that exists on paper, not the one that shows up on Monday morning."</div>
+          <div style="font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:16px;line-height:1.6;">Select which cultural layers to display. Each layer surfaces a different dimension of nuance. Show what the room needs — hide what it does not.</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;" id="culture-layer-toggles">
+          <div class="culture-layer-toggle cl-active" data-layer="geo" onclick="toggleCultureLayer(this)" style="padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--tile-5);border:1px solid var(--tile-5);color:white;user-select:none;transition:all .15s;">Geographic &amp; regional</div>
+          <div class="culture-layer-toggle cl-active" data-layer="level" onclick="toggleCultureLayer(this)" style="padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--tile-3);border:1px solid var(--tile-3);color:white;user-select:none;transition:all .15s;">Organisational level</div>
+          <div class="culture-layer-toggle cl-active" data-layer="function" onclick="toggleCultureLayer(this)" style="padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--tile-2);border:1px solid var(--tile-2);color:white;user-select:none;transition:all .15s;">Functional identity</div>
+          <div class="culture-layer-toggle" data-layer="tenure" onclick="toggleCultureLayer(this)" style="padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);user-select:none;transition:all .15s;">Tenure &amp; history</div>
+          <div class="culture-layer-toggle" data-layer="legacy" onclick="toggleCultureLayer(this)" style="padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);user-select:none;transition:all .15s;">Acquired vs legacy</div>
+        </div>
+        <div style="background:#F5F0FB;border:1px solid #D4C4EF;border-left:3px solid var(--tile-3);border-radius:2px;padding:14px 18px;margin-bottom:20px;">
+          <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--tile-3);margin-bottom:6px;">Practitioner reflection</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:15px;color:var(--ink);font-style:italic;line-height:1.5;">"For each group — what is the cultural layer that could quietly carry this change, and what is the one that could quietly kill it? Name both before you build the map."</div>
+        </div>
+        <div id="culture-tension-display"></div>
+        <div class="culture-matrix">
+          <div class="culture-row">
+            <div class="culture-row-label header">Group</div>
+            <div class="culture-cells" style="display:grid;grid-template-columns:repeat(4,1fr);">
+              <div class="culture-cell header">Comms style risk</div>
+              <div class="culture-cell header">Training risk</div>
+              <div class="culture-cell header">Engagement risk</div>
+              <div class="culture-cell header">Language risk</div>
+            </div>
+          </div>
+          <div class="culture-row">
+            <div class="culture-row-label" style="font-size:11px;">Finance Managers</div>
+            <div class="culture-cells">
+              <div class="culture-cell risk-flag">US team leads with data. France and Brazil need relationship first.</div>
+              <div class="culture-cell risk-flag">English-only training creates exclusion signal in France and Brazil.</div>
+              <div class="culture-cell risk-flag">Group-first sequencing conflicts with individual-first cultural preference.</div>
+              <div class="culture-cell risk-flag">French and Portuguese materials not yet available.</div>
+            </div>
+          </div>
+          <div class="culture-row">
+            <div class="culture-row-label" style="font-size:11px;">Supply Chain Frontline</div>
+            <div class="culture-cells">
+              <div class="culture-cell risk-flag">Formal written comms not reaching deskless workers.</div>
+              <div class="culture-cell risk-flag">Classroom format inaccessible for field workers.</div>
+              <div class="culture-cell ok">Manager-mediated approach aligns with community orientation.</div>
+              <div class="culture-cell risk-flag">Brazil team receiving English-only communications.</div>
+            </div>
+          </div>
+          <div class="culture-row">
+            <div class="culture-row-label" style="font-size:11px;">Senior Leadership</div>
+            <div class="culture-cells">
+              <div class="culture-cell ok">US and UK sponsors: direct style matches project team approach.</div>
+              <div class="culture-cell ok">No training design risk — peripheral impact.</div>
+              <div class="culture-cell risk-flag">French director: public advocacy model conflicts with relationship-first style.</div>
+              <div class="culture-cell ok">All senior leaders working in primary language.</div>
+            </div>
+          </div>
+          <div class="culture-row">
+            <div class="culture-row-label" style="font-size:11px;">HR / IT</div>
+            <div class="culture-cells">
+              <div class="culture-cell ok">Both groups: direct communication preference aligns with project style.</div>
+              <div class="culture-cell ok">High digital literacy — standard formats accessible.</div>
+              <div class="culture-cell ok">Task-first orientation aligns with project team approach.</div>
+              <div class="culture-cell ok">English primary language across both groups.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ad-hoc chart request -->
+      <div class="adhoc-bar">
+        <input type="text" class="adhoc-input" id="adhoc-input" placeholder="Request a chart — e.g. show me posture by country, or map WIIFM strength by group...">
+        <button class="adhoc-btn" onclick="handleAdhoc()">Generate →</button>
+      </div>
+      <div class="adhoc-examples">
+        <span class="adhoc-hint">Try:</span>
+        <div class="adhoc-example" onclick="setAdhoc(this)">Posture breakdown by country</div>
+        <div class="adhoc-example" onclick="setAdhoc(this)">Champion network candidates</div>
+        <div class="adhoc-example" onclick="setAdhoc(this)">Signal gap by function</div>
+        <div class="adhoc-example" onclick="setAdhoc(this)">Cultural risk heatmap</div>
+        <div class="adhoc-example" onclick="setAdhoc(this)">Training modality by group</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ OUTPUT B: NARRATIVE ══════════ -->
+  <div class="view" id="view-narrative">
+    <div class="view-pad">
+      <div class="narrative-toolbar">
+        <button class="narr-btn active" onclick="setNarrView('full',this)">Full diagnostic</button>
+        <button class="narr-btn" onclick="setNarrView('exec',this)">Executive summary</button>
+        <button class="narr-btn" onclick="setNarrView('sponsor',this)">Sponsor briefing</button>
+        <button class="narr-btn" style="margin-left:auto;" onclick="window.print()">Export PDF</button>
+      </div>
+
+      <div class="narrative-body" id="narrative-body">
+        <div class="narr-section">
+          <div class="narr-section-title">What we set out to understand</div>
+          <div class="narr-p" contenteditable="true">Project Meridian represents one of the most significant transformations Meridian Global has undertaken in over a decade — a simultaneous ERP implementation and organisational restructure affecting <strong>340 people across four countries</strong>. The diagnostic phase was designed to answer five core questions before any change experience is designed: What does this population know? What do they feel? What are they worried about? What would make them ready? And crucially — what are they carrying alongside this change that the project team may not be seeing?</div>
+          <div class="narr-p" contenteditable="true">Twenty-eight interviews were conducted across six stakeholder groups over a four-week listening tour. This report reflects what was heard, what it means, and what needs to happen next.</div>
+        </div>
+
+        <div class="narr-section">
+          <div class="narr-section-title">What the data <em>actually</em> says</div>
+          <div class="narr-p" contenteditable="true">The headline number — 8% interview coverage across 340 people — understates both the depth and the gaps in what we know. Where we listened deeply, the data is rich and specific. Where we did not listen enough, the gaps are significant and must be named honestly before any design decisions are made.</div>
+
+          <div class="narr-callout">
+            <div class="narr-callout-label">The most important finding</div>
+            <div class="narr-callout-text" contenteditable="true">The Finance Manager group is the highest-risk population in this engagement — not because they are resistant, but because they are carrying a wound from the 2020 ERP failure that has never been acknowledged. Their Commitment signal sits at 28%. Until trust is rebuilt, no communication, training, or engagement activity will land as intended. This is not a content problem. It is a relationship problem that must be addressed first.</div>
+          </div>
+
+          <div class="narr-p" contenteditable="true">The Supply Chain Frontline group — 84 people across the US and Brazil — represents the second critical risk. Clarity signal is at 40%, meaning the majority of this population does not yet have an accurate picture of what is changing for them. The Brazil sub-group has received no communication in Portuguese. The clock is running and the design window is narrowing.</div>
+
+          <div class="narr-culture-flag">
+            <div class="narr-culture-label">Cultural complexity — what the signal data does not show</div>
+            <div class="narr-callout-text" contenteditable="true">The signal data surfaces where groups are in their change journey. What it cannot show — and what this diagnostic must name explicitly — is the cultural interaction risk between the teams designing this change and the populations experiencing it. The project team operates predominantly with a US and UK cultural operating style: direct communication, data-led messaging, group-first sequencing, and efficiency-gain framing. Three of the six stakeholder groups — Finance Managers in France and Brazil, Supply Chain Frontline in Brazil, and Senior Leadership in France — operate with meaningfully different cultural orientations: relationship before task, indirect communication of concerns, individual-first information sequencing, and community-driven engagement. Without deliberate calibration, communications and training designed by this project team will feel foreign to the populations who need them most.</div>
+          </div>
+        </div>
+
+        <div class="narr-section">
+          <div class="narr-section-title">What we do not yet know</div>
+          <div class="narr-p" contenteditable="true">The Finance Frontline and Admin Support group — 196 people, the largest in the organisation — has two interviews completed. This is not enough data to design for. Any recommendation made for this group at this stage would be based on assumption, not evidence. Additional listening is required before design proceeds for this population.</div>
+          <div class="narr-p" contenteditable="true">The France population has two interviews total — both from management level. The France finance frontline team has no representation in the listening tour. The UK frontline has not been heard. These gaps must be closed before the diagnostic can be considered complete.</div>
+        </div>
+
+        <div class="narr-section">
+          <div class="narr-section-title">What needs to happen next</div>
+          <div class="narr-p" contenteditable="true">The recommendations that follow are sequenced by urgency and by what the data can currently support. Actions marked <strong>Do now</strong> address critical gaps that are already affecting the engagement. Actions marked <strong>Do soon</strong> build the foundation for effective design. Actions marked <strong>Plan for</strong> are important but can be properly sequenced once the immediate priorities are addressed.</div>
+
+          <div class="narr-callout">
+            <div class="narr-callout-label">Three things that must happen this week</div>
+            <div class="narr-callout-text" contenteditable="true">1. Plain-language communication to Supply Chain Frontline in English and Portuguese — simultaneously, not sequentially. 2. Individual conversation with Finance Manager team leads acknowledging the 2020 ERP experience before any forward-looking messaging begins. 3. HR Business Partners briefed 48 hours ahead of the next general population communication — they are currently finding out at the same time as the people they are supposed to be supporting.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ OUTPUT C: PLAN ══════════ -->
+  <div class="view" id="view-plan">
+    <div class="view-pad">
+      <div class="view-title">High-level programme plan</div>
+      <div class="view-sub">Strategic timeline across all workstreams. This is the headline layer — the what, when, and for whom. Detailed execution plans live in Units 2 through 6.</div>
+
+      <div class="plan-timeline">
+        <div class="plan-months" id="plan-months"></div>
+        <div id="workstream-rows"></div>
+        <div class="plan-legend" id="plan-legend"></div>
+      </div>
+
+      <div style="margin-top:28px;">
+        <div class="view-title" style="font-size:18px;margin-bottom:16px;">Priority by group — next 90 days</div>
+        <div class="group-plan-cards" id="group-plan-cards"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ OUTPUT D: PRESENTATION ══════════ -->
+  <div class="view" id="view-presentation">
+    <div class="view-pad">
+      <div class="view-title">Presentation builder</div>
+      <div class="view-sub">Select the slides to include. Edit content directly. Export as PDF — one source of truth, no separate versions.</div>
+
+      <div class="pres-toolbar">
+        <button class="pres-btn" onclick="selectAllSlides()">Select all</button>
+        <button class="pres-btn" onclick="clearSlides()">Clear</button>
+        <button class="pres-btn export" onclick="window.print()">Export PDF →</button>
+      </div>
+
+      <div class="slide-selector" id="slide-selector"></div>
+
+      <div class="slide-preview">
+        <div id="slide-area"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ OUTPUT E: DECISION GUIDE ══════════ -->
+  <div class="view" id="view-guide">
+    <div class="view-pad">
+      <div class="view-title">Practitioner decision guide</div>
+      <div class="view-sub">When something changes — sponsor feedback, new information, a signal that shifts — use this guide to know what to update in Tessera and what downstream outputs are affected. The practitioner controls every decision. The system surfaces the implications.</div>
+
+      <div class="guide-intro">
+        <div class="guide-intro-title">How to use this guide</div>
+        <div class="guide-intro-text">Find the scenario that matches the feedback or new information you have received. Follow the recommended action. Review the downstream update list — these are the outputs that may need to change. Make the decision about what updates and what stays. Document your rationale in the notes field provided.</div>
+      </div>
+
+      <div id="prompt-cards"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Data ──
+const GROUPS = [
+  { name:'Finance Managers', color:'#C4826A', signals:[65,28,35,20,10], risk:'High', posture:{champion:1,cautious:2,uncertain:1,quiet:2,open:0,disengaged:0}, coverage:6/18, influence:0.85 },
+  { name:'Supply Chain Frontline', color:'#C4A840', signals:[40,35,15,10,5], risk:'High', posture:{champion:0,cautious:3,uncertain:3,quiet:1,open:1,disengaged:0}, coverage:8/84, influence:0.45 },
+  { name:'HR Partners', color:'#8B7BA8', signals:[80,60,45,35,20], risk:'Moderate', posture:{champion:1,cautious:2,uncertain:1,quiet:0,open:0,disengaged:0}, coverage:4/12, influence:0.6 },
+  { name:'IT Systems', color:'#4A8FA8', signals:[90,70,80,65,30], risk:'Moderate', posture:{champion:2,cautious:1,uncertain:0,quiet:1,open:0,disengaged:0}, coverage:4/22, influence:0.55 },
+  { name:'Senior Leadership', color:'#7B9E87', signals:[95,85,60,75,50], risk:'Manageable', posture:{champion:3,cautious:1,uncertain:0,quiet:0,open:0,disengaged:0}, coverage:4/8, influence:0.95 },
+  { name:'Finance Frontline', color:'#C4A882', signals:[45,40,20,15,5], risk:'Moderate', posture:{champion:0,cautious:1,uncertain:1,quiet:0,open:0,disengaged:0}, coverage:2/196, influence:0.25 },
+];
+
+// ── Brand ──
+function updateBrand() {
+  document.getElementById('client-name-display').textContent = document.getElementById('brand-name').value;
+  document.getElementById('client-project-display').innerHTML = document.getElementById('brand-project').value;
+  document.getElementById('client-logo').textContent = document.getElementById('brand-initials').value;
+}
+
+function syncColorFromHex(type) {
+  const hex = document.getElementById('brand-' + type + '-hex').value;
+  if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+    document.getElementById('brand-' + type + '-color').value = hex;
+    document.getElementById(type + '-preview').style.background = hex;
+  }
+}
+
+function applyBrandColors() {
+  const primary = document.getElementById('brand-primary-color').value;
+  const secondary = document.getElementById('brand-secondary-color').value;
+  document.getElementById('brand-primary-hex').value = primary;
+  document.getElementById('brand-secondary-hex').value = secondary;
+  document.getElementById('primary-preview').style.background = primary;
+  document.getElementById('secondary-preview').style.background = secondary;
+  document.documentElement.style.setProperty('--brand-primary', primary);
+  document.documentElement.style.setProperty('--brand-secondary', secondary);
+  document.documentElement.style.setProperty('--brand-light', primary + '18');
+  document.querySelector('.brand-swatch').style.background = primary;
+  document.querySelector('.brand-swatch-2').style.background = secondary;
+  document.querySelector('.brand-apply-btn').style.background = primary;
+  document.getElementById('client-header').querySelector('.client-header-top').style.background = primary;
+  document.getElementById('client-header').querySelector('.client-header-bottom').style.background = secondary;
+  document.getElementById('client-logo').style.color = primary;
+}
+
+function toggleBrandPanel() {
+  document.getElementById('brand-panel').classList.toggle('open');
+}
+
+// ── Posture breakdown ──
+function renderPosture() {
+  const totals = { champion:0, cautious:0, uncertain:0, quiet:0, open:0, disengaged:0 };
+  GROUPS.forEach(g => Object.keys(totals).forEach(k => totals[k] += g.posture[k] || 0));
+  const total = Object.values(totals).reduce((a,b) => a+b, 0);
+  const colors = { champion:'#7B9E87', cautious:'#C4A840', uncertain:'#8A8480', quiet:'#8B7BA8', open:'#C4826A', disengaged:'#2A2826' };
+  const labels = { champion:'Champion', cautious:'Cautiously open', uncertain:'Uncertain', quiet:'Quietly resistant', open:'Openly resistant', disengaged:'Disengaged' };
+
+  const stack = document.getElementById('posture-stack-full');
+  const legend = document.getElementById('posture-legend-full');
+  stack.innerHTML = Object.keys(totals).map(k => `
+    <div class="posture-seg" style="width:${totals[k]/total*100}%;background:${colors[k]};" title="${labels[k]}: ${totals[k]}">
+      ${totals[k]/total > 0.08 ? totals[k] : ''}
+      <div class="posture-seg-tooltip">${labels[k]}: ${totals[k]} (${Math.round(totals[k]/total*100)}%)</div>
+    </div>`).join('');
+
+  legend.innerHTML = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">` +
+    Object.keys(totals).map(k => `<div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-muted);"><div style="width:8px;height:8px;border-radius:1px;background:${colors[k]};"></div>${labels[k]}: ${totals[k]}</div>`).join('') + `</div>`;
+}
+
+// ── Signal heat rows ──
+function renderHeatRows() {
+  const dims = ['Clarity','Commitment','Capability','Practice','Sustain'];
+  function hClass(v) { return v>=70?'h-high':v>=40?'h-mid':'h-low'; }
+  function hLabel(v) { return v>=70?'S':v>=40?'P':'L'; }
+  document.getElementById('heat-rows').innerHTML = GROUPS.map(g => `
+    <div class="heat-strip">
+      <div class="heat-group-name">${g.name}</div>
+      ${g.signals.map(v => `<div class="heat-cell-mini ${hClass(v)}">${hLabel(v)}</div>`).join('')}
+      <div class="heat-risk" style="color:${g.risk==='High'?'var(--risk-high)':g.risk==='Moderate'?'var(--risk-mod)':'var(--risk-low)'};font-size:11px;font-weight:500;">${g.risk}</div>
+    </div>`).join('');
+}
+
+// ── Confidence rows ──
+function renderConfidence() {
+  document.getElementById('confidence-rows').innerHTML = GROUPS.map(g => {
+    const pct = Math.round(g.coverage * 100);
+    const cls = pct >= 30 ? 'conf-strong' : pct >= 10 ? 'conf-partial' : 'conf-weak';
+    const label = pct >= 30 ? 'Strong' : pct >= 10 ? 'Partial' : 'Insufficient';
+    const color = pct >= 30 ? 'var(--risk-low)' : pct >= 10 ? 'var(--risk-mod)' : 'var(--risk-high)';
+    return `<div class="confidence-row">
+      <div class="confidence-group">${g.name}</div>
+      <div class="confidence-bar-wrap"><div class="confidence-bar" style="width:${Math.max(pct,3)}%;background:${color}"></div></div>
+      <div class="confidence-pct">${pct}%</div>
+      <div class="confidence-flag ${cls}">${label}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Saturation timeline ──
+function renderSaturation() {
+  const track = document.getElementById('saturation-track');
+  track.querySelector('.timeline-now').style.left = '22%';
+  const events = [
+    { left:'5%', color:'#4A8FA8', label:'ERP kick-off', sub:'Jan 2026', above:true },
+    { left:'22%', color:'var(--brand-secondary)', label:'TODAY', sub:'May 2026', above:false },
+    { left:'35%', color:'#8B7BA8', label:'Restructure comms', sub:'Jul 2026', above:true },
+    { left:'50%', color:'#C4A840', label:'Q3 close', sub:'Sep 2026', above:false },
+    { left:'60%', color:'#C4826A', label:'ERP go-live', sub:'Oct 2026', above:true },
+    { left:'75%', color:'#7B9E87', label:'Hypercare end', sub:'Dec 2026', above:false },
+    { left:'90%', color:'#4A8FA8', label:'Full adoption review', sub:'Feb 2027', above:true },
+  ];
+  events.forEach(e => {
+    const el = document.createElement('div');
+    el.className = 'timeline-event';
+    el.style.left = e.left;
+    el.innerHTML = `<div class="t-dot" style="background:${e.color}"></div>
+      <div class="t-label ${e.above?'above':'below'}"><strong>${e.label}</strong>${e.sub}</div>`;
+    track.appendChild(el);
+  });
+}
+
+// ── Influence map ──
+function renderInfluenceMap() {
+  const map = document.getElementById('influence-map');
+  const bubbles = [
+    { g:GROUPS[4], posture:0.85, influence:0.92, size:40 }, // Senior Leadership - champion
+    { g:GROUPS[3], posture:0.75, influence:0.58, size:32 }, // IT - champion
+    { g:GROUPS[2], posture:0.65, influence:0.62, size:28 }, // HR - cautious
+    { g:GROUPS[0], posture:0.32, influence:0.82, size:36 }, // Finance Managers - resistant HIGH INFLUENCE
+    { g:GROUPS[1], posture:0.42, influence:0.48, size:44 }, // Supply Chain - uncertain
+    { g:GROUPS[5], posture:0.45, influence:0.22, size:52, lowData:true }, // Finance Frontline - insufficient
+  ];
+  const mapW = 100, mapH = 100;
+  bubbles.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'influence-bubble';
+    const x = 8 + (b.posture * 84);
+    const y = 8 + ((1-b.influence) * 84);
+    const color = b.lowData ? '#8A8480' : b.posture > 0.6 ? '#7B9E87' : b.posture > 0.4 ? '#C4A840' : '#C4826A';
+    el.style.cssText = `left:${x}%;top:${y}%;width:${b.size}px;height:${b.size}px;background:${color};transform:translate(-50%,-50%);opacity:${b.lowData?0.4:0.85};`;
+    el.innerHTML = `<div class="bubble-label">${b.g.name.split(' ').slice(-1)[0]}</div>
+      <div class="bubble-tooltip"><strong>${b.g.name}</strong><br>Posture: ${b.posture>0.6?'Champion/open':b.posture>0.4?'Uncertain':'Resistant'}<br>Influence: ${b.influence>0.7?'High':b.influence>0.4?'Moderate':'Low'}<br>${b.lowData?'⚠ Insufficient data':''}</div>`;
+    map.appendChild(el);
+  });
+}
+
+// ── Plan ──
+function renderPlan() {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 27'];
+  document.getElementById('plan-months').innerHTML = months.map((m,i) =>
+    `<div class="plan-month ${m==='May'?'now':''}">${m}</div>`).join('');
+
+  const workstreams = [
+    { label:'Listening & diagnostic', color:'#4A8FA8', blocks:[
+      {start:0,len:4,label:'Listening tour',tip:'28 interviews across 6 groups — Jan to Apr'},
+      {start:4,len:1,label:'Analysis',tip:'Synthesis and diagnostic — May'},
+      {start:5,len:1,label:'Gaps',tip:'Additional interviews — Finance Frontline — Jun'},
+    ]},
+    { label:'Communications', color:'#8B7BA8', blocks:[
+      {start:4,len:1,label:'Urgent comms',tip:'Supply Chain and Finance Manager trust comms — May'},
+      {start:5,len:4,label:'Cascade plan',tip:'Full communications cascade by group — Jun to Sep'},
+      {start:9,len:2,label:'Go-live comms',tip:'Go-live and hypercare communications — Oct to Nov'},
+    ]},
+    { label:'Leadership engagement', color:'#7B9E87', blocks:[
+      {start:4,len:2,label:'Sponsor activation',tip:'Antoine D. and sponsor coalition — May to Jun'},
+      {start:6,len:4,label:'Visibility plan',tip:'Structured leadership visibility through go-live — Jul to Oct'},
+      {start:10,len:2,label:'Sustain',tip:'Leadership reinforcement messaging — Nov to Dec'},
+    ]},
+    { label:'People engagement', color:'#C4826A', blocks:[
+      {start:5,len:2,label:'Co-design',tip:'Finance Manager co-design sessions — Jun to Jul'},
+      {start:6,len:3,label:'Champion network',tip:'Champion identification and activation — Jul to Sep'},
+      {start:9,len:3,label:'Adoption support',tip:'Go-live support and adoption monitoring — Oct to Dec'},
+    ]},
+    { label:'Learning & capability', color:'#C4A840', blocks:[
+      {start:5,len:1,label:'Design',tip:'Training design phase — Jun'},
+      {start:6,len:3,label:'Build',tip:'Role-specific learning journeys built — Jul to Sep'},
+      {start:8,len:2,label:'Delivery',tip:'Training delivery — Sep to Oct'},
+      {start:10,len:2,label:'Reinforcement',tip:'Post go-live learning support — Nov to Dec'},
+    ]},
+    { label:'Adoption & sustainability', color:'#C4A882', blocks:[
+      {start:9,len:1,label:'Baseline',tip:'Go-live adoption baseline — Oct'},
+      {start:10,len:3,label:'Monitoring',tip:'Adoption monitoring and intervention — Nov to Jan 27'},
+    ]},
+  ];
+
+  const totalMonths = months.length;
+  document.getElementById('workstream-rows').innerHTML = workstreams.map(ws => {
+    const blocks = Array(totalMonths).fill(null);
+    ws.blocks.forEach(b => { for(let i=b.start; i<b.start+b.len; i++) blocks[i] = b; });
+    let html = `<div class="workstream"><div class="ws-label"><div class="ws-dot" style="background:${ws.color}"></div>${ws.label}</div><div class="ws-track">`;
+    let i = 0;
+    while (i < totalMonths) {
+      const b = blocks[i];
+      if (b) {
+        html += `<div class="ws-block" style="flex:${b.len};background:${ws.color};">${b.label}<div class="ws-block-tooltip">${b.tip}</div></div>`;
+        i += b.len;
+      } else {
+        html += `<div class="ws-block empty" style="flex:1;"></div>`;
+        i++;
+      }
+    }
+    html += `</div></div>`;
+    return html;
+  }).join('');
+
+  document.getElementById('plan-legend').innerHTML = `
+    <div class="plan-legend-item"><div class="plan-legend-dot" style="background:var(--brand-primary)"></div>Current month</div>
+    <div class="plan-legend-item"><div class="plan-legend-dot" style="background:#C4826A"></div>Priority / urgent</div>
+    <div class="plan-legend-item" style="font-size:11px;color:var(--ink-muted);font-style:italic;">Hover any block for detail &nbsp;·&nbsp; Detailed execution plans live in Units 2–6</div>
+  `;
+
+  const groupPriors = [
+    { g:GROUPS[0], items:[{color:'#C4826A',text:'Acknowledge 2020 ERP experience in first communication'},{color:'#C4826A',text:'Individual conversations before any group sessions'},{color:'#C4A840',text:'Co-design sessions — Jun to Jul'},{color:'#7B9E87',text:'Portuguese and French materials — Jul'}] },
+    { g:GROUPS[1], items:[{color:'#C4826A',text:'Plain-language communication — English and Portuguese — now'},{color:'#C4826A',text:'Supervisor briefing for manager-mediated cascade'},{color:'#C4A840',text:'Mobile-first training design — Jun'},{color:'#7B9E87',text:'Brazil sub-group dedicated sessions — Sep'}] },
+    { g:GROUPS[2], items:[{color:'#C4826A',text:'48-hour advance brief before all general comms — now'},{color:'#C4A840',text:'FAQ document and question escalation path — Jun'},{color:'#7B9E87',text:'Involve in adoption monitoring design — Sep'}] },
+    { g:GROUPS[3], items:[{color:'#C4826A',text:'Raj P. — role clarity conversation — now'},{color:'#C4A840',text:'Post go-live ownership model confirmed — Jul'},{color:'#7B9E87',text:'Nathan C. formal champion activation — Aug'}] },
+    { g:GROUPS[4], items:[{color:'#C4826A',text:'Antoine D. — co-designed advocacy approach — now'},{color:'#C4A840',text:'Operational knowledge brief — Jun'},{color:'#7B9E87',text:'Structured visibility plan — Jul to Oct'}] },
+    { g:GROUPS[5], items:[{color:'#C4826A',text:'Additional listening — 8 to 10 interviews — Jun'},{color:'#C4826A',text:'No design decisions until coverage reaches 10%+'},{color:'#8A8480',text:'Design TBD pending listening completion'}] },
+  ];
+
+  document.getElementById('group-plan-cards').innerHTML = groupPriors.map(({g,items}) => `
+    <div class="gp-card">
+      <div class="gp-card-top"><div class="gp-color" style="background:${g.color}"></div><div><div class="gp-name">${g.name}</div><div class="gp-meta">${g.risk} risk</div></div></div>
+      <div class="gp-priorities">${items.map(item => `
+        <div class="gp-item"><div class="gp-item-dot" style="background:${item.color}"></div>${item.text}</div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ── Presentation slides ──
+const SLIDES = [
+  { id:'cover', label:'Cover slide', icon:'⬜' },
+  { id:'overview', label:'Population overview', icon:'◉' },
+  { id:'heatmap', label:'Signal heat map', icon:'◼' },
+  { id:'influence', label:'Influence & energy map', icon:'◈' },
+  { id:'findings', label:'Key findings', icon:'✦' },
+  { id:'priorities', label:'Priority actions', icon:'▶' },
+  { id:'plan', label:'Programme timeline', icon:'⟶' },
+  { id:'next', label:'Next steps', icon:'→' },
+];
+
+let selectedSlides = new Set(['cover','overview','heatmap','findings','priorities','plan','next']);
+
+function renderSlideSelector() {
+  document.getElementById('slide-selector').innerHTML = SLIDES.map(s => `
+    <div class="slide-option ${selectedSlides.has(s.id)?'selected':''}" onclick="toggleSlide('${s.id}',this)">
+      <div class="slide-option-icon">${s.icon}</div>
+      <div class="slide-option-label">${s.label}</div>
+    </div>`).join('');
+  renderSlideArea();
+}
+
+function toggleSlide(id, el) {
+  selectedSlides.has(id) ? selectedSlides.delete(id) : selectedSlides.add(id);
+  el.classList.toggle('selected');
+  renderSlideArea();
+}
+
+function selectAllSlides() { SLIDES.forEach(s => selectedSlides.add(s.id)); renderSlideSelector(); }
+function clearSlides() { selectedSlides.clear(); renderSlideSelector(); }
+
+function renderSlideArea() {
+  const area = document.getElementById('slide-area');
+  area.innerHTML = [...selectedSlides].map(id => `
+    <div class="slide active">
+      <div class="slide-inner">
+        <div class="slide-top-bar"></div>
+        <div class="slide-accent"></div>
+        <div class="slide-content">
+          ${slideContent(id)}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function slideContent(id) {
+  const name = document.getElementById('client-name-display').textContent;
+  const project = document.getElementById('brand-project').value;
+  switch(id) {
+    case 'cover': return `<div class="slide-eyebrow">Change experience diagnostic</div><div class="slide-title">${project}</div><div class="slide-body">Diagnostic findings and programme recommendations<br><br><strong>${name}</strong> &nbsp;·&nbsp; Mosaic Bridge Advisory &nbsp;·&nbsp; May 2026</div>`;
+    case 'overview': return `<div class="slide-eyebrow">Population overview</div><div class="slide-title">Who is affected by this change</div><div class="slide-data-row"><div class="slide-stat"><div class="slide-stat-num">340</div><div class="slide-stat-label">Total population</div></div><div class="slide-stat"><div class="slide-stat-num">6</div><div class="slide-stat-label">Stakeholder groups</div></div><div class="slide-stat"><div class="slide-stat-num">4</div><div class="slide-stat-label">Countries</div></div><div class="slide-stat"><div class="slide-stat-num">28</div><div class="slide-stat-label">Interviews</div></div></div><div class="slide-body">Six stakeholder groups across the United States, United Kingdom, France, and Brazil. Two groups at high readiness risk. The Finance Frontline group — 196 people — is currently underrepresented in the listening data and requires immediate additional coverage.</div>`;
+    case 'heatmap': return `<div class="slide-eyebrow">Signal heat map</div><div class="slide-title">Where each group is in their change journey</div><div class="slide-body" style="font-size:12px;">S = Strong &nbsp;·&nbsp; P = Partial &nbsp;·&nbsp; L = Low<br><br>${GROUPS.map(g => `<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;"><div style="width:120px;font-size:11px;color:var(--ink-soft);">${g.name}</div>${g.signals.map(v=>`<div style="width:28px;height:22px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;background:${v>=70?'var(--risk-low-bg)':v>=40?'var(--risk-mod-bg)':'var(--risk-high-bg)'};color:${v>=70?'var(--risk-low)':v>=40?'var(--risk-mod)':'var(--risk-high)'}">${v>=70?'S':v>=40?'P':'L'}</div>`).join('')}</div>`).join('')}</div>`;
+    case 'influence': return `<div class="slide-eyebrow">Influence & energy map</div><div class="slide-title">Champions, opportunities, and priority interventions</div><div class="slide-body">High influence, resistant posture = priority intervention. High influence, champion posture = activate now for coalition. Finance Managers sit in the high-influence, resistant quadrant — their energy shapes the adoption of everyone around them. Senior Leadership sits firmly in the champion quadrant and must remain visibly active.</div>`;
+    case 'findings': return `<div class="slide-eyebrow">Key findings</div><div class="slide-title">What the listening tour revealed</div><div class="slide-body"><strong>1. Trust damage is the primary risk</strong> — Finance Managers carry unacknowledged damage from the 2020 ERP failure. Commitment signal is at 28%.<br><br><strong>2. The largest group has not been heard</strong> — Finance Frontline (196 people) has 1% interview coverage.<br><br><strong>3. Cultural interaction risks are not visible in the data</strong> — Three groups are receiving communications designed with a cultural style that does not match their own.<br><br><strong>4. HR cannot support others through a change they do not understand</strong> — Current briefing sequencing is undermining the HR team's credibility.</div>`;
+    case 'priorities': return `<div class="slide-eyebrow">Priority actions</div><div class="slide-title">What must happen this week, this month, and this quarter</div><div class="slide-body"><strong style="color:var(--risk-high);">Do now</strong><br>Plain-language supply chain communication in English and Portuguese. Finance Manager trust conversation. HR 48-hour advance briefing protocol. Raj P. role clarity conversation.<br><br><strong style="color:var(--risk-mod);">Do soon</strong><br>Finance Frontline additional listening. Co-design sessions with Finance Managers. Antoine D. advocacy approach. Mobile training design.<br><br><strong style="color:var(--risk-low);">Plan for</strong><br>Champion network activation. Adoption measurement design. Post go-live sustainability plan.</div>`;
+    case 'plan': return `<div class="slide-eyebrow">Programme timeline</div><div class="slide-title">High-level workstream plan</div><div class="slide-body">Six workstreams across the engagement lifecycle. Listening and diagnostic now complete. Communications and leadership engagement begin immediately. Learning design starts June. Go-live October. Full adoption review February 2027.<br><br>Detailed execution plans for each workstream are developed in Units 2 through 6 of the Tessera engagement framework.</div>`;
+    case 'next': return `<div class="slide-eyebrow">Next steps</div><div class="slide-title">Immediate actions required from this session</div><div class="slide-body"><strong>From the project team:</strong><br>1. Approve the approach to Finance Manager trust communications<br>2. Confirm sponsor briefing sequence and Antoine D. engagement plan<br>3. Release capacity for Finance Frontline additional listening<br><br><strong>From the practitioner:</strong><br>1. Draft plain-language Supply Chain communication — English and Portuguese<br>2. Brief HR ahead of next general communication<br>3. Schedule Raj P. role clarity conversation with his direct manager<br><br><em>Next checkpoint: [Date TBD]</em></div>`;
+    default: return '';
+  }
+}
+
+// ── Decision guide ──
+const PROMPTS = [
+  {
+    scenario: 'A sponsor pushes back on the recommended communication tone for a specific group',
+    action: 'Log the feedback in the group profile notes. Review the source trail for the communication recommendation — specifically the interview evidence that drove the tone choice. Determine whether the pushback reflects new information or a preference conflict.',
+    updates: ['Communication approach for that group — may need revision','Source trail — document the decision and rationale','Narrative — update if the approach changes significantly','Presentation slides — if comms slide is included'],
+    decision: 'If the sponsor has new information that changes the picture — update and cascade. If it is a preference conflict — present the source evidence and recommend maintaining the data-driven approach while acknowledging the sponsor\'s concern in the narrative.'
+  },
+  {
+    scenario: 'New information emerges that changes a group\'s risk level',
+    action: 'Update the group signal profile with the new information and its source. Review whether the existing recommendations for that group still hold or need revision.',
+    updates: ['Group signal profile — update the relevant dimension','Heat map — will update automatically','Priority actions — review Do now vs Do soon sequencing','Narrative — flag the change and what prompted it','Plan — check if workstream timing needs adjustment'],
+    decision: 'Always document what changed, when, and why. The source trail must reflect the most current data — not just the original listening tour.'
+  },
+  {
+    scenario: 'A key influencer\'s posture shifts — positively or negatively',
+    action: 'Update their individual profile with the new posture reading and a note on what drove the shift. Review the champion network plan if they were identified as an anchor.',
+    updates: ['Individual person profile','Group posture summary — influencer shift affects the group read','Champion network plan — if relevant','Influence and energy map — position may shift','Communications approach — if they were a cascade anchor'],
+    decision: 'A positive shift in an influencer is an activation opportunity — move quickly. A negative shift is a signal that something in the engagement design is not working — diagnose before escalating.'
+  },
+  {
+    scenario: 'A sponsor requests a chart or visual that is not in the current dashboard',
+    action: 'Use the ad-hoc chart request field at the bottom of the Dashboard view. Describe what you want to show in plain language. The system will generate it from the existing data.',
+    updates: ['Dashboard — new chart added to ad-hoc section','Presentation — add the new slide if relevant'],
+    decision: 'If the sponsor is asking for something the data cannot support — be transparent about that. A chart built on insufficient data is worse than no chart.'
+  },
+  {
+    scenario: 'A group\'s listening coverage is deemed insufficient before design decisions must be made',
+    action: 'Flag the group in the coverage confidence view. Add a design hold note to their experience design outputs. Document the minimum additional interviews required before design can proceed.',
+    updates: ['Coverage confidence — update status','Experience design for that group — mark as design hold','Narrative — flag explicitly','Plan — adjust timeline if additional listening delays design'],
+    decision: 'Never generate recommendations for a group with less than 10% coverage and fewer than 3 interviews. The Finance Frontline group is currently in this position.'
+  },
+  {
+    scenario: 'The project timeline compresses and the go-live date moves earlier',
+    action: 'Update the programme plan with the new date. Review the workstream sequencing — identify what can be delivered, what needs to be deprioritised, and what is now at risk.',
+    updates: ['Programme plan — all workstream blocks','Priority actions — Do now list expands','Communications plan — sequencing may compress','Training design — delivery window may narrow','Narrative — timeline risk must be named explicitly'],
+    decision: 'Timeline compression is a design constraint, not a reason to skip steps. Document what is being traded off and make that visible to the sponsor before proceeding.'
+  },
+  {
+    scenario: 'A sponsor deprioritises or dismisses the cultural nuance work — says it is nice to have, not need to have',
+    action: 'Do not argue for the cultural work as an abstract principle. Make it concrete and connect it to risk they already recognise. Show them the cultural tension map filtered to the one or two layers most relevant to their concerns.',
+    updates: ['Note the pushback in project context — it is a signal about how this sponsor processes information','Adjust the cultural complexity view for this sponsor — show fewer layers, highest-risk ones only','Flag in the narrative that cultural calibration was deprioritised and what that means for recommendation confidence'],
+    decision: '"Think about the last change that did not stick. Chances are the tech worked. What did not work was the people layer — and usually that is because we did not see it early enough to do anything about it." Lead with risk, not theory. Sponsors understand risk. Culture is what either carries the change or quietly kills it — frame it that way.'
+  },
+];
+
+function renderGuide() {
+  document.getElementById('prompt-cards').innerHTML = PROMPTS.map((p,i) => `
+    <div class="prompt-card" id="pc-${i}">
+      <div class="prompt-header" onclick="togglePrompt(${i})">
+        <span class="prompt-if">If</span>
+        <div class="prompt-scenario">${p.scenario}</div>
+        <div class="prompt-caret">▼</div>
+      </div>
+      <div class="prompt-body">
+        <div class="prompt-body-grid">
+          <div>
+            <div class="prompt-col-label">Recommended action</div>
+            <div class="prompt-action">${p.action}</div>
+          </div>
+          <div>
+            <div class="prompt-col-label">What may need updating</div>
+            <div class="prompt-updates">${p.updates.map(u => `<div class="prompt-update-item"><div class="prompt-update-dot"></div>${u}</div>`).join('')}</div>
+          </div>
+        </div>
+        <div class="prompt-decision"><strong>Decision principle:</strong> ${p.decision}</div>
+      </div>
+    </div>`).join('');
+}
+
+function togglePrompt(i) {
+  document.getElementById('pc-' + i).classList.toggle('open');
+}
+
+// ── Adhoc chart ──
+function setAdhoc(el) { document.getElementById('adhoc-input').value = el.textContent; }
+function handleAdhoc() {
+  const val = document.getElementById('adhoc-input').value.trim();
+  if (!val) return;
+  alert('Ad-hoc chart generation will use the Claude API to build this chart from your project data: "' + val + '"\n\nThis feature activates in the agentic build phase. For now, document the request and we will build it as a custom output.');
+}
+
+// ── Navigation ──
+function switchOutput(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setNarrView(mode, btn) {
+  document.querySelectorAll('.narr-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── Mosaic ──
+const colors = ['#C4A882','#7B9E87','#8B7BA8','#C4826A','#F7F3ED','#4A8FA8','#E8D9C4'];
+const mosaic = document.getElementById('mosaic');
+for (let i = 0; i < 36; i++) {
+  const t = document.createElement('div');
+  t.className = 'mosaic-tile';
+  t.style.background = colors[i % colors.length];
+  t.style.animationDelay = (0.02 + i * 0.015) + 's';
+  mosaic.appendChild(t);
+}
+
+// ── Init ──
+renderCultureMap();
+renderPosture();
+renderHeatRows();
+renderConfidence();
+renderSaturation();
+renderInfluenceMap();
+renderPlan();
+renderSlideSelector();
+renderGuide();
+</script>
+
+  <script>
+    // Demo mode
+    (function() {
+      const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true';
+      if (isDemo) {
+        document.getElementById('demo-badge').classList.add('visible');
+        document.getElementById('demo-banner').classList.add('visible');
+      }
+      // Mark active nav item
+      const path = window.location.pathname.split('/').pop();
+      const navMap = {
+        'tessera-module1.html': 'nav-m1',
+        'tessera-module2.html': 'nav-m2',
+        'tessera-module3.html': 'nav-m3',
+        'tessera-module4.html': 'nav-m4',
+        'tessera-module5.html': 'nav-m5',
+      };
+      if (navMap[path]) {
+        const el = document.getElementById(navMap[path]);
+        if (el) el.classList.add('active');
+      }
+    })();
+  
+  // ── Cultural tension map ──
+  const CULTURE_DATA = {
+    geo: {
+      label: 'Geographic & regional',
+      color: 'var(--tile-5)',
+      rows: [
+        { group: 'Finance Managers', risk: 'high', text: 'France and Brazil sub-groups operate with relationship-first, indirect communication norms. US/UK project team leads with data and direct messaging. The same communication will land very differently across these regions.' },
+        { group: 'Supply Chain Frontline', risk: 'high', text: 'Brazil team geographic and working context creates a communication isolation risk. Field-based, Portuguese-speaking, no dedicated materials. Distance from headquarters compounds the awareness gap.' },
+        { group: 'Senior Leadership', risk: 'mod', text: 'French director in a different timezone and cultural communication context from the US/UK sponsor pair. Alignment sessions need to account for this, not assume it.' },
+        { group: 'HR / IT', risk: 'low', text: 'US and UK based. Geographic and cultural alignment with project team approach is strong.' },
+      ]
+    },
+    level: {
+      label: 'Organisational level',
+      color: 'var(--tile-3)',
+      rows: [
+        { group: 'Senior Leadership', risk: 'low', text: 'Initiated the change. Proximity to decision-making means high Clarity but a potential blind spot for how the change lands three levels down. Sponsors often overestimate how much has been understood and accepted below them.' },
+        { group: 'Finance Managers', risk: 'high', text: 'Middle position creates dual pressure — receiving direction from above while being expected to cascade and model adoption below. Have not yet been equipped for the cascade role. Level creates an expectation gap.' },
+        { group: 'Supply Chain Frontline', risk: 'high', text: 'Furthest from the decision. Most affected in day-to-day terms. Change was made above them and is arriving at them — the classic experience of change as something that happens to you, not with you.' },
+        { group: 'HR / IT', risk: 'mod', text: 'Both groups asked to play an enabling role for others while managing their own experience of the change. The level dynamic creates a service obligation that can mask their own needs.' },
+      ]
+    },
+    function: {
+      label: 'Functional identity',
+      color: 'var(--tile-2)',
+      rows: [
+        { group: 'Finance Managers', risk: 'high', text: 'Finance culture values precision, control, and deep process expertise. This change automates and abstracts — a direct threat to functional identity. Efficiency-gain messaging will feel like a devaluation of what finance people do.' },
+        { group: 'Supply Chain Frontline', risk: 'mod', text: 'Operations culture is practical and tactile. Abstract system benefits will not land — concrete workflow demonstrations will. The training design must speak this language.' },
+        { group: 'IT Systems', risk: 'low', text: 'IT culture is comfortable with system change by definition. The functional identity risk is post-go-live role ownership, not the change itself.' },
+        { group: 'HR / IT', risk: 'mod', text: 'HR functional identity as the people-first function creates tension when they are not being treated as a priority population themselves. They see the gap between the stated values and the experience they are receiving.' },
+      ]
+    },
+    tenure: {
+      label: 'Tenure & history',
+      color: 'var(--tile-4)',
+      rows: [
+        { group: 'Finance Managers', risk: 'high', text: 'Long-tenured employees (7-15+ years) carry the 2020 ERP failure as lived memory. The change is not arriving in a neutral space — it is arriving into a history of broken promises. New employees in the same group do not carry this and may have a different initial posture.' },
+        { group: 'Supply Chain Frontline', risk: 'mod', text: 'Mix of tenures. Longer-tenured operators have built informal expertise in the current system that is not documented. This knowledge is at risk and its loss will be felt operationally post go-live.' },
+        { group: 'Senior Leadership', risk: 'low', text: 'Leadership tenure is not a significant risk here — sponsors have the context and chose this change.' },
+        { group: 'Finance Frontline', risk: 'mod', text: 'Unknown — insufficient listening data. Tenure profile for this group has not been captured. This is a diagnostic gap.' },
+      ]
+    },
+    legacy: {
+      label: 'Acquired vs legacy',
+      color: 'var(--clay)',
+      rows: [
+        { group: 'Finance Managers', risk: 'mod', text: 'Brazil finance team came through an acquisition 3 years ago. They are still in the process of cultural integration with the parent organisation. This change lands on top of an ongoing identity transition.' },
+        { group: 'Supply Chain Frontline', risk: 'low', text: 'No known acquisition context in this group. Legacy organisation throughout.' },
+        { group: 'Senior Leadership', risk: 'low', text: 'All legacy leadership. No acquisition dynamics at play at this level.' },
+        { group: 'HR / IT', risk: 'low', text: 'No significant acquisition dynamics identified in listening.' },
+      ]
+    }
+  };
+
+  let activeLayers = new Set(['geo', 'level', 'function']);
+
+  function toggleCultureLayer(el) {
+    const layer = el.dataset.layer;
+    const layerConfig = CULTURE_DATA[layer];
+    if (!layerConfig) return;
+    const colors = { geo: 'var(--tile-5)', level: 'var(--tile-3)', function: 'var(--tile-2)', tenure: 'var(--tile-4)', legacy: 'var(--clay)' };
+    if (activeLayers.has(layer)) {
+      activeLayers.delete(layer);
+      el.style.background = 'var(--surface)';
+      el.style.borderColor = 'var(--border)';
+      el.style.color = 'var(--ink-muted)';
+    } else {
+      activeLayers.add(layer);
+      el.style.background = colors[layer];
+      el.style.borderColor = colors[layer];
+      el.style.color = 'white';
+    }
+    renderCultureMap();
+  }
+
+  function renderCultureMap() {
+    const display = document.getElementById('culture-tension-display');
+    if (!display) return;
+    if (activeLayers.size === 0) {
+      display.innerHTML = '<div style="padding:20px;text-align:center;color:var(--ink-muted);font-size:13px;font-style:italic;font-weight:300;">Select at least one layer to display the cultural tension map.</div>';
+      return;
+    }
+
+    const allGroups = ['Finance Managers', 'Supply Chain Frontline', 'Finance Frontline', 'HR / IT', 'IT Systems', 'Senior Leadership'];
+    const riskColor = { high: 'var(--risk-high)', mod: 'var(--risk-mod)', low: 'var(--risk-low)' };
+    const riskBg = { high: 'var(--risk-high-bg)', mod: 'var(--risk-mod-bg)', low: 'var(--risk-low-bg)' };
+    const riskLabel = { high: 'Design risk', mod: 'Watch', low: 'Aligned' };
+    const layerColors = { geo: 'var(--tile-5)', level: 'var(--tile-3)', function: 'var(--tile-2)', tenure: 'var(--tile-4)', legacy: 'var(--clay)' };
+
+    let html = '';
+    allGroups.forEach(group => {
+      const activeRows = [];
+      activeLayers.forEach(layer => {
+        const layerData = CULTURE_DATA[layer];
+        if (!layerData) return;
+        const row = layerData.rows.find(r => r.group === group);
+        if (row) activeRows.push({ layer, config: layerData, row });
+      });
+      if (activeRows.length === 0) return;
+
+      html += `<div style="margin-bottom:14px;background:var(--surface-raised);border:1px solid var(--border);border-radius:2px;overflow:hidden;">
+        <div style="padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+          <div style="font-size:13px;font-weight:500;color:var(--ink);">${group}</div>
+        </div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
+          ${activeRows.map(({layer, config, row}) => `
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <div style="padding:2px 8px;border-radius:8px;font-size:9px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;background:${layerColors[layer]};color:white;flex-shrink:0;margin-top:1px;">${config.label}</div>
+              <div style="font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.6;flex:1;">${row.text}</div>
+              <div style="padding:2px 8px;border-radius:8px;font-size:9px;font-weight:500;color:${riskColor[row.risk]};background:${riskBg[row.risk]};flex-shrink:0;margin-top:1px;">${riskLabel[row.risk]}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    });
+
+    display.innerHTML = html || '<div style="padding:20px;text-align:center;color:var(--ink-muted);font-size:13px;font-style:italic;">No tension data available for the selected layers.</div>';
+  }
+
+</script>
+</body>
+</html>

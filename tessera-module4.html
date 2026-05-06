@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera — Experience Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay: #C4A882;
+      --clay-light: #E8D9C4;
+      --clay-dark: #8B7355;
+      --ink: #1C1A17;
+      --ink-soft: #4A4640;
+      --ink-muted: #8A8480;
+      --surface: #F7F3ED;
+      --surface-raised: #FDFAF6;
+      --tile-1: #C4A882;
+      --tile-2: #7B9E87;
+      --tile-3: #8B7BA8;
+      --tile-4: #C4826A;
+      --tile-5: #4A8FA8;
+      --border: rgba(28,26,23,0.12);
+      --radius: 2px;
+      --risk-high: #C4826A;
+      --risk-high-bg: #FDF2EE;
+      --risk-mod: #C4A840;
+      --risk-mod-bg: #FDFAEE;
+      --risk-low: #7B9E87;
+      --risk-low-bg: #F0F7F2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+    .app { max-width: 980px; margin: 0 auto; background: var(--surface-raised); min-height: 100vh; box-shadow: 0 0 80px rgba(0,0,0,0.07); padding-bottom: 80px; }
+
+    /* Header */
+    .header { padding: 48px 48px 32px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .mosaic-accent { position: absolute; top: 0; right: 0; display: grid; grid-template-columns: repeat(9,13px); grid-template-rows: repeat(5,13px); gap: 2px; padding: 12px; opacity: 0.5; pointer-events: none; }
+    .mosaic-tile { border-radius: 1px; opacity: 0; animation: tileIn 0.4s forwards; }
+    @keyframes tileIn { from{opacity:0;transform:scale(0.4)} to{opacity:1;transform:scale(1)} }
+    .wordmark { font-family:'DM Serif Display',serif; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--clay-dark); margin-bottom:16px; }
+    .header-row { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+    .header h1 { font-family:'DM Serif Display',serif; font-size:34px; font-weight:400; color:var(--ink); line-height:1.15; margin-bottom:8px; }
+    .header h1 em { font-style:italic; color:var(--clay-dark); }
+    .header p { font-size:13px; color:var(--ink-muted); font-weight:300; line-height:1.7; max-width:540px; }
+    .version-tag { font-size:10px; color:var(--ink-muted); font-weight:300; margin-top:6px; }
+
+    /* Methodology badge */
+    .method-badge { flex-shrink:0; display:flex; flex-direction:column; align-items:flex-end; gap:6px; padding-top:4px; }
+    .method-label { font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); }
+    .method-pill { padding:6px 14px; border-radius:20px; font-size:11px; font-weight:500; background:var(--surface); border:1px solid var(--border); color:var(--ink-soft); cursor:pointer; transition:all .15s; }
+    .method-pill:hover { border-color:var(--clay); }
+    .method-picker { display:none; position:absolute; right:48px; top:80px; background:white; border:1px solid var(--border); border-radius:4px; box-shadow:0 8px 32px rgba(0,0,0,.12); z-index:100; min-width:200px; }
+    .method-picker.open { display:block; }
+    .method-option { padding:12px 16px; font-size:13px; cursor:pointer; color:var(--ink-soft); font-weight:300; transition:background .1s; border-bottom:1px solid var(--border); }
+    .method-option:last-child { border-bottom:none; }
+    .method-option:hover { background:var(--surface); }
+    .method-option.active { color:var(--clay-dark); font-weight:500; }
+
+    /* Mock banner */
+    .mock-banner { background:var(--ink); padding:12px 48px; display:flex; align-items:center; gap:12px; }
+    .mock-dot { width:8px;height:8px;border-radius:50%;background:var(--clay);flex-shrink:0;animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+    .mock-text { font-size:12px; color:rgba(255,255,255,.6); font-weight:300; }
+    .mock-text strong { color:var(--clay); font-weight:500; }
+
+    /* Group selector bar */
+    .group-bar { padding:16px 48px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .group-bar-label { font-size:11px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); margin-right:4px; flex-shrink:0; }
+    .group-pill { padding:6px 14px; border-radius:20px; font-size:12px; cursor:pointer; transition:all .15s; border:1px solid var(--border); background:var(--surface-raised); color:var(--ink-muted); }
+    .group-pill.active { color:white; font-weight:500; }
+    .group-pill:hover:not(.active) { border-color:var(--clay); color:var(--clay-dark); }
+
+    /* Output area */
+    .output-area { padding:32px 48px; }
+
+    /* Group context banner */
+    .group-context { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px 24px; margin-bottom:28px; display:flex; align-items:flex-start; gap:20px; }
+    .group-context-bar { width:4px; border-radius:2px; flex-shrink:0; align-self:stretch; }
+    .group-context-content { flex:1; }
+    .group-context-name { font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; margin-bottom:4px; }
+    .group-context-meta { font-size:12px; color:var(--ink-muted); font-weight:300; margin-bottom:12px; }
+    .context-pills { display:flex; gap:8px; flex-wrap:wrap; }
+    .context-pill { padding:3px 10px; border-radius:10px; font-size:11px; font-weight:400; border:1px solid var(--border); color:var(--ink-muted); background:var(--surface-raised); }
+    .context-pill.signal-low { background:var(--risk-high-bg); color:var(--risk-high); border-color:#E8C4B8; }
+    .context-pill.signal-mod { background:var(--risk-mod-bg); color:var(--risk-mod); border-color:#E8D8A0; }
+    .context-pill.signal-ok { background:var(--risk-low-bg); color:var(--risk-low); border-color:#C4DBC9; }
+
+    /* Design domain sections */
+    .domain-section { margin-bottom:32px; }
+    .domain-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+    .domain-left { display:flex; align-items:center; gap:12px; }
+    .domain-icon { width:32px; height:32px; border-radius:var(--radius); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+    .domain-title { font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; }
+    .domain-subtitle { font-size:12px; color:var(--ink-muted); font-weight:300; margin-top:2px; }
+    .method-flag { font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); padding:3px 8px; border:1px solid var(--border); border-radius:8px; }
+
+    /* Output cards */
+    .output-card { background:var(--surface-raised); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; }
+    .output-card-header { padding:18px 20px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; cursor:pointer; }
+    .output-card-header:hover { background:var(--surface); }
+    .output-tag { font-size:10px; font-weight:500; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:5px; }
+    .output-title { font-size:14px; font-weight:500; color:var(--ink); line-height:1.4; }
+    .output-meta { font-size:12px; color:var(--ink-muted); font-weight:300; margin-top:3px; }
+    .output-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .priority-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .p-now { background:var(--risk-high); }
+    .p-soon { background:var(--risk-mod); }
+    .p-plan { background:var(--risk-low); }
+    .expand-caret { font-size:11px; color:var(--ink-muted); transition:transform .2s; }
+    .output-card.open .expand-caret { transform:rotate(180deg); }
+
+    .output-card-body { display:none; padding:0 20px 20px; border-top:1px solid var(--border); }
+    .output-card.open .output-card-body { display:block; }
+
+    .output-content { padding-top:18px; }
+    .output-text { font-size:13px; color:var(--ink-soft); font-weight:300; line-height:1.8; margin-bottom:14px; }
+    .output-text strong { font-weight:500; color:var(--ink); }
+
+    .output-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    .action-btn { padding:7px 16px; border-radius:var(--radius); font-size:12px; font-weight:500; cursor:pointer; transition:all .15s; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); }
+    .action-btn:hover { border-color:var(--clay); color:var(--clay-dark); }
+    .action-btn.primary { background:var(--clay); border-color:var(--clay); color:white; }
+    .action-btn.primary:hover { background:var(--clay-dark); }
+
+    /* Traceability panel */
+    .trace-panel { margin-top:16px; background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--tile-5); border-radius:var(--radius); overflow:hidden; }
+    .trace-header { padding:10px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+    .trace-header:hover { background:#F0F4F8; }
+    .trace-label { font-size:10px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:var(--tile-5); }
+    .trace-caret { font-size:10px; color:var(--ink-muted); transition:transform .2s; }
+    .trace-panel.open .trace-caret { transform:rotate(180deg); }
+    .trace-body { display:none; padding:14px 16px; border-top:1px solid var(--border); }
+    .trace-panel.open .trace-body { display:block; }
+    .trace-section { margin-bottom:12px; }
+    .trace-section:last-child { margin-bottom:0; }
+    .trace-section-label { font-size:10px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:6px; }
+    .trace-item { font-size:12px; color:var(--ink-soft); font-weight:300; line-height:1.6; padding:4px 0; border-bottom:1px solid var(--border); display:flex; gap:8px; }
+    .trace-item:last-child { border-bottom:none; }
+    .trace-item-source { font-size:10px; color:var(--clay-dark); font-weight:500; flex-shrink:0; padding-top:1px; }
+    .trace-quote { font-style:italic; color:var(--ink-muted); }
+
+    /* Signal summary strip */
+    .signal-strip { display:flex; gap:8px; margin-bottom:24px; }
+    .signal-dim { flex:1; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px; text-align:center; }
+    .signal-dim-label { font-size:10px; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-muted); margin-bottom:6px; }
+    .signal-dim-value { font-size:13px; font-weight:500; margin-bottom:4px; }
+    .signal-dim-bar { height:3px; border-radius:2px; background:var(--border); overflow:hidden; margin:0 auto; max-width:60px; }
+    .signal-dim-fill { height:100%; border-radius:2px; }
+    .sig-low { color:var(--risk-high); }
+    .sig-mod { color:var(--risk-mod); }
+    .sig-ok { color:var(--risk-low); }
+
+    /* Design priorities */
+    .priorities-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:24px; }
+    .priority-card { padding:14px 16px; border-radius:var(--radius); border:1px solid; }
+    .priority-now { background:var(--risk-high-bg); border-color:#E8C4B8; }
+    .priority-soon { background:var(--risk-mod-bg); border-color:#E8D8A0; }
+    .priority-plan { background:var(--risk-low-bg); border-color:#C4DBC9; }
+    .priority-card-label { font-size:10px; font-weight:500; letter-spacing:.09em; text-transform:uppercase; margin-bottom:6px; }
+    .priority-now .priority-card-label { color:var(--risk-high); }
+    .priority-soon .priority-card-label { color:var(--risk-mod); }
+    .priority-plan .priority-card-label { color:var(--risk-low); }
+    .priority-card-text { font-size:12px; font-weight:300; color:var(--ink-soft); line-height:1.55; }
+
+    @media(max-width:700px){
+      .header,.output-area,.mock-banner,.group-bar{ padding-left:20px;padding-right:20px; }
+      .priorities-row{ grid-template-columns:1fr; }
+      .signal-strip{ flex-wrap:wrap; }
+      .signal-dim{ min-width:calc(50% - 4px); }
+    }
+  </style>
+  <style>
+    .t-nav{background:#1C1A17;padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:200;flex-wrap:wrap;min-height:48px;}
+    .t-nav-brand{font-family:"DM Serif Display",serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#C4A882;text-decoration:none;padding:14px 0;flex-shrink:0;}
+    .t-nav-modules{display:flex;gap:2px;flex-wrap:wrap;}
+    .t-nav-module{padding:6px 12px;font-size:11px;font-weight:400;color:rgba(255,255,255,.45);text-decoration:none;border-radius:2px;transition:all .15s;white-space:nowrap;}
+    .t-nav-module:hover{color:white;background:rgba(255,255,255,.08);}
+    .t-nav-module.active{color:#C4A882;font-weight:500;}
+    .t-demo-badge{padding:4px 10px;border-radius:10px;font-size:10px;font-weight:500;background:#C4A882;color:white;letter-spacing:.06em;text-transform:uppercase;display:none;}
+    .t-demo-badge.visible{display:inline-block;}
+    .t-demo-banner{background:#8B7355;padding:10px 48px;font-size:12px;color:white;font-weight:300;display:none;align-items:center;gap:12px;}
+    .t-demo-banner.visible{display:flex;}
+    .t-demo-banner strong{font-weight:500;}
+    .t-demo-dot{width:6px;height:6px;border-radius:50%;background:white;opacity:.7;flex-shrink:0;animation:tdpulse 2s infinite;}
+    @keyframes tdpulse{0%,100%{opacity:.7}50%{opacity:.3}}
+    @media(max-width:640px){.t-nav{padding:0 20px;}.t-nav-modules{display:none;}.t-demo-banner{padding-left:20px;padding-right:20px;}}
+  </style>
+  <!-- Nav styles injected -->
+</head>
+<body>
+  <nav class="t-nav">
+    <a href="index.html" class="t-nav-brand">Tessera</a>
+    <div class="t-nav-modules">
+      <a href="tessera-module1.html" class="t-nav-module" id="nav-m1">1 &nbsp;·&nbsp; Project context</a>
+      <a href="tessera-module2.html" class="t-nav-module" id="nav-m2">2 &nbsp;·&nbsp; Listening tour</a>
+      <a href="tessera-module3.html" class="t-nav-module" id="nav-m3">3 &nbsp;·&nbsp; Stakeholder map</a>
+      <a href="tessera-module4.html" class="t-nav-module" id="nav-m4">4 &nbsp;·&nbsp; Experience design</a>
+      <a href="tessera-module5.html" class="t-nav-module" id="nav-m5">5 &nbsp;·&nbsp; Diagnostic output</a>
+    </div>
+    <div class="t-nav-right">
+      <span class="t-demo-badge" id="demo-badge">Demo</span>
+    </div>
+  </nav>
+  <div class="t-demo-banner" id="demo-banner">
+    <div class="t-demo-dot"></div>
+    <div><strong>Demo mode active</strong> &nbsp;·&nbsp; All data is fictional and for illustration only. <a href="index.html" style="color:#E8D9C4;text-decoration:underline;">Return to home &rarr;</a></div>
+  </div>
+<div class="app">
+
+  <div class="header" style="position:relative;">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+    <div class="header-row">
+      <div>
+        <h1>Experience <em>Design</em></h1>
+        <p>Tailored change experience recommendations for each stakeholder group — grounded in what the listening tour actually revealed. Every output carries a source trail so you can show your work.</p>
+        <div class="version-tag">Unit 1 &nbsp;·&nbsp; Unit 1 · Module 4 of 4 &nbsp;·&nbsp; v1.0</div>
+      </div>
+      <div class="method-badge">
+        <div class="method-label">Methodology</div>
+        <div class="method-pill" id="method-pill" onclick="toggleMethodPicker()">Default — Signal framework ▾</div>
+      </div>
+    </div>
+    <div class="method-picker" id="method-picker">
+      <div class="method-option active" onclick="setMethod('default')">Default — Signal framework</div>
+      <div class="method-option" onclick="setMethod('prosci')">Prosci ADKAR</div>
+      <div class="method-option" onclick="setMethod('kotter')">Kotter 8-Step</div>
+      <div class="method-option" onclick="setMethod('mckinsey')">McKinsey Influence Model</div>
+    </div>
+  </div>
+
+  <div class="mock-banner">
+    <div class="mock-dot"></div>
+    <div class="mock-text"><strong>Mock data active</strong> — Project Meridian &nbsp;·&nbsp; Global ERP + Organisational Restructure &nbsp;·&nbsp; Select a stakeholder group to view their tailored experience design.</div>
+  </div>
+
+  <div class="group-bar">
+    <span class="group-bar-label">Group</span>
+    <div class="group-pill active" style="background:#C4826A;border-color:#C4826A;" onclick="setGroup(0,this)">Finance Managers</div>
+    <div class="group-pill" onclick="setGroup(1,this)">Supply Chain Frontline</div>
+    <div class="group-pill" onclick="setGroup(2,this)">HR Partners</div>
+    <div class="group-pill" onclick="setGroup(3,this)">IT Systems</div>
+    <div class="group-pill" onclick="setGroup(4,this)">Senior Leadership</div>
+    <div class="group-pill" onclick="setGroup(5,this)">Finance Frontline</div>
+  </div>
+
+  <div class="output-area" id="output-area"></div>
+
+</div>
+
+<script>
+// ── Methodology config ──
+const METHODS = {
+  default: {
+    name: 'Default — Signal framework',
+    dims: ['Clarity','Commitment','Capability','Practice','Sustain'],
+    short: ['CL','CO','CA','PR','SU'],
+    badge: null
+  },
+  prosci: {
+    name: 'Prosci ADKAR',
+    dims: ['Awareness','Desire','Knowledge','Ability','Reinforcement'],
+    short: ['A','D','K','Ab','R'],
+    badge: 'Prosci ADKAR'
+  },
+  kotter: {
+    name: 'Kotter 8-Step',
+    dims: ['Urgency & Vision','Conviction','Empowerment','Short-term wins','Anchored change'],
+    short: ['UV','CV','EM','SW','AC'],
+    badge: 'Kotter'
+  },
+  mckinsey: {
+    name: 'McKinsey Influence Model',
+    dims: ['Understanding','Conviction','Skills','Reinforcement'],
+    short: ['UN','CV','SK','RE'],
+    badge: 'McKinsey'
+  }
+};
+
+let currentMethod = 'default';
+let currentGroup = 0;
+
+// ── Group data ──
+const GROUPS = [
+  {
+    name: 'Finance Managers & Team Leads',
+    color: '#C4826A',
+    meta: '18 people &nbsp;·&nbsp; US, UK, France, Brazil &nbsp;·&nbsp; Middle manager / Team leader',
+    risk: 'High',
+    signals: [28, 28, 35, 20, 10], // pct for each dimension
+    contextPills: [
+      { label:'Change-scarred — prior ERP failure', cls:'signal-low' },
+      { label:'Commitment critically low (28%)', cls:'signal-low' },
+      { label:'Transformational impact', cls:'signal-low' },
+      { label:'Multi-lingual group', cls:'signal-mod' },
+      { label:'Strong influencer: Sarah K.', cls:'signal-ok' },
+    ],
+    priorities: {
+      now: 'Restore trust before any forward-looking messaging. The 2020 ERP failure is still present in this group. Acknowledge the past explicitly or all communications will be filtered through that lens.',
+      soon: 'Build Commitment through involvement — not information. This group needs to co-design elements of the solution to shift from passive recipients to active participants.',
+      plan: 'Develop peer-led capability building using Sarah K. and Jean-Luc M. as anchor champions once Commitment signal improves above 50%.'
+    },
+    domains: [
+      {
+        id: 'comms',
+        icon: '✉',
+        color: 'var(--tile-5)',
+        title: 'Communications approach',
+        subtitle: 'Tone, channel, timing, and message architecture for this group',
+        outputs: [
+          {
+            tag: 'Tone & message architecture',
+            title: 'Lead with acknowledgement — not announcement',
+            meta: 'All communications to this group &nbsp;·&nbsp; Immediate priority',
+            priority: 'now',
+            content: `<p class="output-text">Every communication to Finance Managers must open by acknowledging what happened in 2020 before introducing anything about this project. Not a lengthy apology — a direct, human recognition that the last major system change was difficult and that this team carries that experience into this one.</p>
+            <p class="output-text">Suggested opening frame for all initial communications: <strong>"We know this isn't the first time you've heard about a major system change. We also know how the last one landed. This time we want to do this differently — and we want your voice in how."</strong></p>
+            <p class="output-text">Avoid: efficiency-gain messaging, ROI framing, or positive-only narratives in early communications. These will be received as tone-deaf given the trust gap and will accelerate resistance rather than reduce it.</p>`,
+            trace: {
+              signals: ['Commitment signal at 28% — lowest of all groups', 'Change-scarred classification from Module 1', 'Risk rating: High'],
+              interviews: [
+                { source:'David W. (UK)', quote:'Last time they promised us training and it never came. Why would this be different?' },
+                { source:'Carla S. (Brazil)', quote:'I heard about this project three months ago and nobody has spoken to me directly yet.' },
+                { source:'Jean-Luc M. (France)', quote:'We are always the last to know and the first to be blamed when it does not work.' },
+              ],
+              framework: 'Bridges Transition Model — ending acknowledgement as prerequisite to new beginning. Brown BRAVING inventory — trust requires demonstrated follow-through, not promises.'
+            }
+          },
+          {
+            tag: 'Channel strategy',
+            title: 'One-on-one before group — always',
+            meta: 'Communication sequencing &nbsp;·&nbsp; Immediate priority',
+            priority: 'now',
+            content: `<p class="output-text">Cultural signals across this group — particularly in France and Brazil — indicate a strong preference for receiving significant information in a one-on-one context before group settings. Group announcements to this population will produce surface compliance and private skepticism.</p>
+            <p class="output-text"><strong>Recommended sequence:</strong> Direct manager conversation first → small group session with questions allowed → broader communication cascade. Never lead with a town hall or all-hands for this group on topics that directly affect their roles.</p>
+            <p class="output-text">US and UK team members are more comfortable with direct group communication but still prefer candid conversation over polished presentation. Formal slide decks should be supplemented with unscripted Q&A time.</p>`,
+            trace: {
+              signals: ['Cultural signals: relationship-before-task across all regions', 'Indirect disagreement style flagged in France and Brazil profiles', 'High uncertainty avoidance — needs clarity before public commitment'],
+              interviews: [
+                { source:'Priya R. (US)', quote:'I would have appreciated hearing this from my manager before seeing it in an email.' },
+                { source:'Jean-Luc M. (France)', quote:'We prefer to discuss these things in person — not to receive a presentation.' },
+              ],
+              framework: 'Meyer Culture Map — communicating and evaluating scales. Hofstede power distance — high PD cultures process change through personal relationship channels first.'
+            }
+          },
+          {
+            tag: 'Language and translation',
+            title: 'Portuguese and French materials are non-negotiable',
+            meta: 'Brazil and France sub-groups &nbsp;·&nbsp; Plan now, deliver before go-live',
+            priority: 'soon',
+            content: `<p class="output-text">The Brazil and France sub-groups within Finance Managers are receiving communications in their second language. This is not a minor accessibility consideration — it is a trust signal. Receiving important information about your role in a language that is not your own communicates that your experience was an afterthought.</p>
+            <p class="output-text"><strong>Action required:</strong> All communications to Brazil sub-group translated into Portuguese before distribution. French materials for France team. Translation should be done by someone who understands the organisational context — not machine translation of English originals.</p>`,
+            trace: {
+              signals: ['Languages: English, French, Portuguese across this group', 'Geographic scope: Multi-country', 'Cultural context: high relationship orientation in Brazil and France'],
+              interviews: [
+                { source:'Carla S. (Brazil)', quote:'Sometimes the words are translated but the meaning is not.' },
+              ],
+              framework: 'Zheng DEI Deconstructed — structural inclusion requires designing for the population as it actually exists, not as it would be convenient for it to be.'
+            }
+          }
+        ]
+      },
+      {
+        id: 'engagement',
+        icon: '◎',
+        color: 'var(--tile-3)',
+        title: 'Engagement approach',
+        subtitle: 'How to involve this group in the change — not just inform them',
+        outputs: [
+          {
+            tag: 'Involvement design',
+            title: 'Co-design sessions — Finance Managers as architects, not audience',
+            meta: 'Commitment-building intervention &nbsp;·&nbsp; Priority: now',
+            priority: 'now',
+            content: `<p class="output-text">The most effective intervention for a group with low Commitment signal and a history of feeling done-to rather than involved-with is structured co-design. This group needs to have a hand in shaping something real — not a token consultation.</p>
+            <p class="output-text"><strong>Recommended:</strong> A series of two to three working sessions where Finance Managers have genuine input on the workflow design for their function, the training approach for their teams, and the transition timeline for their processes. Outputs from these sessions must visibly influence the project — if input is sought but not used, trust will drop further.</p>
+            <p class="output-text">Ground this in Grant's research on originals — people who feel they have shaped something are more likely to champion it. The goal is to shift this group from recipients to co-owners before go-live.</p>`,
+            trace: {
+              signals: ['Commitment signal: 28%', 'Change posture: cautious to quietly resistant', 'Unmet need: expertise acknowledged before being asked to change'],
+              interviews: [
+                { source:'Sarah K. (US)', quote:'Nobody has asked us what we actually do with the system. They have just told us what it will do.' },
+                { source:'Tom H. (UK)', quote:'I have been here 14 years. I know things about this process that are not in any documentation.' },
+              ],
+              framework: 'Grant Think Again — involvement shifts people from passive skeptics to active champions. Knowles andragogy — adults engage more deeply when they contribute to design.'
+            }
+          },
+          {
+            tag: 'Champion network',
+            title: 'Activate Sarah K. and Jean-Luc M. as regional anchors',
+            meta: 'Influencer strategy &nbsp;·&nbsp; Priority: soon',
+            priority: 'soon',
+            content: `<p class="output-text">Sarah K. (US) and Jean-Luc M. (France) were identified in the listening tour as informal influencers — people others look to before forming a view. Both are currently cautiously open, not resistant. This is the window to activate them as change champions before their posture hardens.</p>
+            <p class="output-text"><strong>Recommended approach:</strong> Individual conversations with each — not a group briefing — to share what is being designed, ask for their honest read, and invite them into an early information loop. They need to feel genuinely ahead of the curve, not just nominally involved.</p>
+            <p class="output-text">David W. (UK) is currently the most vocal skeptic and has influence within the UK team. Direct engagement with David is higher risk — recommend addressing his specific concerns (role clarity post-go-live, training adequacy) through the project team before attempting to shift his posture publicly.</p>`,
+            trace: {
+              signals: ['Influencers: Sarah K. (US), Jean-Luc M. (France)', 'Blocker: David W. (UK)', 'Posture: cautious open to quietly resistant split'],
+              interviews: [
+                { source:'Practitioner debrief — Sarah K.', quote:'Magic tick found: compared the system change to upgrading from handwritten ledgers to spreadsheets — she immediately reframed it as a professional evolution, not a replacement.' },
+                { source:'Practitioner debrief — David W.', quote:'Unmet need: needs explicit role clarity and written commitment on training adequacy before he will move.' },
+              ],
+              framework: 'Kotter coalition-building — change requires a guiding coalition with credibility at every level. Edmondson psychological safety — safe-to-speak-up champions create psychological permission for others to engage.'
+            }
+          }
+        ]
+      },
+      {
+        id: 'learning',
+        icon: '◈',
+        color: 'var(--tile-2)',
+        title: 'Learning & capability design',
+        subtitle: 'How this group builds the knowledge and skills they need',
+        outputs: [
+          {
+            tag: 'Learning modality',
+            title: 'Contextual, role-specific training — not system demos',
+            meta: 'Training design recommendation &nbsp;·&nbsp; Priority: soon',
+            priority: 'soon',
+            content: `<p class="output-text">This group's learning signals indicate a strong preference for understanding the why before the how, with a secondary preference for hands-on practice over passive instruction. Generic system demonstrations will disengage this group — they need to see their actual workflow in the new system, not a theoretical use case.</p>
+            <p class="output-text"><strong>Recommended design:</strong> Role-specific training scenarios built from the Finance Manager workflow. Session opens with why this process is changing (the strategic rationale, not the project rationale), moves to a side-by-side comparison of old and new process, then hands-on practice in a sandbox environment using real Finance Manager data scenarios.</p>
+            <p class="output-text">Training for France and Brazil sub-groups must be delivered in French and Portuguese respectively — not translated English materials. Facilitators should be native speakers where possible, or at minimum fluent.</p>
+            <p class="output-text">Estimated time available: moderate — 1 to 2 hours per week. Training design should be broken into focused 60-90 minute sessions rather than full-day programmes.</p>`,
+            trace: {
+              signals: ['Learning style: needs why before how (observed, 5 of 6 interviews)', 'Learning style: hands-on practice preferred', 'Time available: 1–2 hours/week', 'Access: office-based and hybrid'],
+              interviews: [
+                { source:'Priya R. (US)', quote:'Just show me how I do my actual job in the new system. I do not need a tour of all the features.' },
+                { source:'Jean-Luc M. (France)', quote:'If you can explain why this is better for what I do specifically, I will engage. If it is generic, I will switch off.' },
+              ],
+              framework: 'Knowles andragogy — adults learn through connection to existing experience and immediate applicability. Kolb experiential learning — concrete experience before abstract conceptualisation.'
+            }
+          },
+          {
+            tag: 'Knowledge transfer',
+            title: 'Preserve institutional knowledge before go-live',
+            meta: 'Risk mitigation &nbsp;·&nbsp; Priority: now',
+            priority: 'now',
+            content: `<p class="output-text">Several Finance Manager interviews surfaced deep institutional knowledge embedded in current processes — workarounds, adaptations, and expertise that is not documented anywhere. This knowledge is at risk of being lost in the transition if it is not captured and either built into the new system design or formally documented.</p>
+            <p class="output-text"><strong>Recommended action:</strong> A structured knowledge capture workshop — framed not as documentation but as the organisation preserving the expertise this group has built. This framing honours the loss (Bridges) while creating a practical output the project team needs.</p>
+            <p class="output-text">This is also an engagement intervention. Being asked to share expertise is an acknowledgement of value — it shifts the dynamic from being managed through a change to contributing to it.</p>`,
+            trace: {
+              signals: ['Role today: deep process expertise, manual workarounds', 'What they lose: subject matter expert identity', 'Change posture driver: fear of expertise devaluation'],
+              interviews: [
+                { source:'Tom H. (UK)', quote:'There are things I do in this system that took me years to figure out. Nobody has asked me about them.' },
+                { source:'Sarah K. (US)', quote:'The reconciliation process I built handles exceptions that the standard approach does not. Is that going to be in the new system?' },
+              ],
+              framework: 'Bridges Transition Model — endings must be acknowledged and honoured before transitions can begin. The institutional knowledge session is both a practical deliverable and a symbolic acknowledgement.'
+            }
+          }
+        ]
+      },
+      {
+        id: 'adoption',
+        icon: '⟳',
+        color: 'var(--tile-1)',
+        title: 'Adoption & sustainability',
+        subtitle: 'How we know this group has genuinely moved — and how we sustain it',
+        outputs: [
+          {
+            tag: 'Adoption indicators',
+            title: 'Behavioural signals — not system usage metrics alone',
+            meta: 'Measurement approach &nbsp;·&nbsp; Priority: plan',
+            priority: 'plan',
+            content: `<p class="output-text">System login rates and transaction volumes will be the first metrics the project team reaches for. For this group they are necessary but not sufficient. A Finance Manager can comply with the new system while continuing to maintain parallel processes informally — which will be the actual adoption risk for this group given their Commitment signal.</p>
+            <p class="output-text"><strong>Recommended adoption indicators:</strong></p>
+            <p class="output-text">Workaround cessation — are the informal processes that existed alongside the old system still running? This requires direct conversation, not system data.</p>
+            <p class="output-text">Advocacy behaviour — are Finance Managers speaking positively about the change to their teams, or are they neutral/negative in informal settings? Champion network members can surface this signal.</p>
+            <p class="output-text">Escalation quality — are the issues being raised by this group system problems (normal) or resistance-driven rejections (signal of low Commitment)? Tracking the nature of escalations tells you more than the volume.</p>`,
+            trace: {
+              signals: ['Commitment signal: 28% — lowest dimension', 'Posture: cautious to quietly resistant', 'Change history: prior failed implementation created compliance-without-adoption pattern'],
+              interviews: [
+                { source:'David W. (UK)', quote:'Last time people just kept their own spreadsheets on the side. Nothing really changed.' },
+              ],
+              framework: 'Prosci best practices — adoption measurement must go beyond system metrics to behavioural indicators. Bridges — sustained adoption requires reinforcement through the neutral zone, not just go-live support.'
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'Supply Chain Frontline',
+    color: '#C4A840',
+    meta: '84 people &nbsp;·&nbsp; US, Brazil &nbsp;·&nbsp; Individual contributor / Frontline',
+    risk: 'High',
+    signals: [40, 35, 15, 10, 5],
+    contextPills: [
+      { label:'Clarity critically low (40%)', cls:'signal-low' },
+      { label:'Capability at 15%', cls:'signal-low' },
+      { label:'Change-naive', cls:'signal-mod' },
+      { label:'No Portuguese materials yet', cls:'signal-low' },
+      { label:'Field / deskless workers', cls:'signal-mod' },
+    ],
+    priorities: {
+      now: 'Immediate plain-language communication in English and Portuguese explaining what is changing, when, and what support is available. Clarity is at 40% — this group cannot engage with a change they do not yet understand.',
+      soon: 'Design mobile-friendly, short-burst training that works for deskless and field workers. Standard classroom or e-learning formats will not reach this population.',
+      plan: 'Build manager-mediated engagement approach — frontline workers in this group receive most change information through their direct supervisor. Supervisor enablement is the leverage point.'
+    },
+    domains: [
+      {
+        id: 'comms',
+        icon: '✉',
+        color: 'var(--tile-5)',
+        title: 'Communications approach',
+        subtitle: 'Plain language, right channel, right language',
+        outputs: [
+          {
+            tag: 'Immediate action',
+            title: 'Plain-language awareness communication — English and Portuguese',
+            meta: 'All supply chain frontline &nbsp;·&nbsp; This week',
+            priority: 'now',
+            content: `<p class="output-text">Clarity signal for this group is at 40% — meaning the majority of this population does not yet have an accurate picture of what is changing for them. This is the most urgent communications gap in the engagement.</p>
+            <p class="output-text"><strong>Communication must answer five questions in plain language:</strong> What is changing? When is it changing? What will be different about my job? What training will I receive and when? Who do I talk to if I have questions?</p>
+            <p class="output-text">The Brazil sub-group must receive this communication in Portuguese simultaneously with the English version — not as a follow-up translation. Receiving the same information later, in a secondary format, signals that their experience matters less.</p>`,
+            trace: {
+              signals: ['Clarity signal: 40%', 'Brazil team: primary language Portuguese', 'Change-naive classification', 'Listening gap: limited interviews from this group'],
+              interviews: [
+                { source:'Ana L. (Brazil)', quote:'I heard something was changing but I do not know what it means for my work.' },
+                { source:'Marcus T. (US)', quote:'Nobody has told us anything officially. We are hearing it through other people.' },
+              ],
+              framework: 'Prosci ADKAR — Awareness is the prerequisite to all other change dimensions. Zheng — structural inclusion requires simultaneous, not sequential, communication across language groups.'
+            }
+          }
+        ]
+      },
+      {
+        id: 'learning',
+        icon: '◈',
+        color: 'var(--tile-2)',
+        title: 'Learning & capability design',
+        subtitle: 'Designed for deskless, field-based, multi-lingual workers',
+        outputs: [
+          {
+            tag: 'Modality design',
+            title: 'Short-burst, mobile-first, manager-mediated learning',
+            meta: 'Training design &nbsp;·&nbsp; Priority: soon',
+            priority: 'soon',
+            content: `<p class="output-text">Standard e-learning modules and classroom training will not reach this population effectively. Field and deskless workers have limited screen time, irregular schedules, and variable access to training infrastructure.</p>
+            <p class="output-text"><strong>Recommended design:</strong> 5 to 10 minute micro-learning modules accessible on a mobile device. Visual-first content — diagrams, short video demonstrations, illustrated job aids — to support workers whose primary language is not English and who have varying literacy levels.</p>
+            <p class="output-text">Manager-mediated learning is the highest-leverage channel for this group. When a frontline supervisor models the new behaviour and explains it in a team huddle, adoption follows. Training the supervisors first — and giving them tools to cascade to their teams — is more effective than direct frontline training for this population.</p>`,
+            trace: {
+              signals: ['Access context: field / deskless', 'Learning time: very limited', 'Languages: English and Portuguese', 'Cultural signals: community oriented, peer learning preferred'],
+              interviews: [
+                { source:'Marcus T. (US)', quote:'We do not sit at desks. If it is not on a phone or shown to us by a supervisor, most people will not see it.' },
+                { source:'Patricia O. (Brazil)', quote:'When our supervisor shows us something in a team meeting it lands. Emails do not.' },
+              ],
+              framework: 'Knowles — adults learn through immediate application to real work context. VARK — visual and kinaesthetic modalities are most accessible for deskless workers with limited formal training time.'
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'HR Business Partners & Ops',
+    color: '#8B7BA8',
+    meta: '12 people &nbsp;·&nbsp; US, UK &nbsp;·&nbsp; Individual contributor / Business partner',
+    risk: 'Moderate',
+    signals: [80, 60, 45, 35, 20],
+    contextPills: [
+      { label:'Dual role — implementing & experiencing', cls:'signal-mod' },
+      { label:'Capability gap: 45%', cls:'signal-mod' },
+      { label:'Frustrated by information gaps', cls:'signal-mod' },
+      { label:'Change-experienced', cls:'signal-ok' },
+      { label:'Influencer: Joanna F.', cls:'signal-ok' },
+    ],
+    priorities: {
+      now: 'Brief HR ahead of the general population — they cannot support others through a change they do not fully understand. Being briefed at the same time as everyone else is undermining their credibility.',
+      soon: 'Equip HR with answers to the questions they are already being asked. A live FAQ document they can update is more valuable than a polished briefing deck.',
+      plan: 'Involve HR in adoption measurement design — they have the relationships and access to surface qualitative adoption signals the project team cannot see.'
+    },
+    domains: [
+      {
+        id: 'engagement',
+        icon: '◎',
+        color: 'var(--tile-3)',
+        title: 'Engagement approach',
+        subtitle: 'HR as a partner in delivery — not just another recipient',
+        outputs: [
+          {
+            tag: 'Sequencing',
+            title: 'HR receives information first — every time',
+            meta: 'Engagement sequencing &nbsp;·&nbsp; Immediate priority',
+            priority: 'now',
+            content: `<p class="output-text">HR Business Partners are being asked to support employees through this change while receiving information at the same time as those employees. This is the single most cited frustration in HR interviews and it is eroding their ability to play the role the project needs them to play.</p>
+            <p class="output-text"><strong>Required change to communication sequencing:</strong> All project communications to the general population must be preceded by a minimum 48-hour HR briefing. HR should receive a plain-language summary of what is being communicated, the expected employee questions, and the recommended responses.</p>`,
+            trace: {
+              signals: ['Unmet need: briefed ahead of the population they support', 'Commitment signal: 60% — willing but frustrated', 'Capability: 45% — knowledge gaps creating credibility risk'],
+              interviews: [
+                { source:'Joanna F. (US)', quote:'I had an employee ask me about the restructure and I found out about it the same morning in the same email she did. That cannot happen.' },
+                { source:'Michael B. (UK)', quote:'We are supposed to be the trusted people but we are finding out things at the same time as everyone else.' },
+              ],
+              framework: 'Prosci — change practitioner and sponsor roles. HR in this engagement is functioning as a change practitioner and must be resourced and informed accordingly. Edmondson — credibility of the support network is a psychological safety prerequisite.'
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'IT Systems & Infrastructure',
+    color: '#4A8FA8',
+    meta: '22 people &nbsp;·&nbsp; US, UK &nbsp;·&nbsp; Individual contributor / Team leader',
+    risk: 'Moderate',
+    signals: [90, 70, 80, 65, 30],
+    contextPills: [
+      { label:'Technically ready', cls:'signal-ok' },
+      { label:'Sustain gap: 30%', cls:'signal-mod' },
+      { label:'Role uncertainty: Raj P.', cls:'signal-low' },
+      { label:'Change-experienced', cls:'signal-ok' },
+      { label:'Influencer: Nathan C.', cls:'signal-ok' },
+    ],
+    priorities: {
+      now: 'Resolve role ownership ambiguity post-go-live. IT is technically committed but Raj P.\'s quiet resistance is rooted in legitimate role uncertainty that will spread if not addressed.',
+      soon: 'Clarify post-go-live support model — who owns what, what the hypercare period looks like, and what IT\'s ongoing role is. Ambiguity here is the primary Sustain risk.',
+      plan: 'Engage Nathan C. formally as a technical champion — he has credibility with both IT and business teams and can bridge the technical-human gap in go-live communications.'
+    },
+    domains: [
+      {
+        id: 'engagement',
+        icon: '◎',
+        color: 'var(--tile-3)',
+        title: 'Engagement approach',
+        subtitle: 'Technical commitment is strong — sustaining it requires role clarity',
+        outputs: [
+          {
+            tag: 'Individual intervention',
+            title: 'Direct conversation with Raj P. on role clarity — before posture hardens',
+            meta: 'Blocker management &nbsp;·&nbsp; Immediate priority',
+            priority: 'now',
+            content: `<p class="output-text">Raj P. (UK) is currently quietly resistant — not disengaged, but holding back in ways that are beginning to influence the UK IT team. The debrief from his interview indicated that his resistance is not ideological but practical: he does not know what his role looks like after go-live and whether it is still needed.</p>
+            <p class="output-text">This is a solvable problem if addressed directly. A conversation between Raj and his direct manager — focused specifically on his post-go-live role, not general project reassurance — is the recommended intervention. If the role is genuinely at risk under the restructure, that conversation needs to happen anyway and delaying it increases the risk.</p>`,
+            trace: {
+              signals: ['Blocker: Raj P. (UK) — role uncertainty creating quiet non-participation', 'Change posture: quietly resistant', 'ADKAR low point: Desire'],
+              interviews: [
+                { source:'Practitioner debrief — Raj P.', quote:'Energy was low and guarded. He answered questions technically but deflected anything about his future role. The unmet need is role clarity — he needs to know his expertise is still valued before he can commit to the transition.' },
+              ],
+              framework: 'Bridges — people cannot begin a new beginning until they know what they are ending. Role ambiguity keeps people stuck at the ending. Brown BRAVING — trust requires that people believe their interests are being considered.'
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'Senior Leadership & Sponsors',
+    color: '#7B9E87',
+    meta: '8 people &nbsp;·&nbsp; US, UK, France &nbsp;·&nbsp; Executive / Senior leader',
+    risk: 'Manageable',
+    signals: [95, 85, 60, 75, 50],
+    contextPills: [
+      { label:'Strongly committed', cls:'signal-ok' },
+      { label:'Capability gap: 60%', cls:'signal-mod' },
+      { label:'France director: activation needed', cls:'signal-mod' },
+      { label:'Sustain: 50%', cls:'signal-mod' },
+    ],
+    priorities: {
+      now: 'Activate Antoine D. (France) with a tailored advocacy approach that fits his relationship-oriented style. The France team is feeling his absence.',
+      soon: 'Close the Capability gap — sponsors need operational detail literacy to answer credible questions from their teams. A targeted knowledge brief focused on what they will be asked, not what the project does.',
+      plan: 'Design a structured visibility plan for all sponsors through go-live — what they say, when, in what format, to whom. Visible leadership is the strongest Sustain driver.'
+    },
+    domains: [
+      {
+        id: 'engagement',
+        icon: '◎',
+        color: 'var(--tile-3)',
+        title: 'Leadership engagement approach',
+        subtitle: 'Activation, visibility, and cultural calibration for sponsors',
+        outputs: [
+          {
+            tag: 'Sponsor activation',
+            title: 'Antoine D. — co-designed advocacy, not standard sponsor script',
+            meta: 'France regional director &nbsp;·&nbsp; Immediate priority',
+            priority: 'now',
+            content: `<p class="output-text">Antoine D. is currently cautiously open — not resistant — but his engagement level is visibly lower than the US and UK sponsors. The France team is interpreting his absence as a signal that leadership does not consider their experience a priority.</p>
+            <p class="output-text">The standard sponsor activation playbook — keynote speech, email to team, presence at town hall — will not work for Antoine. His cultural signals indicate a relationship-first, low-public-profile leadership style. Pushing him into a high-visibility advocacy role before he is ready will produce reluctant, unconvincing sponsorship that does more damage than absence.</p>
+            <p class="output-text"><strong>Recommended approach:</strong> A one-on-one session with Antoine focused on understanding his concerns first, then co-designing his advocacy approach in a way that fits his style. Smaller group conversations, personal check-ins with his direct reports, and a prepared set of talking points he has shaped himself will be more effective than a formal sponsor launch event.</p>`,
+            trace: {
+              signals: ['Posture: cautious', 'Cultural signals: relationship before task, less comfortable with public advocacy', 'France team signal: feeling absent leadership'],
+              interviews: [
+                { source:'Antoine D. (France)', quote:'I support this project but I prefer to work through relationships rather than presentations. That is how trust works here.' },
+                { source:'Jean-Luc M. (Finance — France)', quote:'We have not heard from our regional director about this. That tells us something.' },
+              ],
+              framework: 'Meyer Culture Map — leading and communicating scales differ significantly between French and Anglo-American cultural contexts. Kotter — guiding coalition requires culturally calibrated activation, not one-size sponsorship.'
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'Finance Frontline & Admin Support',
+    color: '#C4A882',
+    meta: '196 people &nbsp;·&nbsp; US, UK, Brazil &nbsp;·&nbsp; Individual contributor / Support',
+    risk: 'Moderate',
+    signals: [45, 40, 20, 15, 5],
+    contextPills: [
+      { label:'Coverage gap — 1% interviewed', cls:'signal-low' },
+      { label:'Largest group in organisation', cls:'signal-low' },
+      { label:'Insufficient signal data', cls:'signal-low' },
+      { label:'Design cannot proceed without more listening', cls:'signal-low' },
+    ],
+    priorities: {
+      now: 'Do not design for this group yet. 2 interviews from 196 people is not a sufficient signal base. Additional listening is required before any experience design recommendation for this group can be made with integrity.',
+      soon: 'Conduct a minimum of 8 to 10 additional interviews across US, UK, and Brazil sub-groups. Prioritise Brazil frontline — no interviews from this population have been completed.',
+      plan: 'Once signal data is sufficient, experience design for this group will likely mirror Supply Chain Frontline in modality and channel — but that is a hypothesis, not a recommendation, until confirmed through listening.'
+    },
+    domains: [
+      {
+        id: 'gap',
+        icon: '⚠',
+        color: 'var(--risk-high)',
+        title: 'Design hold — insufficient listening data',
+        subtitle: 'Experience design for this group cannot proceed with integrity until the coverage gap is resolved',
+        outputs: [
+          {
+            tag: 'Coverage gap',
+            title: 'This group cannot be designed for yet',
+            meta: '196 people &nbsp;·&nbsp; 2 interviews completed',
+            priority: 'now',
+            content: `<p class="output-text">Finance Frontline and Admin Support is the largest single group in this organisation — 196 people across three countries. Two interviews have been completed. Generating experience design recommendations from that data would be irresponsible and would produce outputs that could actively harm this population by designing for assumptions rather than reality.</p>
+            <p class="output-text"><strong>What is needed before design can proceed:</strong></p>
+            <p class="output-text">A minimum of 8 to 10 additional interviews — at least 3 from Brazil, 3 from US, and 2 from UK. Focus should be on individual contributors and admin support, not supervisors. The Brazil frontline in particular has zero representation in the current data.</p>
+            <p class="output-text">This is not a process delay. It is the right thing to do for 196 people whose experience of this change will be shaped by the design decisions made in the next few weeks. They deserve to be heard before those decisions are made.</p>`,
+            trace: {
+              signals: ['Interviewed: 2 of 196 (1%)', 'Signal confidence: insufficient', 'Brazil frontline: zero interviews'],
+              interviews: [
+                { source:'Linda T. (US)', quote:'I am not sure anyone knows what people like me actually do day to day.' },
+              ],
+              framework: 'Zheng DEI Deconstructed — designing for a population without hearing from them is an act of exclusion, regardless of intent. Outcomes over intentions requires listening before designing.'
+            }
+          }
+        ]
+      }
+    ]
+  }
+];
+
+// ── Render ──
+let currentMethodData = METHODS.default;
+
+function setMethod(key) {
+  currentMethod = key;
+  currentMethodData = METHODS[key];
+  document.getElementById('method-pill').textContent = currentMethodData.name + ' ▾';
+  document.querySelectorAll('.method-option').forEach(o => o.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('method-picker').classList.remove('open');
+  renderOutput();
+}
+
+function toggleMethodPicker() {
+  document.getElementById('method-picker').classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.method-badge') && !e.target.closest('.method-picker')) {
+    document.getElementById('method-picker').classList.remove('open');
+  }
+});
+
+function setGroup(idx, el) {
+  currentGroup = idx;
+  document.querySelectorAll('.group-pill').forEach(p => {
+    p.classList.remove('active');
+    p.style.background = '';
+    p.style.borderColor = '';
+  });
+  el.classList.add('active');
+  el.style.background = GROUPS[idx].color;
+  el.style.borderColor = GROUPS[idx].color;
+  renderOutput();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderOutput() {
+  const g = GROUPS[currentGroup];
+  const m = currentMethodData;
+  const dims = m.dims.slice(0, 5);
+  const badge = m.badge;
+
+  function sigClass(v) {
+    if (v >= 70) return 'sig-ok';
+    if (v >= 40) return 'sig-mod';
+    return 'sig-low';
+  }
+  function sigLabel(v) {
+    if (v >= 70) return 'Strong';
+    if (v >= 40) return 'Partial';
+    return 'Low';
+  }
+  function sigBarColor(v) {
+    if (v >= 70) return 'var(--risk-low)';
+    if (v >= 40) return 'var(--risk-mod)';
+    return 'var(--risk-high)';
+  }
+
+  let html = `
+    <div class="group-context">
+      <div class="group-context-bar" style="background:${g.color}"></div>
+      <div class="group-context-content">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">
+          <div>
+            <div class="group-context-name">${g.name}</div>
+            <div class="group-context-meta">${g.meta}</div>
+          </div>
+          ${badge ? `<div style="padding:4px 10px;border-radius:10px;font-size:10px;font-weight:500;letter-spacing:.08em;border:1px solid var(--border);color:var(--ink-muted);white-space:nowrap;">${badge}</div>` : ''}
+        </div>
+        <div class="context-pills">${g.contextPills.map(p => `<span class="context-pill ${p.cls}">${p.label}</span>`).join('')}</div>
+      </div>
+    </div>
+
+    <div class="signal-strip">
+      ${dims.map((d,i) => `
+        <div class="signal-dim">
+          <div class="signal-dim-label">${d}</div>
+          <div class="signal-dim-value ${sigClass(g.signals[i])}">${sigLabel(g.signals[i])}</div>
+          <div class="signal-dim-bar"><div class="signal-dim-fill" style="width:${g.signals[i]}%;background:${sigBarColor(g.signals[i])}"></div></div>
+        </div>`).join('')}
+    </div>
+
+    <div class="priorities-row">
+      <div class="priority-card priority-now">
+        <div class="priority-card-label">● Do now</div>
+        <div class="priority-card-text">${g.priorities.now}</div>
+      </div>
+      <div class="priority-card priority-soon">
+        <div class="priority-card-label">● Do soon</div>
+        <div class="priority-card-text">${g.priorities.soon}</div>
+      </div>
+      <div class="priority-card priority-plan">
+        <div class="priority-card-label">● Plan for</div>
+        <div class="priority-card-text">${g.priorities.plan}</div>
+      </div>
+    </div>
+  `;
+
+  g.domains.forEach(domain => {
+    html += `
+      <div class="domain-section">
+        <div class="domain-header">
+          <div class="domain-left">
+            <div class="domain-icon" style="background:${domain.color}20;color:${domain.color}">${domain.icon}</div>
+            <div>
+              <div class="domain-title">${domain.title}</div>
+              <div class="domain-subtitle">${domain.subtitle}</div>
+            </div>
+          </div>
+          ${badge ? `<span class="method-flag">${badge}</span>` : ''}
+        </div>
+        ${domain.outputs.map((out, oi) => `
+          <div class="output-card" id="card-${domain.id}-${oi}">
+            <div class="output-card-header" onclick="toggleCard('${domain.id}-${oi}')">
+              <div>
+                <div class="output-tag">${out.tag}</div>
+                <div class="output-title">${out.title}</div>
+                <div class="output-meta">${out.meta}</div>
+              </div>
+              <div class="output-right">
+                <div class="priority-dot p-${out.priority}" title="${out.priority === 'now' ? 'Do now' : out.priority === 'soon' ? 'Do soon' : 'Plan for'}"></div>
+                <div class="expand-caret">▼</div>
+              </div>
+            </div>
+            <div class="output-card-body">
+              <div class="output-content">
+                ${out.content}
+                <div class="output-actions">
+                  <button class="action-btn primary">Use this recommendation</button>
+                  <button class="action-btn">Edit</button>
+                  <button class="action-btn">Export</button>
+                </div>
+                <div class="trace-panel" id="trace-${domain.id}-${oi}">
+                  <div class="trace-header" onclick="toggleTrace('${domain.id}-${oi}')">
+                    <span class="trace-label">Why this — source trail</span>
+                    <span class="trace-caret">▼</span>
+                  </div>
+                  <div class="trace-body">
+                    <div class="trace-section">
+                      <div class="trace-section-label">Signal inputs</div>
+                      ${out.trace.signals.map(s => `<div class="trace-item"><span class="trace-item-source">Signal</span>${s}</div>`).join('')}
+                    </div>
+                    <div class="trace-section">
+                      <div class="trace-section-label">Interview evidence</div>
+                      ${out.trace.interviews.map(i => `<div class="trace-item"><span class="trace-item-source">${i.source}</span><span class="trace-quote">"${i.quote}"</span></div>`).join('')}
+                    </div>
+                    <div class="trace-section">
+                      <div class="trace-section-label">Framework grounding</div>
+                      <div class="trace-item"><span class="trace-item-source">Source</span>${out.trace.framework}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  });
+
+  document.getElementById('output-area').innerHTML = html;
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  card.classList.toggle('open');
+}
+
+function toggleTrace(id) {
+  const panel = document.getElementById('trace-' + id);
+  panel.classList.toggle('open');
+}
+
+// ── Mosaic ──
+const colors = ['#C4A882','#7B9E87','#8B7BA8','#C4826A','#F7F3ED','#4A8FA8','#E8D9C4'];
+const mosaic = document.getElementById('mosaic');
+for (let i = 0; i < 45; i++) {
+  const t = document.createElement('div');
+  t.className = 'mosaic-tile';
+  t.style.background = colors[i % colors.length];
+  t.style.animationDelay = (0.02 + i * 0.015) + 's';
+  mosaic.appendChild(t);
+}
+
+// ── Init ──
+renderOutput();
+</script>
+
+  <script>
+    // Demo mode
+    (function() {
+      const isDemo = new URLSearchParams(window.location.search).get('demo') === 'true';
+      if (isDemo) {
+        document.getElementById('demo-badge').classList.add('visible');
+        document.getElementById('demo-banner').classList.add('visible');
+      }
+      // Mark active nav item
+      const path = window.location.pathname.split('/').pop();
+      const navMap = {
+        'tessera-module1.html': 'nav-m1',
+        'tessera-module2.html': 'nav-m2',
+        'tessera-module3.html': 'nav-m3',
+        'tessera-module4.html': 'nav-m4',
+        'tessera-module5.html': 'nav-m5',
+      };
+      if (navMap[path]) {
+        const el = document.getElementById(navMap[path]);
+        if (el) el.classList.add('active');
+      }
+    })();
+  </script>
+</body>
+</html>
