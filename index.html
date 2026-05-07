@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera — Mosaic Bridge Advisory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    :root { --clay:#C4A882;--clay-light:#E8D9C4;--clay-dark:#8B7355;--ink:#1C1A17;--ink-soft:#4A4640;--ink-muted:#8A8480;--surface:#F7F3ED;--surface-raised:#FDFAF6;--tile-2:#7B9E87;--tile-3:#8B7BA8;--tile-4:#C4826A;--tile-5:#4A8FA8;--border:rgba(28,26,23,0.12); }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;}
+    .hero{background:var(--ink);padding:72px 48px 56px;position:relative;overflow:hidden;}
+    .mosaic-bg{position:absolute;top:0;right:0;bottom:0;width:280px;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;padding:12px;opacity:.1;pointer-events:none;}
+    .mosaic-tile{border-radius:1px;opacity:0;animation:tileIn .5s forwards;}
+    @keyframes tileIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+    .wordmark{font-family:"DM Serif Display",serif;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--clay);margin-bottom:24px;}
+    h1{font-family:"DM Serif Display",serif;font-size:52px;font-weight:400;line-height:1.1;color:white;margin-bottom:16px;max-width:580px;}
+    h1 em{font-style:italic;color:var(--clay);}
+    .hero-sub{font-size:16px;color:rgba(255,255,255,.5);font-weight:300;line-height:1.8;max-width:500px;margin-bottom:32px;}
+    .hero-tags{display:flex;gap:8px;flex-wrap:wrap;}
+    .hero-tag{padding:5px 14px;border-radius:20px;font-size:12px;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);}
+    .hero-tag.on{background:var(--clay);border-color:var(--clay);color:white;font-weight:500;}
+    .wrap{max-width:960px;margin:0 auto;padding:52px 48px;}
+    .eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-dark);margin-bottom:10px;}
+    .stitle{font-family:"DM Serif Display",serif;font-size:30px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:14px;}
+    .stitle em{font-style:italic;color:var(--clay-dark);}
+    .btext{font-size:15px;color:var(--ink-soft);font-weight:300;line-height:1.85;max-width:620px;margin-bottom:16px;}
+    .tessera-block{background:var(--surface-raised);border:1px solid var(--border);border-left:4px solid var(--clay);border-radius:2px;padding:22px 26px;margin:22px 0;max-width:540px;}
+    .tw{font-family:"DM Serif Display",serif;font-size:32px;color:var(--clay-dark);font-style:italic;margin-bottom:3px;}
+    .to{font-size:11px;color:var(--ink-muted);font-weight:300;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+    .td{font-size:14px;color:var(--ink-soft);font-weight:300;line-height:1.7;}
+    .demo-band{background:var(--clay-dark);padding:36px 48px;}
+    .demo-band-in{max-width:960px;margin:0 auto;}
+    .demo-band h2{font-family:"DM Serif Display",serif;font-size:26px;color:white;font-weight:400;margin-bottom:8px;}
+    .demo-band p{font-size:14px;color:rgba(255,255,255,.6);font-weight:300;line-height:1.7;margin-bottom:24px;max-width:560px;}
+    .demo-paths{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
+    .dp{padding:20px 22px;border-radius:2px;text-decoration:none;display:block;border:1px solid rgba(255,255,255,.15);transition:all .2s;}
+    .dp:hover{border-color:var(--clay-light);transform:translateY(-1px);}
+    .dp-sc{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:6px;}
+    .dp-t{font-size:15px;font-weight:500;color:white;margin-bottom:4px;}
+    .dp-s{font-size:12px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.5;}
+    .demo-links{display:flex;gap:10px;flex-wrap:wrap;}
+    .dl{padding:9px 18px;border-radius:2px;font-size:12px;font-weight:500;text-decoration:none;border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);transition:all .15s;}
+    .dl:hover{border-color:var(--clay-light);color:white;}
+    .unit-block{margin-bottom:44px;}
+    .unit-hdr{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+    .unit-lbl{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--clay-dark);}
+    .us{padding:2px 9px;border-radius:10px;font-size:10px;font-weight:500;}
+    .us-b{background:#F0F7F2;color:#7B9E87;}
+    .us-c{background:var(--surface);color:var(--ink-muted);border:1px solid var(--border);}
+    .utitle{font-family:"DM Serif Display",serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:8px;}
+    .utitle em{font-style:italic;color:var(--clay-dark);}
+    .udesc{font-size:14px;color:var(--ink-muted);font-weight:300;line-height:1.7;max-width:620px;margin-bottom:16px;}
+    .mgrid{display:grid;gap:8px;}
+    .mcard{background:var(--surface-raised);border:1px solid var(--border);border-radius:2px;overflow:hidden;transition:all .15s;text-decoration:none;display:block;}
+    .mcard:hover{box-shadow:0 3px 16px rgba(0,0,0,.07);transform:translateY(-1px);}
+    .mcard.coming{opacity:.5;cursor:default;pointer-events:none;}
+    .mc-in{display:flex;align-items:stretch;}
+    .mc-bar{width:4px;flex-shrink:0;}
+    .mc-bd{flex:1;padding:16px 20px;}
+    .mc-lbl{font-size:10px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:4px;}
+    .mc-n{font-size:16px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .mc-d{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;}
+    .mc-r{padding:16px 18px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:10px;flex-shrink:0;}
+    .mcs{font-size:11px;font-weight:500;padding:3px 10px;border-radius:10px;}
+    .mcs-b{background:#F0F7F2;color:#7B9E87;}
+    .mcs-c{background:var(--surface);color:var(--ink-muted);border:1px solid var(--border);}
+    .mc-arr{font-size:16px;color:var(--ink-muted);}
+    .mcard:hover .mc-arr{color:var(--clay-dark);}
+    .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+    .src-chip{padding:12px 14px;background:var(--surface-raised);border:1px solid var(--border);border-radius:2px;}
+    .sc-a{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+    .sc-w{font-size:12px;color:var(--clay-dark);font-style:italic;font-weight:300;margin-bottom:4px;}
+    .sc-t{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;}
+    .t-cm{background:#EEF3FB;color:#2A5DA8;}
+    .t-cu{background:#FEF3EE;color:#8B4A2A;}
+    .t-l{background:#F0F7F2;color:#2A6B42;}
+    .t-h{background:#F5F0FB;color:#5A3A8B;}
+    .t-d{background:#FBF0F5;color:#8B2A5A;}
+    .footer{background:var(--ink);padding:24px 48px;text-align:center;}
+    .fw{font-family:"DM Serif Display",serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;}
+    .ft{font-size:12px;color:rgba(255,255,255,.3);font-weight:300;}
+    @media(max-width:640px){
+      .hero,.wrap,.demo-band,.footer{padding-left:24px;padding-right:24px;}
+      h1{font-size:34px;}
+      .demo-paths{grid-template-columns:1fr;}
+      .src-grid{grid-template-columns:1fr 1fr;}
+      .mc-r{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="mosaic-bg" id="mosaic"></div>
+  <div class="wordmark">Tessera &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+  <h1>Built for <em>people,</em><br>not projects.</h1>
+  <p class="hero-sub">A human-centered change intelligence platform for change management practitioners. Every output starts with a specific human — accounting for who they are, where they sit, how their culture shapes how they receive change, and what they specifically need to move forward.</p>
+  <div class="hero-tags">
+    <span class="hero-tag on">Units 1–3 built &nbsp;·&nbsp; Units 4–7 coming</span>
+    <span class="hero-tag">3 demo scenarios</span>
+    <span class="hero-tag">AI-assisted generation</span>
+    <span class="hero-tag">Cultural nuance built in</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="eyebrow">What this is</div>
+  <div class="stitle">A consulting <em>delivery engine</em> — not another CM tool.</div>
+  <p class="btext">Most change management tools are built around the project. Tessera flips that. The project is the context. The person is the center. Every recommendation — every communication, every training experience, every leadership message — starts with a specific human and works outward from there.</p>
+  <p class="btext">The practitioner is always in the room. Tessera handles the analytical, generative, and synthesis work so they have the time and headspace to be fully human in the moments that require it.</p>
+  <div class="tessera-block">
+    <div class="tw">Tessera</div>
+    <div class="to">Latin &nbsp;·&nbsp; noun &nbsp;·&nbsp; from Greek tessares</div>
+    <div class="td">A single tile in a mosaic — complete in itself and essential to the whole. Every person in an organisation is a distinct piece. The job of change management is to understand each one and design an experience that honours that.</div>
+  </div>
+</div>
+
+<div class="demo-band">
+  <div class="demo-band-in">
+    <h2>Try the demo — three scenarios, no setup.</h2>
+    <p>Pick a scenario and explore all built units. Each scenario is a realistic engagement with real cultural complexity. Switch between scenarios using the dropdown in any module.</p>
+    <div class="demo-paths">
+      <a href="tessera-app.html?mode=demo&scenario=meridian" class="dp">
+        <div class="dp-sc">⚙ ERP &amp; Restructure</div>
+        <div class="dp-t">Meridian Global</div>
+        <div class="dp-s">340 people · 4 countries · 6 stakeholder groups · Finance &amp; Supply Chain</div>
+      </a>
+      <a href="tessera-app.html?mode=demo&scenario=fusion" class="dp">
+        <div class="dp-sc">🤝 M&amp;A Integration</div>
+        <div class="dp-t">Fusion Dynamics</div>
+        <div class="dp-s">280 people · US, Netherlands, Germany · Cross-cultural integration</div>
+      </a>
+      <a href="tessera-app.html?mode=demo&scenario=nova" class="dp" style="background:rgba(196,168,130,.15);border-color:var(--clay);">
+        <div class="dp-sc">⚡ Workforce Transformation</div>
+        <div class="dp-t">Nova Energy</div>
+        <div class="dp-s">520 people · 12 US states · AI adoption + role redesign</div>
+      </a>
+    </div>
+    <div class="demo-links">
+      <a href="tessera-app.html?mode=manual" class="dl">Use the tool with your own data →</a>
+      <a href="tessera-cia.html" class="dl">Jump to: Change impact analysis →</a>
+      <a href="tessera-comms.html" class="dl">Jump to: Communications →</a>
+      <a href="tessera-content-library.html" class="dl">Jump to: Content library →</a>
+      <a href="tessera-team.html" class="dl">Jump to: Project team directory →</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="unit-block">
+    <div class="unit-hdr">
+      <div class="unit-lbl">Unit 1 — Diagnostic foundation</div>
+      <span class="us us-b">Built</span>
+    </div>
+    <div class="utitle">Five modules. <em>One complete picture.</em></div>
+    <div class="udesc">The diagnostic layer — project context, listening tour, stakeholder mapping, experience design, and diagnostic output. Everything that happens before a single communication is written or training is designed.</div>
+    <div class="mgrid">
+      <a href="tessera-app.html?mode=demo&scenario=meridian" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#C4A882;"></div><div class="mc-bd"><div class="mc-lbl">Module 1</div><div class="mc-n">Project context</div><div class="mc-d">Change landscape, strategic intent, organisational context, competing initiatives, change saturation, cultural signals, and practitioner assumptions before a single interview happens.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-app.html?mode=demo&scenario=meridian" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#8B7BA8;"></div><div class="mc-bd"><div class="mc-lbl">Module 2</div><div class="mc-n">Listening tour &amp; person profiles</div><div class="mc-d">Design the interview guide, run structured interviews across three capture layers, build the person profile. Dynamic questions by role and project type. The practitioner's human read captured in the debrief layer.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-app.html?mode=demo&scenario=meridian" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#4A8FA8;"></div><div class="mc-bd"><div class="mc-lbl">Module 3</div><div class="mc-n">Stakeholder mapping</div><div class="mc-d">Groups the listening tour into meaningful segments. Signal heat map, coverage and gaps, cultural tension map, risk picture. Identifies where design hold applies before a change experience is built.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-app.html?mode=demo&scenario=meridian" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#C4826A;"></div><div class="mc-bd"><div class="mc-lbl">Module 4</div><div class="mc-n">Experience design</div><div class="mc-d">Tailored change experience recommendations per stakeholder group — communications approach, engagement strategy, learning design, adoption indicators. Every recommendation traces back to signals and interview evidence.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-app.html?mode=demo&scenario=meridian" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#7B9E87;"></div><div class="mc-bd"><div class="mc-lbl">Module 5</div><div class="mc-n">Diagnostic output &amp; dashboard</div><div class="mc-d">Five outputs from one source — visual dashboard, diagnostic narrative, high-level programme plan, presentation builder, and practitioner decision guide. Client branding applied throughout.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+    </div>
+  </div>
+
+  <div class="unit-block">
+    <div class="unit-hdr">
+      <div class="unit-lbl">Unit 2 — Analysis &amp; synthesis</div>
+      <span class="us us-b">Built</span>
+    </div>
+    <div class="utitle">Four modules. <em>Two people data layers.</em></div>
+    <div class="udesc">The analysis layer — the impacted population, the delivery team, document intake, and the change impact analysis. Everything downstream in Units 3 through 7 reads from what is built here.</div>
+    <div class="mgrid">
+      <a href="tessera-roster.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#4A8FA8;"></div><div class="mc-bd"><div class="mc-lbl">Module 1</div><div class="mc-n">Employee roster &amp; people data</div><div class="mc-d">Import people data from Excel or CSV. Field mapping, data quality review, competing priority flags. Pivot views by department, location, and manager. Source of truth for audience mapping across all units.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-team.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#7B9E87;"></div><div class="mc-bd"><div class="mc-lbl">Module 2</div><div class="mc-n">Project team directory</div><div class="mc-d">Sponsors, workstream leads, decision makers, and the CM team. Reviewer chains by deliverable type. Capacity flags. Engagement intelligence panel — emails, voice notes, uploaded documents, and channel threads analysed and surfaced for practitioner review. Full engagement version history.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-intake.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#8B7BA8;"></div><div class="mc-bd"><div class="mc-lbl">Module 3</div><div class="mc-n">Document intake &amp; case for change</div><div class="mc-d">Upload project documents — charter, business case, process maps, anything. AI extraction with confidence ratings. Open questions generated from gaps. The foundation the CIA builds from.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-cia.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#C4826A;"></div><div class="mc-bd"><div class="mc-lbl">Module 4</div><div class="mc-n">Change impact analysis</div><div class="mc-d">Living record of what is changing, for whom, and how significantly. AI-generated first draft. Multi-select type, audience, and workstream. Heat map, pivot views, version history, open questions. Feeds communications, training, and leadership planning.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+    </div>
+  </div>
+
+  <div class="unit-block">
+    <div class="unit-hdr">
+      <div class="unit-lbl">Unit 3 — Communications</div>
+      <span class="us us-b">Built</span>
+    </div>
+    <div class="utitle">Six modules plus content library. <em>The full communications system.</em></div>
+    <div class="udesc">Strategy through to tracking. Not just email — channel strategy calibrated to cultural nuance and group signal data. Creative channel options surfaced when standard approaches will not reach the audience. Draft messages for leadership to react to before anything is finalised. Shared content blocks that cascade updates across all deliverables.</div>
+    <div class="mgrid">
+      <a href="tessera-comms.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#4A6FA8;"></div><div class="mc-bd"><div class="mc-lbl">Modules 1–3 · Strategy, architecture &amp; cascade</div><div class="mc-n">Communications strategy, message architecture &amp; cascade model</div><div class="mc-d">Communications principles grounded in research. Channel strategy by audience group — standard and creative options calibrated to cultural context. Case for change in plain language. WIIFM by group. Narrative arc. Full cascade with manager enablement packs and external stakeholder streams. Draft messages for leadership to react to.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-comms.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#8B7BA8;"></div><div class="mc-bd"><div class="mc-lbl">Modules 4–6 · Plan, drafts &amp; tracking</div><div class="mc-n">Communications plan, draft editor &amp; tracking</div><div class="mc-d">Multi-layer calendar with project, programme, and organisation views. Time scales from week to multi-year. Swimlanes by audience group, workstream, phase, or owner. Full draft editor with approval states and version history. Signal movement before and after communications. Feedback themes and pulse check results.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+      <a href="tessera-content-library.html" class="mcard"><div class="mc-in"><div class="mc-bar" style="background:#7B9E87;"></div><div class="mc-bd"><div class="mc-lbl">Content library</div><div class="mc-n">Content library &amp; deliverable builder</div><div class="mc-d">Shared content blocks that travel across all deliverables. When shared content changes, every deliverable containing it is flagged. Deliverable builder generates twelve communication types — FAQs, talking points, conversation guides, town hall scripts, and more — with reviewer assignment from the project team directory.</div></div><div class="mc-r"><span class="mcs mcs-b">Built</span><span class="mc-arr">→</span></div></div></a>
+    </div>
+  </div>
+
+  <div class="unit-block">
+    <div class="unit-hdr">
+      <div class="unit-lbl">Units 4–7 — In development</div>
+      <span class="us us-c">Coming</span>
+    </div>
+    <div class="utitle">Four more units. <em>The full engagement scope.</em></div>
+    <div class="udesc">Learning and capability, leadership engagement, stakeholder engagement and readiness, and reporting and measurement. When all seven units are complete, the connection layer wires everything into a single flow — one engagement file, data that moves forward automatically.</div>
+    <div class="mgrid">
+      <div class="mcard coming"><div class="mc-in"><div class="mc-bar" style="background:#7B9E87;"></div><div class="mc-bd"><div class="mc-lbl">Unit 4 · Learning &amp; capability</div><div class="mc-n">Training analysis, design &amp; delivery</div><div class="mc-d">Training needs analysis from the CIA. Role-specific learning journeys. Curriculum design. Delivery planning — not always classroom, not always digital. Scheduled against the change saturation picture.</div></div><div class="mc-r"><span class="mcs mcs-c">Coming</span></div></div></div>
+      <div class="mcard coming"><div class="mc-in"><div class="mc-bar" style="background:#8B7BA8;"></div><div class="mc-bd"><div class="mc-lbl">Unit 5 · Leadership engagement</div><div class="mc-n">Sponsor &amp; leadership action plans</div><div class="mc-d">Sponsor action plan. Leadership coalition design. Visibility strategy. What leadership needs to do — not just say — to make this change stick.</div></div><div class="mc-r"><span class="mcs mcs-c">Coming</span></div></div></div>
+      <div class="mcard coming"><div class="mc-in"><div class="mc-bar" style="background:#C4826A;"></div><div class="mc-bd"><div class="mc-lbl">Unit 6 · Stakeholder engagement</div><div class="mc-n">Readiness &amp; adoption planning</div><div class="mc-d">Change network design and management. Stakeholder engagement plans. Readiness measurement. Resistance management. Adoption tracking from first conversation to sustained behaviour change.</div></div><div class="mc-r"><span class="mcs mcs-c">Coming</span></div></div></div>
+      <div class="mcard coming"><div class="mc-in"><div class="mc-bar" style="background:#C4A882;"></div><div class="mc-bd"><div class="mc-lbl">Unit 7 · Reporting &amp; measurement</div><div class="mc-n">Dashboard &amp; programme reporting</div><div class="mc-d">Three views from one source — sponsor dashboard, project team view, practitioner view. Signal readings over time. Risk flags. Decisions needed. The evidence base for every recommendation.</div></div><div class="mc-r"><span class="mcs mcs-c">Coming</span></div></div></div>
+    </div>
+  </div>
+
+  <div class="eyebrow">The foundation</div>
+  <div class="stitle">Grounded in <em>credible research.</em></div>
+  <p class="btext">Every diagnostic question, cultural signal, and design recommendation is traceable to established research. Not window dressing — the intellectual architecture of the system.</p>
+  <div class="src-grid">
+    <div class="src-chip"><div class="sc-a">Prosci / Jeff Hiatt</div><div class="sc-w">ADKAR Model</div><span class="sc-t t-cm">Change management</span></div>
+    <div class="src-chip"><div class="sc-a">William Bridges</div><div class="sc-w">Managing Transitions</div><span class="sc-t t-cm">Change management</span></div>
+    <div class="src-chip"><div class="sc-a">John Kotter</div><div class="sc-w">Leading Change</div><span class="sc-t t-cm">Change management</span></div>
+    <div class="src-chip"><div class="sc-a">Erin Meyer</div><div class="sc-w">The Culture Map</div><span class="sc-t t-cu">Culture</span></div>
+    <div class="src-chip"><div class="sc-a">Geert Hofstede</div><div class="sc-w">Culture's Consequences</div><span class="sc-t t-cu">Culture</span></div>
+    <div class="src-chip"><div class="sc-a">Shalom Schwartz</div><div class="sc-w">Basic Human Values</div><span class="sc-t t-cu">Culture</span></div>
+    <div class="src-chip"><div class="sc-a">Malcolm Knowles</div><div class="sc-w">Andragogy</div><span class="sc-t t-l">Adult learning</span></div>
+    <div class="src-chip"><div class="sc-a">David Kolb</div><div class="sc-w">Experiential Learning Cycle</div><span class="sc-t t-l">Adult learning</span></div>
+    <div class="src-chip"><div class="sc-a">Amy Edmondson</div><div class="sc-w">The Fearless Organisation</div><span class="sc-t t-h">Human dynamics</span></div>
+    <div class="src-chip"><div class="sc-a">Brené Brown</div><div class="sc-w">Dare to Lead</div><span class="sc-t t-h">Human dynamics</span></div>
+    <div class="src-chip"><div class="sc-a">Adam Grant</div><div class="sc-w">Think Again</div><span class="sc-t t-h">Human dynamics</span></div>
+    <div class="src-chip"><div class="sc-a">Lily Zheng</div><div class="sc-w">DEI Deconstructed</div><span class="sc-t t-d">Equity &amp; inclusion</span></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="fw">Tessera &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+  <div class="ft">Human-centered change intelligence &nbsp;·&nbsp; Units 1–3 built &nbsp;·&nbsp; Units 4–7 in development &nbsp;·&nbsp; Early build — feedback welcome</div>
+</div>
+
+<script>
+  const colors=['#C4A882','#7B9E87','#8B7BA8','#C4826A','#F7F3ED','#4A8FA8','#E8D9C4','#1C1A17'];
+  const mosaic=document.getElementById('mosaic');
+  for(let i=0;i<60;i++){const t=document.createElement('div');t.className='mosaic-tile';t.style.background=colors[Math.floor(Math.random()*colors.length)];t.style.animationDelay=(0.02+i*0.012)+'s';mosaic.appendChild(t);}
+</script>
+</body>
+</html>
