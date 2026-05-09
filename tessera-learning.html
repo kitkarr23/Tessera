@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera™ — Learning &amp; Capability</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay:#C4A882;--clay-light:#E8D9C4;--clay-dark:#8B7355;
+      --ink:#1C1A17;--ink-soft:#4A4640;--ink-muted:#8A8480;
+      --surface:#F7F3ED;--surface-raised:#FDFAF6;
+      --tile-2:#7B9E87;--tile-3:#8B7BA8;--tile-4:#C4826A;--tile-5:#4A8FA8;
+      --border:rgba(28,26,23,0.12);--radius:2px;
+      --risk-high:#C4826A;--risk-high-bg:#FDF2EE;
+      --risk-mod:#C4A840;--risk-mod-bg:#FDFAEE;
+      --risk-low:#7B9E87;--risk-low-bg:#F0F7F2;
+      /* Unit 4 accent */
+      --u4:#2A7A5A;--u4-light:#EAF5F0;--u4-dark:#1A5A40;
+      /* Modality colors */
+      --m-classroom:#4A6FA8;--m-digital:#7B9E87;--m-peer:#8B7BA8;
+      --m-coach:#C4826A;--m-micro:#C4A840;--m-sim:#4A8FA8;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;}
+
+    /* Nav */
+    .t-nav{background:var(--ink);padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;flex-wrap:wrap;position:sticky;top:0;z-index:200;}
+    .t-nav-brand{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);text-decoration:none;padding:14px 0;}
+    .t-nav-pills{display:flex;gap:4px;flex-wrap:wrap;}
+    .t-nav-pill{padding:4px 12px;border-radius:10px;font-size:11px;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);text-decoration:none;white-space:nowrap;}
+    .t-nav-pill.active{color:var(--clay);border-color:var(--clay);}
+    .unit-badge{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:500;background:rgba(42,122,90,.3);color:#6BC4A0;border:1px solid rgba(42,122,90,.4);}
+
+    .app{max-width:1100px;margin:0 auto;background:var(--surface-raised);min-height:100vh;box-shadow:0 0 80px rgba(0,0,0,.07);padding-bottom:80px;}
+
+    /* Header */
+    .header{padding:32px 48px 22px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;background:linear-gradient(135deg,var(--surface-raised) 0%,#EAF5F0 100%);}
+    .mosaic-accent{position:absolute;top:0;right:0;display:grid;grid-template-columns:repeat(10,12px);grid-template-rows:repeat(4,12px);gap:2px;padding:10px;opacity:.25;pointer-events:none;}
+    .mosaic-tile{border-radius:1px;opacity:0;animation:tileIn .4s forwards;}
+    @keyframes tileIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+    .wordmark{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--u4-dark);margin-bottom:8px;}
+    .header h1{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--ink);margin-bottom:4px;}
+    .header h1 em{font-style:italic;color:var(--u4);}
+    .header p{font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;max-width:580px;}
+
+    /* Scenario bar */
+    .scenario-bar{background:var(--u4-dark);padding:10px 48px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    .scenario-sel{padding:5px 12px;border:1px solid rgba(255,255,255,.2);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:white;background:rgba(255,255,255,.1);cursor:pointer;}
+    .scenario-sel option{color:var(--ink);background:white;}
+
+    /* Module tabs */
+    .module-bar{display:flex;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;}
+    .module-tab{padding:11px 16px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+    .module-tab.active{border-bottom-color:var(--u4);background:var(--surface-raised);}
+    .mt-num{width:20px;height:20px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--ink-muted);flex-shrink:0;}
+    .module-tab.active .mt-num{background:var(--u4);border-color:var(--u4);color:white;}
+    .mt-label{font-size:12px;color:var(--ink-soft);}
+    .module-tab.active .mt-label{color:var(--ink);font-weight:500;}
+
+    .module-view{display:none;animation:fadeUp .25s ease forwards;}
+    .module-view.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .view-pad{padding:28px 48px;}
+
+    /* Buttons */
+    .btn-primary{padding:9px 20px;background:var(--u4);color:white;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+    .btn-primary:hover{background:var(--u4-dark);}
+    .btn-ghost{padding:8px 16px;border:1px solid var(--border);background:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink-soft);cursor:pointer;transition:all .15s;}
+    .btn-ghost:hover{border-color:var(--u4);color:var(--u4-dark);}
+    .btn-row{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap;align-items:center;}
+
+    /* Section headers */
+    .section-head{margin-bottom:20px;}
+    .section-eyebrow{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--u4);margin-bottom:6px;}
+    .section-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px;}
+    .section-title em{font-style:italic;color:var(--u4);}
+    .section-sub{font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;max-width:640px;}
+
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:20px;}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;}
+    .stat-num{font-family:'DM Serif Display',serif;font-size:24px;color:var(--ink);line-height:1;margin-bottom:3px;}
+    .stat-label{font-size:10px;color:var(--ink-muted);font-weight:300;text-transform:uppercase;letter-spacing:.06em;}
+
+    /* Cards */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;}
+    .card-title{font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+
+    /* ── MODULE 1: TNA ── */
+    .tna-row{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;}
+    .tna-header{padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .tna-header:hover{background:var(--surface);}
+    .tna-sev{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;flex-shrink:0;}
+    .sev-critical{background:var(--risk-high-bg);color:var(--risk-high);}
+    .sev-high{background:#FDF2EE;color:#8B4A2A;}
+    .sev-medium{background:var(--risk-mod-bg);color:#8B5A00;}
+    .sev-low{background:var(--risk-low-bg);color:var(--tile-2);}
+    .tna-change{font-size:13px;color:var(--ink-soft);font-weight:300;flex:1;line-height:1.4;}
+    .tna-meta{font-size:11px;color:var(--ink-muted);font-weight:300;flex-shrink:0;}
+    .tna-caret{font-size:10px;color:var(--ink-muted);transition:transform .2s;flex-shrink:0;}
+    .tna-row.open .tna-caret{transform:rotate(180deg);}
+    .tna-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+    .tna-row.open .tna-body{display:block;}
+    .tna-detail-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;}
+    .tna-detail{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.5;}
+    .tna-detail-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--u4);margin-bottom:4px;}
+    .tna-need{padding:8px 10px;background:var(--u4-light);border:1px solid rgba(42,122,90,.2);border-radius:var(--radius);margin-top:10px;font-size:12px;color:var(--u4-dark);font-weight:300;line-height:1.5;}
+    .tna-need-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--u4);margin-bottom:4px;}
+    .modality-badge{display:inline-flex;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;margin-right:4px;margin-top:4px;}
+    .mb-classroom{background:#EEF2FB;color:#2A4A8B;}
+    .mb-digital{background:var(--risk-low-bg);color:#2A6B42;}
+    .mb-peer{background:#F5F0FB;color:#5A3A8B;}
+    .mb-coach{background:var(--risk-high-bg);color:#8B4A2A;}
+    .mb-micro{background:var(--risk-mod-bg);color:#8B5A00;}
+    .mb-sim{background:#EEF3FB;color:#2A5DA8;}
+    .mb-job{background:var(--surface);color:var(--ink-muted);border:1px solid var(--border);}
+    .flag-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;background:#F5F0FB;color:var(--tile-3);border:1px solid rgba(139,123,168,.3);margin-top:6px;margin-right:4px;}
+
+    /* ── MODULE 2: COHORTS ── */
+    .cohort-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+    .cc-header{padding:16px 18px;display:flex;align-items:flex-start;gap:14px;}
+    .cc-color{width:4px;border-radius:2px;flex-shrink:0;align-self:stretch;}
+    .cc-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+    .cc-sub{font-size:12px;color:var(--ink-muted);font-weight:300;}
+    .cc-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+    .cc-badge{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;}
+    .cc-body{padding:0 18px 18px;}
+    .cc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+    .cc-field{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.5;}
+    .cc-field-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:4px;}
+    .tech-indicator{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;font-size:12px;color:var(--ink-soft);font-weight:300;}
+    .tech-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .cultural-profile{margin-top:14px;}
+    .cp-section-title{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--u4);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+    .meyer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+    .meyer-dim{padding:10px;background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);}
+    .md-name{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:4px;}
+    .md-bar-wrap{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+    .md-bar-track{flex:1;height:5px;background:rgba(28,26,23,.08);border-radius:3px;overflow:hidden;}
+    .md-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+    .md-score{font-size:10px;color:var(--ink-muted);font-weight:300;width:20px;text-align:right;flex-shrink:0;}
+    .md-label{font-size:11px;color:var(--ink-soft);font-weight:500;margin-bottom:3px;}
+    .md-flag{font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;font-style:italic;}
+    .hofstede-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;}
+    .hf-dim{padding:10px;background:var(--surface-raised);border:1px solid var(--border);border-left:3px solid var(--tile-3);border-radius:var(--radius);}
+    .readiness-strip{padding:10px 12px;border-radius:var(--radius);margin-bottom:6px;font-size:12px;font-weight:300;line-height:1.5;}
+    .rs-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
+    .union-flag{padding:10px 12px;background:#F5F0FB;border:1px solid rgba(139,123,168,.3);border-radius:var(--radius);font-size:12px;color:var(--ink-soft);font-weight:300;margin-top:10px;line-height:1.5;}
+    .uf-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--tile-3);margin-bottom:4px;}
+
+    /* ── MODULE 3: LEARNING JOURNEYS + ROLE CARDS ── */
+    .journey-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+    .journey-tab{padding:5px 13px;border-radius:20px;font-size:12px;border:1px solid var(--border);color:var(--ink-muted);cursor:pointer;background:var(--surface-raised);transition:all .15s;}
+    .journey-tab.active{background:var(--u4);border-color:var(--u4);color:white;}
+
+    /* Journey timeline */
+    .journey-track{position:relative;padding:16px 0;}
+    .jt-spine{position:absolute;left:20px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--u4),var(--clay));border-radius:1px;}
+    .jt-phase{position:relative;padding:0 0 20px 52px;}
+    .jt-phase:last-child{padding-bottom:0;}
+    .jt-dot{position:absolute;left:11px;top:4px;width:18px;height:18px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 2px var(--u4);background:var(--u4);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:white;}
+    .jt-phase-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--u4);margin-bottom:3px;}
+    .jt-phase-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .jt-phase-desc{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-bottom:6px;}
+    .jt-modalities{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px;}
+    .jt-duration{font-size:11px;color:var(--ink-muted);font-weight:300;font-style:italic;}
+    .creative-flag{padding:8px 10px;background:var(--risk-mod-bg);border:1px solid rgba(196,168,64,.3);border-radius:var(--radius);font-size:12px;color:var(--ink-soft);font-weight:300;margin-top:6px;line-height:1.5;}
+    .cf-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--risk-mod);margin-bottom:3px;}
+
+    /* Role cards */
+    .role-cards-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px;}
+    .role-card{background:var(--ink);border-radius:4px;padding:24px;position:relative;overflow:hidden;cursor:pointer;transition:all .2s;}
+    .role-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2);}
+    .rc-bg-tile{position:absolute;bottom:-10px;right:-10px;width:80px;height:80px;opacity:.08;}
+    .rc-eyebrow{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-light);margin-bottom:10px;}
+    .rc-role{font-family:'DM Serif Display',serif;font-size:20px;color:white;font-weight:400;margin-bottom:6px;}
+    .rc-org{font-size:11px;color:rgba(255,255,255,.45);font-weight:300;margin-bottom:16px;}
+    .rc-divider{height:1px;background:rgba(255,255,255,.1);margin-bottom:14px;}
+    .rc-section{margin-bottom:12px;}
+    .rc-section-label{font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;}
+    .rc-text{font-size:12px;color:rgba(255,255,255,.65);font-weight:300;line-height:1.6;}
+    .rc-tag{display:inline-flex;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;background:rgba(196,168,130,.15);color:var(--clay);border:1px solid rgba(196,168,130,.2);margin-right:4px;margin-top:3px;}
+    .rc-footer{margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;}
+    .rc-footer-label{font-size:10px;color:rgba(255,255,255,.25);font-weight:300;}
+    .rc-footer-val{font-size:11px;color:rgba(255,255,255,.5);font-weight:400;}
+
+    /* Role card download preview */
+    .rc-preview-note{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-bottom:14px;font-style:italic;}
+
+    /* ── MODULE 4: CURRICULUM ── */
+    .deliverable-build{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;}
+    .db-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+    .db-icon{width:36px;height:36px;border-radius:var(--radius);background:var(--u4-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .db-title{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+    .db-sub{font-size:11px;color:var(--ink-muted);font-weight:300;}
+    .db-items{display:flex;flex-direction:column;gap:5px;}
+    .db-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--surface-raised);border-radius:var(--radius);font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.5;}
+    .db-item-type{font-size:10px;font-weight:500;padding:1px 6px;border-radius:6px;flex-shrink:0;margin-top:1px;}
+    .dbt-guide{background:#EEF2FB;color:#2A4A8B;}
+    .dbt-ppt{background:var(--risk-high-bg);color:#8B4A2A;}
+    .dbt-ref{background:var(--risk-low-bg);color:#2A6B42;}
+    .dbt-video{background:#F5F0FB;color:#5A3A8B;}
+    .dbt-card{background:var(--risk-mod-bg);color:#8B5A00;}
+    .dbt-assess{background:var(--surface);color:var(--ink-muted);border:1px solid var(--border);}
+
+    /* ── MODULE 5: SCHEDULING ── */
+    .sched-grid{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;}
+    .sched-table{width:100%;border-collapse:collapse;font-size:12px;min-width:700px;}
+    .sched-table th{background:var(--ink);color:rgba(255,255,255,.65);padding:9px 12px;text-align:left;font-weight:400;font-size:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+    .sched-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+    .sched-table tr:last-child td{border-bottom:none;}
+    .sched-table tr:hover td{background:rgba(42,122,90,.02);}
+    .saturation-flag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:500;}
+    .sf-ok{background:var(--risk-low-bg);color:var(--tile-2);}
+    .sf-mod{background:var(--risk-mod-bg);color:#8B5A00;}
+    .sf-high{background:var(--risk-high-bg);color:var(--risk-high);}
+    .sf-block{background:#F5F0FB;color:var(--tile-3);}
+
+    /* ── MODULE 6: ADOPTION ── */
+    .tier-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;}
+    .tier-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:white;flex-shrink:0;}
+    .tier-meta{flex:1;}
+    .tier-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .tier-desc{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.5;margin-bottom:8px;}
+    .tier-examples{display:flex;flex-wrap:wrap;gap:4px;}
+    .tier-tag{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:400;background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);}
+    .tier-restriction{padding:8px 10px;background:#F5F0FB;border:1px solid rgba(139,123,168,.3);border-radius:var(--radius);font-size:12px;color:var(--tile-3);font-weight:300;margin-top:8px;}
+    .restriction-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--tile-3);margin-bottom:3px;}
+    .group-measure-row{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;}
+    .gm-color{width:4px;border-radius:2px;flex-shrink:0;align-self:stretch;}
+    .gm-group{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+    .gm-tiers{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+    .gm-tier-pill{padding:3px 9px;border-radius:10px;font-size:10px;font-weight:500;}
+    .gm-note{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.5;font-style:italic;}
+    .signal-connect{padding:12px 14px;background:var(--u4-light);border:1px solid rgba(42,122,90,.2);border-radius:var(--radius);font-size:12px;color:var(--u4-dark);font-weight:300;line-height:1.6;margin-top:12px;}
+    .sc-label{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--u4);margin-bottom:4px;}
+
+    @media(max-width:700px){
+      .t-nav,.view-pad,.header,.scenario-bar{padding-left:20px;padding-right:20px;}
+      .stats-row{grid-template-columns:repeat(3,1fr);}
+      .tna-detail-grid,.cc-grid,.role-cards-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="t-nav">
+  <a href="tessera-app.html" class="t-nav-brand" style="text-decoration:none;">Tessera™</a>
+  <div class="t-nav-pills">
+    <a href="tessera-app.html" class="t-nav-pill">Unit 1</a>
+    <a href="tessera-cia.html" class="t-nav-pill">Unit 2</a>
+    <a href="tessera-comms.html" class="t-nav-pill">Unit 3</a>
+    <span class="t-nav-pill active">Unit 4 · Learning</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="unit-badge">Unit 4 of 7</span>
+    <button class="btn-ghost" style="font-size:11px;" onclick="exportUnit4()">Export →</button>
+  </div>
+</nav>
+
+<div class="app">
+  <div class="header">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera™ &nbsp;·&nbsp; Unit 4 &nbsp;·&nbsp; Learning &amp; capability</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <div>
+        <h1>Learning &amp; <em>capability</em></h1>
+        <p>Training is not a course. It is a designed experience that meets each person where they are — in their role, their language, their working environment, and their relationship to the change. Completion is not adoption. This unit designs for both.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scenario-bar">
+    <span style="font-size:11px;color:rgba(255,255,255,.5);font-weight:300;">Engagement</span>
+    <select class="scenario-sel" onchange="loadScenario(this.value)">
+      <option value="meridian">Meridian Global — ERP &amp; Restructure</option>
+      <option value="fusion">Fusion Dynamics — M&amp;A Integration</option>
+      <option value="nova">Nova Energy — Workforce Transformation</option>
+    </select>
+    <div style="font-size:11px;color:rgba(255,255,255,.35);font-weight:300;margin-left:auto;">Reads from Unit 2 CIA training flags &nbsp;·&nbsp; All 3 scenarios pre-populated</div>
+  </div>
+
+  <!-- Module tabs -->
+  <div class="module-bar">
+    <div class="module-tab active" onclick="showModule(1,this)"><div class="mt-num">1</div><div class="mt-label">Training needs</div></div>
+    <div class="module-tab" onclick="showModule(2,this)"><div class="mt-num">2</div><div class="mt-label">Cohort design</div></div>
+    <div class="module-tab" onclick="showModule(3,this)"><div class="mt-num">3</div><div class="mt-label">Learning journeys</div></div>
+    <div class="module-tab" onclick="showModule(4,this)"><div class="mt-num">4</div><div class="mt-label">Curriculum &amp; deliverables</div></div>
+    <div class="module-tab" onclick="showModule(5,this)"><div class="mt-num">5</div><div class="mt-label">Delivery &amp; scheduling</div></div>
+    <div class="module-tab" onclick="showModule(6,this)"><div class="mt-num">6</div><div class="mt-label">Adoption measurement</div></div>
+  </div>
+
+  <!-- ══ MODULE 1: TRAINING NEEDS ANALYSIS ══ -->
+  <div class="module-view active" id="module-1">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Module 1 &nbsp;·&nbsp; Training needs analysis</div>
+        <div class="section-title">What each person needs to <em>be able to do</em></div>
+        <div class="section-sub">Generated from the change impact analysis. Every change item marked as requiring training becomes a structured training need — grouped by role, sequenced by go-live, and qualified by what the person needs to know versus what they need to be able to do.</div>
+      </div>
+
+      <div class="stats-row" id="tna-stats"></div>
+
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-title">
+          Training needs — from CIA flags
+          <button class="btn-ghost" style="font-size:11px;" onclick="exportTNA()">Export TNA summary</button>
+        </div>
+        <div id="tna-list"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" onclick="showModule(2,null)">Next — Cohort design →</button>
+        <button class="btn-ghost" onclick="exportTNA()">Export TNA to Word</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODULE 2: COHORT DESIGN ══ -->
+  <div class="module-view" id="module-2">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Module 2 &nbsp;·&nbsp; Cohort design</div>
+        <div class="section-title">Who trains <em>together</em> — and why it matters</div>
+        <div class="section-sub">Cohort groupings are not org chart groupings. The variables that matter: shared role in the new world, language and location, go-live sequence, technology access, union and regulatory constraints, and peer dynamics. A deskless warehouse worker in Brazil and a corporate analyst in New York may be going through the same system change — they should not be in the same training cohort.</div>
+      </div>
+      <div id="cohort-list"></div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="showModule(1,null)">← Back</button>
+        <button class="btn-primary" onclick="showModule(3,null)">Next — Learning journeys →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODULE 3: LEARNING JOURNEYS + ROLE CARDS ══ -->
+  <div class="module-view" id="module-3">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Module 3 &nbsp;·&nbsp; Learning journeys &amp; role cards</div>
+        <div class="section-title">The path — and the <em>person's place</em> in it</div>
+        <div class="section-sub">A learning journey is a designed sequence — not a course list. Pre-work, core learning, practice, reinforcement, follow-up. The sequence matters. Role cards translate the journey into something a specific person can hold — in their hands or on their screen — and understand what this change means for them specifically.</div>
+      </div>
+
+      <div class="journey-tabs" id="journey-tabs"></div>
+      <div id="journey-content"></div>
+
+      <div style="margin-top:28px;margin-bottom:16px;">
+        <div class="card-title">Role cards — what this change means for each role</div>
+        <p class="rc-preview-note">Role cards are designed deliverables — one per role group, printed or digital. They translate the change impact, the learning journey, and the support structure into language that feels personal rather than corporate. The creative output layer generates these as downloadable designed artifacts.</p>
+        <div class="role-cards-grid" id="role-cards"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="showModule(2,null)">← Back</button>
+        <button class="btn-primary" onclick="showModule(4,null)">Next — Curriculum &amp; deliverables →</button>
+        <button class="btn-ghost" onclick="alert('Role cards export as designed PDFs via the creative output layer. Connect Claude Design to activate full production output.')">Export role cards ↓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODULE 4: CURRICULUM & DELIVERABLES ══ -->
+  <div class="module-view" id="module-4">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Module 4 &nbsp;·&nbsp; Curriculum &amp; deliverables</div>
+        <div class="section-title">What gets <em>built</em> — and by whom</div>
+        <div class="section-sub">The training deliverables list — what the training workstream produces, in what format, owned by whom, and by when. Connected to the communications content library so training communications are not designed separately from everything else.</div>
+      </div>
+      <div id="curriculum-list"></div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="showModule(3,null)">← Back</button>
+        <button class="btn-primary" onclick="showModule(5,null)">Next — Delivery &amp; scheduling →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODULE 5: SCHEDULING ══ -->
+  <div class="module-view" id="module-5">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Module 5 &nbsp;·&nbsp; Delivery &amp; scheduling</div>
+        <div class="section-title">When training lands — and when it <em>should not</em></div>
+        <div class="section-sub">Training scheduled into a saturation window does not land. A group cannot absorb a major communication and a two-day training in the same week. Scheduling is sequenced against the go-live date, the communications calendar, and the change saturation picture from Unit 2.</div>
+      </div>
+
+      <!-- Saturation warning -->
+      <div id="saturation-warning" style="padding:12px 16px;background:var(--risk-high-bg);border:1px solid var(--risk-high);border-radius:var(--radius);margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">
+        <div style="font-size:14px;flex-shrink:0;">⚑</div>
+        <div>
+          <div style="font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--risk-high);margin-bottom:3px;">Saturation conflict detected</div>
+          <div style="font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.5;" id="saturation-text"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Training schedule — sequenced against communications and go-live</div>
+        <div class="sched-grid">
+          <table class="sched-table" id="sched-table">
+            <thead><tr>
+              <th>Cohort</th><th>Training</th><th>Format</th><th>Duration</th>
+              <th>Scheduled</th><th>Go-live gap</th><th>Saturation</th><th>Owner</th>
+            </tr></thead>
+            <tbody id="sched-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="showModule(4,null)">← Back</button>
+        <button class="btn-primary" onclick="showModule(6,null)">Next — Adoption measurement →</button>
+        <button class="btn-ghost" onclick="exportSchedule()">Export schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODULE 6: ADOPTION MEASUREMENT ══ -->
+  <div class="module-view" id="module-6">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Module 6 &nbsp;·&nbsp; Adoption measurement</div>
+        <div class="section-title">Did they learn it — or did they <em>just attend?</em></div>
+        <div class="section-sub">Completion is not adoption. Five measurement tiers — from attendance to business outcome. Not all tiers apply to all groups. Union agreements, regulatory constraints, and workforce context determine what measurement is appropriate. The system captures the constraints and designs the measurement framework accordingly.</div>
+      </div>
+
+      <!-- Five tiers -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">The five measurement tiers</div>
+        <div id="tier-list"></div>
+      </div>
+
+      <!-- Group-specific measurement -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title">Measurement design by group</div>
+        <div style="font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:14px;line-height:1.6;">Which tiers apply to which groups — and why. The practitioner confirms or adjusts. Flags are generated from the cohort technology profile, union status, and regulatory context captured in Module 2.</div>
+        <div id="group-measures"></div>
+      </div>
+
+      <!-- Signal connection -->
+      <div class="signal-connect">
+        <div class="sc-label">Connection to Unit 1 signal data</div>
+        After major training events, update the Clarity and Capability signals for the relevant groups in the Unit 1 stakeholder map. Effective training should move the Clarity signal — if it does not, the training either did not land or reached the wrong people. The practitioner records the signal reading in Unit 1 with the training event as the trigger.
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="showModule(5,null)">← Back</button>
+        <button class="btn-primary" onclick="exportUnit4()">Export full Unit 4 →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div style="background:#1C1A17;padding:10px 48px;text-align:center;border-top:1px solid rgba(255,255,255,.06);">
+  <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.25);font-weight:300;">&copy; 2026 Mosaic Bridge Advisory &nbsp;&middot;&nbsp; Tessera&trade; is a trademark of Mosaic Bridge Advisory &nbsp;&middot;&nbsp; All rights reserved</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// SCENARIO DATA
+// ══════════════════════════════════════════
+const SCENARIOS = {
+  meridian: {
+    name:'Meridian Global', type:'ERP & Restructure',
+    saturation:'Q3 close (September) conflicts with go-live training window (August). Finance Manager training must complete before August 15 — no training during final close cycle.',
+    tna: [
+      { id:1, change:'Monthly financial close process — 5-day manual to 2-day system-assisted', severity:'Critical', group:'Finance Managers', asIs:'Manual Excel reconciliation, full end-to-end ownership', toBe:'Exception review and oversight, system-assisted', knowledgeNeeds:'New system navigation, exception flagging logic, approval workflow', skillNeeds:'Interpreting system outputs, managing exceptions, cross-border close coordination', attitude:'Trust rebuild required before any system training. Start with the why, not the how.', modalities:['coach','classroom','peer'], flag:'Identity change — role expertise shift. Training alone will not solve this.', duration:'2 days core + 4 weeks supported practice' },
+      { id:2, change:'SAP R/3 to SAP S/4HANA — all Finance users', severity:'High', group:'Finance Managers & Finance Frontline', asIs:'SAP R/3 with user-built Excel supplements', toBe:'SAP S/4HANA — new interface, reporting structure, no legacy workarounds', knowledgeNeeds:'New navigation, new reporting structure, key transactions by role', skillNeeds:'System proficiency, data interpretation in new structure', attitude:'Resistance likely. Acknowledge the loss of hard-won expertise in the old system before training begins.', modalities:['classroom','digital','sim'], flag:'Superuser network essential — system experts within the team support peers.', duration:'3 days classroom + test environment access from 8 weeks pre-go-live' },
+      { id:3, change:'Purchase order and goods receipt — 3-step digital approval', severity:'High', group:'Supply Chain Frontline', asIs:'Verbal and paper-based approval, flexible, relationship-driven', toBe:'3-step digital approval in SAP before goods movement', knowledgeNeeds:'3-step digital process, system access, what to do when system is unavailable', skillNeeds:'Device operation, system navigation under time pressure', attitude:'Pragmatic group — focus on "here is exactly what you do", not the strategic rationale.', modalities:['job','classroom','micro'], flag:'Deskless delivery required. Floor-based training at each site. Visual aids in Portuguese for Brazil.', duration:'Half-day per site + quick reference card' },
+      { id:4, change:'Finance reporting lines — regional to centralised hub', severity:'High', group:'Finance Managers', asIs:'Regional autonomy, local decision authority', toBe:'Centralised Finance Operations hub, local advisory role', knowledgeNeeds:'New reporting structure, escalation paths, retained local accountability', skillNeeds:'Working within a centralised model, influencing without authority', attitude:'France and Brazil managers most affected. Antoine D. must be involved in designing the approach for France.', modalities:['coach','peer'], flag:'Not a system training need — a role and relationship training need. Different design.', duration:'Manager conversation series + role clarity workshop' },
+    ],
+    cohorts: [
+      { name:'Finance Managers — Global', color:'#C4826A', size:18, language:'English (primary) / French / Portuguese (separate sessions)', location:'US, UK, France, Brazil', goLive:'October 2026', device:'Laptop — full access', connectivity:'Reliable', lms:'SAP Enable Now — credentials confirmed', digitalLiteracy:'High', workEnv:'Desk-based', union:false, unionNote:'', regulatory:false, regNote:'', priority:'Critical', satFlag:'must complete before August 15 — Q3 close conflict', timing:'July–August 2026', modalities:['coach','classroom','sim'] },
+      { name:'Finance Frontline — US & UK', color:'#C4A882', size:80, language:'English', location:'US, UK', goLive:'October 2026', device:'Desktop workstation', connectivity:'Reliable', lms:'SAP Enable Now — credentials TBC', digitalLiteracy:'Medium', workEnv:'Desk-based', union:false, unionNote:'', regulatory:false, regNote:'', priority:'High', satFlag:'', timing:'August–September 2026', modalities:['classroom','digital'] },
+      { name:'Finance Frontline — France', color:'#8B7BA8', size:42, language:'French — all materials and sessions in French', location:'Paris office', goLive:'October 2026', device:'Desktop workstation', connectivity:'Reliable', lms:'SAP Enable Now — French instance required', digitalLiteracy:'Medium', workEnv:'Desk-based', union:true, unionNote:'French Works Council (CSE) consultation required before training programme is confirmed. Training hours and format subject to agreement.', regulatory:false, regNote:'', priority:'High', satFlag:'CSE consultation must complete before training schedule is published', timing:'August–September 2026 (pending CSE)', modalities:['classroom'] },
+      { name:'Supply Chain Frontline — US sites', color:'#C4A840', size:86, language:'English', location:'3 US warehouse sites', goLive:'October 2026', device:'No personal device at workstation — shared terminal only', connectivity:'Site Wi-Fi — intermittent', lms:'No LMS access at workstation', digitalLiteracy:'Variable', workEnv:'Deskless — warehouse floor', union:false, unionNote:'', regulatory:false, regNote:'', priority:'High', satFlag:'', timing:'September 2026 — 2 weeks pre-go-live per site', modalities:['job','classroom','micro'] },
+      { name:'Supply Chain Frontline — Brazil', color:'#4A8FA8', size:36, language:'Portuguese — all materials and sessions in Portuguese', location:'São Paulo warehouse', goLive:'October 2026', device:'No personal device — device availability at workstation TBC', connectivity:'Warehouse Wi-Fi — reliability unknown', lms:'No LMS access', digitalLiteracy:'Variable', workEnv:'Deskless — warehouse floor', union:false, unionNote:'', regulatory:false, regNote:'', priority:'High', satFlag:'Device availability must be confirmed before training can be designed for digital delivery', timing:'September 2026 — pending device confirmation', modalities:['job','micro'] },
+    ],
+    journeys: [
+      { role:'Finance Managers', color:'#C4826A', phases:[
+        { num:1, phase:'Before we start', title:'Trust and context', desc:'One-to-one conversation with the practitioner before any system training. Acknowledge the 2020 ERP experience explicitly. Establish what the new role means and why it is an upgrade, not a demotion.', modalities:['coach'], duration:'1:1 session, 60–90 minutes', creative:'This is not a training session. It is a human conversation. No slides. No system demos. The practitioner listens more than they talk.' },
+        { num:2, phase:'Pre-work', title:'Understanding the new close', desc:'Self-paced reading: the new close process design, the exceptions framework, and what automation handles versus what the manager handles. Sets context for the classroom session.', modalities:['digital','micro'], duration:'2 hours self-paced, 2 weeks before classroom', creative:'' },
+        { num:3, phase:'Core learning', title:'System training — S/4HANA for Finance Managers', desc:'Role-specific SAP training. Not the generic Finance module — the specific transactions, reports, and exception workflows a Finance Manager uses. France and Brazil versions account for regional process differences.', modalities:['classroom','sim'], duration:'2 days. France in French. Brazil in Portuguese.', creative:'' },
+        { num:4, phase:'Practice', title:'Test environment access', desc:'8 weeks of test environment access before go-live. Superuser available for questions. Weekly optional drop-in session with the trainer.', modalities:['sim','peer'], duration:'8 weeks pre-go-live', creative:'Superuser network: 2 Finance Managers identified as superusers — they become the first port of call for peers. Their expertise is now asset not liability.' },
+        { num:5, phase:'Go-live support', title:'First close — supported', desc:'First close cycle post go-live runs with practitioner and superuser on standby. Daily check-in for the first 5 days. Escalation path clearly defined.', modalities:['coach','peer'], duration:'First 2 weeks post go-live', creative:'' },
+        { num:6, phase:'Reinforcement', title:'30-day and 90-day check-in', desc:'Structured conversation at 30 days: what is working, what is not, what workarounds have emerged. At 90 days: adoption indicators reviewed, further support designed if needed.', modalities:['coach'], duration:'60 min at 30 days, 60 min at 90 days', creative:'' },
+      ]},
+      { role:'Supply Chain Frontline', color:'#C4A840', phases:[
+        { num:1, phase:'Awareness', title:'What is changing in your work', desc:'Supervisor-led team conversation. Not a training session — a 15-minute briefing from the supervisor about exactly what changes, with the quick reference card in hand.', modalities:['job','coach'], duration:'15 minutes, supervisor-led', creative:'The supervisor IS the training channel for this group. They must be equipped and confident before this conversation happens.' },
+        { num:2, phase:'Core learning', title:'The 3-step digital approval — hands on', desc:'Floor-based demonstration at each site. Small groups. Every person completes the 3 steps in the test environment before leaving the session. No one is left uncertain about what to do.', modalities:['classroom','job'], duration:'2 hours per site. Repeated until all staff complete.', creative:'Physical demonstration at the actual goods receiving point. Not in a training room.' },
+        { num:3, phase:'Reference', title:'Quick reference card', desc:'Laminated quick reference card at every workstation and goods receiving point. English and Portuguese. Step-by-step. What to do when the system is unavailable.', modalities:['micro'], duration:'Permanent at workstation', creative:'✦ Physical card. Not an email. Not an intranet page. A card that lives where the work happens.' },
+        { num:4, phase:'Go-live support', title:'Supervisor on the floor', desc:'Supervisor present at go-live for the first shift. Escalation path posted at every terminal. Helpdesk number visible.', modalities:['coach','job'], duration:'First 3 days post go-live', creative:'' },
+      ]},
+    ],
+    roleCards: [
+      { role:'Finance Manager', org:'Meridian Global', change:'Your role shifts from hands-on data processing to exception management and oversight. The system handles routine reconciliation. You handle complexity, judgement, and the exceptions that need human expertise.', gains:'More time for the analysis and insight work. Cross-border visibility you did not have before. A role that reflects your actual expertise rather than your ability to operate a manual process.', support:'1:1 practitioner session before training begins. 8 weeks test environment access. Superuser peer network. First close cycle with practitioner on standby.', journey:'Trust conversation → Pre-work → 2-day system training → Practice → Supported first close → 30 and 90-day check-in', colour:'#C4826A' },
+      { role:'Supply Chain Coordinator', org:'Meridian Global', change:'The approval process for goods movement becomes digital. Three steps in the system before goods move. Your supervisor will show you exactly how before it is required.', gains:'A clearer approval trail. Less ambiguity about what has been approved and when. The verbal process that sometimes caused delays becomes a documented digital record.', support:'Floor-based training at your site. Quick reference card at your workstation. Supervisor present for the first week. Helpdesk available.', journey:'Supervisor briefing → Hands-on floor training → Quick reference card → Supported go-live', colour:'#C4A840' },
+    ],
+    curriculum: [
+      { icon:'📋', title:'Training needs summary', sub:'Sponsor-facing TNA document', items:[
+        { type:'guide', text:'Structured TNA summary: what training is needed, for whom, why, and what it will produce — written for a sponsor who will approve the training investment' },
+        { type:'ref', text:'Training needs matrix: role × change item × severity × modality × timeline — one page, client-shareable' },
+      ]},
+      { icon:'🗓', title:'Facilitated session materials — Finance Managers', sub:'2-day SAP S/4HANA role-specific training', items:[
+        { type:'ppt', text:'Day 1 session deck: close process redesign, exception framework, new reporting structure' },
+        { type:'guide', text:'Facilitator guide: full 2-day run of show, timing, exercises, discussion prompts, and escalation protocols' },
+        { type:'ref', text:'Participant workbook: exercises, reference tables, and space for notes during the session' },
+        { type:'assess', text:'Knowledge check: 10 scenario-based questions testing exception judgement, not system navigation' },
+      ]},
+      { icon:'📇', title:'Role cards — all groups', sub:'Designed deliverable via creative output layer', items:[
+        { type:'card', text:'Finance Manager role card: change summary, gains, losses (named honestly), learning journey, support available' },
+        { type:'card', text:'Supply Chain Frontline role card: plain language, what changes, what stays, quick reference embedded' },
+        { type:'card', text:'HR Partner role card: advance brief protocol, what changes for HR, escalation path' },
+      ]},
+      { icon:'📱', title:'Floor-based training kit — Supply Chain', sub:'Deskless delivery package', items:[
+        { type:'guide', text:'Supervisor delivery guide: how to run the 15-minute briefing conversation, what to say, what to do if someone pushes back' },
+        { type:'ref', text:'Quick reference card: 3-step approval process in English and Portuguese. Print-ready A5 laminated.' },
+        { type:'video', text:'60-second demonstration video: filmed at an actual warehouse workstation, not a training room' },
+      ]},
+      { icon:'📬', title:'Training communications — participant packs', sub:'Before, during, and after — linked to content library', items:[
+        { type:'guide', text:'Save the date: 4 weeks out — who, what, when, format, what to prepare' },
+        { type:'guide', text:'Full training details: 2 weeks out — logistics, pre-work instructions, what to bring' },
+        { type:'guide', text:'Post-training reinforcement: 1 week after — what to practise, where to get help, next milestones' },
+      ]},
+    ],
+    schedule: [
+      { cohort:'Finance Managers — France', training:'1:1 trust conversation', format:'Practitioner 1:1', duration:'90 min', date:'July 7–11', goLiveGap:'12 weeks', saturation:'ok', owner:'Practitioner' },
+      { cohort:'Finance Managers — Global', training:'Pre-work: new close process', format:'Self-paced digital', duration:'2 hrs', date:'July 14–18', goLiveGap:'11 weeks', saturation:'ok', owner:'Practitioner' },
+      { cohort:'Finance Managers — US & UK', training:'SAP S/4HANA role training (English)', format:'2-day classroom', duration:'2 days', date:'July 21–22', goLiveGap:'10 weeks', saturation:'ok', owner:'Training lead' },
+      { cohort:'Finance Managers — France', training:'SAP S/4HANA role training (French)', format:'2-day classroom', duration:'2 days', date:'July 28–29', goLiveGap:'9 weeks', saturation:'ok', owner:'Training lead + French facilitator' },
+      { cohort:'Finance Managers — Brazil', training:'SAP S/4HANA role training (Portuguese)', format:'2-day classroom', duration:'2 days', date:'August 4–5', goLiveGap:'8 weeks', saturation:'ok', owner:'Training lead + Portuguese facilitator' },
+      { cohort:'Finance Frontline — US & UK', training:'SAP S/4HANA user training', format:'1-day classroom', duration:'1 day', date:'August 11–15', goLiveGap:'7 weeks', saturation:'moderate', owner:'Training lead' },
+      { cohort:'Finance Frontline — France', training:'SAP S/4HANA user training (French)', format:'1-day classroom', duration:'1 day', date:'September 1–5', goLiveGap:'4 weeks', saturation:'moderate', owner:'Training lead (pending CSE)' },
+      { cohort:'SC Frontline — US sites', training:'3-step digital approval — floor training', format:'Floor-based', duration:'2 hrs per site', date:'September 15–26', goLiveGap:'1–2 weeks', saturation:'high', owner:'Site supervisors + trainer' },
+      { cohort:'SC Frontline — Brazil', training:'3-step digital approval — floor training', format:'Floor-based (Portuguese)', duration:'2 hrs', date:'TBC — device access pending', goLiveGap:'TBC', saturation:'block', owner:'TBC' },
+    ],
+    tiers: [
+      { num:1, color:'#C4A882', name:'Attendance and completion', desc:'Did they receive the learning? Necessary but not sufficient. The baseline metric for all groups regardless of other constraints.', examples:['Session attendance log','LMS completion record','Supervisor confirmation for deskless groups'], restriction:false, restrictNote:'' },
+      { num:2, color:'#C4826A', name:'Knowledge check', desc:'Did they understand it? Scenario-based assessment testing judgement and application, not memorisation of facts.', examples:['10-question scenario assessment','Practical demonstration at workstation','Verbal knowledge check by supervisor'], restriction:true, restrictNote:'French Works Council (CSE) agreement required before any formal assessment is used for Finance Frontline — France. Knowledge checks for this group must be confirmed as non-evaluative.' },
+      { num:3, color:'#8B7BA8', name:'Application observation', desc:'Can they do it in their actual role? Manager observation against defined criteria. More meaningful than a quiz because it measures real behaviour in real context.', examples:['Manager observation checklist — 30 days post go-live','Peer review of first close cycle (Finance Managers)','Supervisor sign-off on first digital approval (Supply Chain)'], restriction:false, restrictNote:'' },
+      { num:4, color:'#4A8FA8', name:'Behaviour change signal', desc:'Are they doing it consistently? Signal readings updated in Unit 1 after major training events. The Clarity signal should move after effective training.', examples:['Capability signal updated in stakeholder map','Manager observation repeated at 90 days','Workaround detection — are people finding ways around the new process?'], restriction:false, restrictNote:'' },
+      { num:5, color:'#7B9E87', name:'Business outcome indicator', desc:'Did the change actually land? Metrics from the client\'s own systems — Tessera tracks them but does not generate them.', examples:['Close cycle time (Finance)','System error rate post go-live','Goods receipt processing time (Supply Chain)','Helpdesk call volume for training-related issues'], restriction:false, restrictNote:'' },
+    ],
+    groupMeasures: [
+      { group:'Finance Managers', color:'#C4826A', tiers:[1,2,3,4,5], tiersApply:[true,true,true,true,true], note:'All five tiers appropriate. Knowledge check is scenario-based (exception judgement), not system navigation. Application observation at first close cycle is the most meaningful indicator.', union:false },
+      { group:'Finance Frontline — France', color:'#8B7BA8', tiers:[1,2,3,4,5], tiersApply:[true,false,true,true,true], note:'Tier 2 (knowledge check) requires CSE agreement before use. Tiers 1, 3, 4, 5 confirmed appropriate. Supervisor observation at first close is the primary application indicator.', union:true },
+      { group:'Supply Chain Frontline', color:'#C4A840', tiers:[1,2,3,4,5], tiersApply:[true,false,true,true,true], note:'Tier 2 not appropriate for deskless context — supervisor sign-off on first digital approval is the practical equivalent. Floor-based and direct. Workaround detection (are people finding ways around the digital approval?) is the key Tier 4 indicator.', union:false },
+    ],
+  },
+
+  fusion: {
+    name:'Fusion Dynamics', type:'M&A Integration',
+    saturation:'Integration announcement (May) creates high information load. Training on ways of working must not land in the same month as structural communications.',
+    tna:[
+      { id:1, change:'Cross-cultural communication norms — US and NL/DE teams operating together', severity:'Critical', group:'All Management', asIs:'Two separate communication cultures operating independently', toBe:'Single combined organisation requiring cross-cultural decision-making daily', knowledgeNeeds:'Dutch and German communication patterns, how to read silence correctly, asynchronous input protocols', skillNeeds:'Facilitating cross-cultural meetings, creating psychological safety for disagreement, reading between the lines', attitude:'US leadership team needs this most. Frame as competitive advantage, not cultural sensitivity training.', modalities:['coach','classroom','sim'], flag:'This is the most urgent training need. Do before any joint decision-making sessions.', duration:'1-day workshop + 6-week coaching series' },
+      { id:2, change:'Performance review process — continuous feedback to annual cycle', severity:'Medium', group:'Individual Contributors', asIs:'Continuous feedback, real-time recognition', toBe:'Annual review with mid-year check-in', knowledgeNeeds:'New process steps, how to request informal feedback within the new structure', skillNeeds:'Documenting performance conversations, using the new system', attitude:'Genuine loss — acknowledge it. Train managers to maintain informal feedback culture within the formal structure.', modalities:['digital','micro'], flag:'Manager behaviour change is the real training need here, not the process.', duration:'Half-day manager training + short IC orientation' },
+    ],
+    cohorts:[
+      { name:'US Executive Leadership', color:'#2D5016', size:8, language:'English', location:'Austin, US', goLive:'Ongoing integration', device:'Full access', connectivity:'Reliable', lms:'Corporate LMS', digitalLiteracy:'High', workEnv:'Desk-based', union:false, unionNote:'', regulatory:false, regNote:'', priority:'Critical', satFlag:'Cross-cultural training must happen before next joint leadership session', timing:'Immediate', modalities:['coach','classroom'] },
+      { name:'NL/DE Leadership', color:'#8B7BA8', size:12, language:'Dutch and German — parallel sessions in local language', location:'Amsterdam NL / Berlin DE', goLive:'Ongoing integration', device:'Full access', connectivity:'Reliable', lms:'Corporate LMS — NL/DE instance', digitalLiteracy:'High', workEnv:'Desk-based', union:true, unionNote:'Dutch Works Council (OR) consultation required for any formal training programme affecting NL/DE employees.', regulatory:false, regNote:'', priority:'Critical', satFlag:'OR consultation required before training is confirmed', timing:'Pending OR consultation', modalities:['coach','classroom'] },
+    ],
+    journeys:[
+      { role:'US Executive Leadership', color:'#2D5016', phases:[
+        { num:1, phase:'Immediate', title:'Cross-cultural calibration session', desc:'One structured working session — not a training session — where US leadership learns to run meetings differently with European counterparts. Focus on asynchronous input, pre-meeting written positions, and how to invite disagreement explicitly.', modalities:['coach','classroom'], duration:'1 day', creative:'✦ Not labelled as cultural sensitivity training — labelled as high-performance team design.' },
+        { num:2, phase:'Ongoing', title:'Joint session practice', desc:'Practitioner observes and debriefs the first three joint leadership sessions. Feedback given to US leadership individually, not in the group.', modalities:['coach'], duration:'3 joint sessions with debrief', creative:'' },
+      ]},
+    ],
+    roleCards:[
+      { role:'US Senior Leader', org:'Fusion Dynamics', change:'You now lead a team that includes people from two countries with fundamentally different communication styles. Silence in a group meeting does not mean agreement — it means the European team is processing, not aligned.', gains:'A combined organisation with capabilities neither company had alone. A leadership team that is genuinely cross-cultural, not just geographically dispersed.', support:'Cross-cultural calibration session before your next joint meeting. Individual debrief after each joint leadership session for the first three months.', journey:'Calibration session → Joint session observation × 3 → Individual debrief', colour:'#2D5016' },
+    ],
+    curriculum:[
+      { icon:'🌍', title:'Cross-cultural communication programme', sub:'US leadership and NL/DE leadership — parallel tracks', items:[
+        { type:'guide', text:'Facilitator guide: 1-day cross-cultural calibration session — working session format, not classroom' },
+        { type:'ref', text:'Meeting design protocol: how to structure joint sessions to surface genuine views from both cultures' },
+        { type:'video', text:'Short video explainer for US leadership: what Dutch and German communication patterns look like and what they mean' },
+      ]},
+    ],
+    schedule:[
+      { cohort:'US Executive Leadership', training:'Cross-cultural calibration session', format:'1-day working session', duration:'1 day', date:'Before next joint leadership meeting', goLiveGap:'Immediate', saturation:'ok', owner:'Practitioner' },
+      { cohort:'NL/DE Leadership', training:'Integration context session (Dutch/German)', format:'Half-day', duration:'4 hours', date:'Pending OR consultation', goLiveGap:'TBC', saturation:'block', owner:'Practitioner + NL/DE HR Director' },
+    ],
+    tiers:[
+      { num:1, color:'#C4A882', name:'Attendance and completion', desc:'Session attendance confirmed for all leadership cohorts.', examples:['Session attendance log'], restriction:false, restrictNote:'' },
+      { num:2, color:'#C4826A', name:'Knowledge check', desc:'Not appropriate for cross-cultural leadership training. Observed behaviour is the measure.', examples:['Not applicable for this cohort'], restriction:true, restrictNote:'Cross-cultural communication is a skill and mindset change, not a knowledge test. Assessment would undermine the trust-building the programme is designed to create.' },
+      { num:3, color:'#8B7BA8', name:'Application observation', desc:'Practitioner observes first three joint leadership sessions and debriefs with US leadership individually.', examples:['Joint session observation checklist','Debrief conversation notes'], restriction:false, restrictNote:'' },
+      { num:4, color:'#4A8FA8', name:'Behaviour change signal', desc:'NL/DE team Commitment signal is the key indicator. If cross-cultural training is landing, the signal should move.', examples:['NL/DE Commitment signal reading in Unit 1','Number of joint decisions made with pre-meeting written input'], restriction:false, restrictNote:'' },
+      { num:5, color:'#7B9E87', name:'Business outcome indicator', desc:'Integration pace and quality of joint decisions.', examples:['Decision turnaround time in joint meetings','Escalations from NL/DE team to NL/DE leadership'], restriction:false, restrictNote:'' },
+    ],
+    groupMeasures:[
+      { group:'US Executive Leadership', color:'#2D5016', tiers:[1,2,3,4,5], tiersApply:[true,false,true,true,true], note:'Knowledge check not appropriate. Application observation by practitioner in live joint sessions is the primary measure. NL/DE Commitment signal is the outcome indicator.', union:false },
+      { group:'NL/DE Leadership', color:'#8B7BA8', tiers:[1,2,3,4,5], tiersApply:[true,false,false,true,true], note:'Dutch Works Council consultation required before any formal training or assessment. Tiers 1, 4, and 5 only until OR consultation is complete.', union:true },
+    ],
+  },
+
+  nova: {
+    name:'Nova Energy', type:'AI Adoption + Role Redesign',
+    saturation:'Industry uncertainty and ongoing safety protocol implementation create pre-existing saturation. Every training intervention must earn its place — no "nice to have" modules.',
+    tna:[
+      { id:1, change:'Analyst role redesign — routine automation to interpretation and recommendation', severity:'Critical', group:'Data & Analytics', asIs:'Data pulling, report building, routine analysis — technical data skills', toBe:'Interpretation, insight generation, recommendation — AI tools handle routine', knowledgeNeeds:'AI tool operation (Azure OpenAI), prompting, output validation, governance protocol', skillNeeds:'Insight storytelling, translating AI outputs to business recommendations, critical evaluation of AI outputs', attitude:'Enthusiastic early adopters — risk is overconfidence and moving faster than the org can absorb. Design for depth not speed.', modalities:['peer','digital','classroom'], flag:'Co-design the curriculum with the team. They are the experts — they should help build what comes next.', duration:'3-day immersive + 6-week practice programme' },
+      { id:2, change:'Field Supervisor — new analytical capability requirement (hidden change)', severity:'High', group:'Field Operations Supervisors', asIs:'Operational oversight, safety, team management — no analytical expectation', toBe:'Above plus interpretation of AI-generated operational data reports', knowledgeNeeds:'How to read AI-generated field reports, what to do with the data, when to escalate vs act', skillNeeds:'Data interpretation in field context, asking good questions about what the AI is showing', attitude:'This is a hidden role change not communicated yet. Training cannot begin until supervisors have been told about this new expectation — and have had the conversation with their manager about what it means.', modalities:['peer','coach','job'], flag:'Do not begin training until supervisors have been briefed on the new expectation. Sequence is: brief first, train second.', duration:'1-day peer-facilitated session + field-based practice' },
+      { id:3, change:'Azure OpenAI tools deployment — all analyst-grade roles', severity:'Low', group:'Data & Analytics', asIs:'Python, SQL, Power BI — no AI tools in workflow', toBe:'Azure OpenAI integrated, prompting and validation as core skills', knowledgeNeeds:'Azure OpenAI interface, prompt construction, output types and limitations, data governance', skillNeeds:'Prompting, validation of outputs, governance protocol application', attitude:'Ready and waiting. Risk is boredom — this group needs challenge not hand-holding.', modalities:['peer','digital'], flag:'Let the team co-design the training. They know the tools better than the training team.', duration:'2-day intensive + self-directed practice' },
+    ],
+    cohorts:[
+      { name:'Data & Analytics — Pilot cohort', color:'#00A896', size:18, language:'English', location:'Houston HQ', goLive:'May 2026 (pilot)', device:'Full access — personal laptop', connectivity:'Reliable', lms:'Corporate LMS + Azure sandbox', digitalLiteracy:'Expert', workEnv:'Desk-based', union:false, unionNote:'', regulatory:false, regNote:'', priority:'High', satFlag:'', timing:'May–June 2026', modalities:['peer','digital','classroom'] },
+      { name:'Field Operations Supervisors — pilot states', color:'#C4826A', size:24, language:'English', location:'Texas, Colorado (pilot states)', goLive:'August 2026 (pilot)', device:'Shared site device — intermittent access', connectivity:'Variable by site', lms:'No reliable LMS access in field', digitalLiteracy:'Variable', workEnv:'Field — mobile and deskless', union:false, unionNote:'', regulatory:true, regNote:'State energy regulations require that operational decisions based on AI-generated data are reviewed by a qualified supervisor before action. Training must include the human review protocol.', priority:'Critical', satFlag:'Must not start until supervisors have been formally briefed on new analytical expectation', timing:'July 2026 — pending briefing sequence', modalities:['peer','coach','job'] },
+    ],
+    journeys:[
+      { role:'Data & Analytics — Pilot cohort', color:'#00A896', phases:[
+        { num:1, phase:'Co-design', title:'Build the curriculum together', desc:'2-hour working session with the pilot cohort to co-design the learning programme. They know the tools — use their expertise. The outcome is a curriculum they own, not one delivered to them.', modalities:['peer'], duration:'2 hours', creative:'✦ Peer-led co-design. Not practitioner-designed and handed to them. They build what they will be trained on.' },
+        { num:2, phase:'Immersive', title:'3-day AI immersive', desc:'Deep-dive into Azure OpenAI tools, prompting, output validation, and the governance framework. Co-facilitated by a Data & Analytics team member from the pilot cohort.', modalities:['classroom','digital','peer'], duration:'3 days', creative:'Co-facilitated by a peer. Signals that the expertise lives in the team, not just externally.' },
+        { num:3, phase:'Practice', title:'Real projects only', desc:'6-week practice period using actual work deliverables — not exercises. Weekly peer group to share what is working and what is not. Governance protocol applied in real time.', modalities:['peer','job'], duration:'6 weeks', creative:'✦ No artificial exercises. All practice uses real work. The learning is the doing.' },
+        { num:4, phase:'Storytelling', title:'Share what you learned', desc:'Pilot cohort shares experience with wider organisation. Short video, written piece, or peer session — their choice of format. This is the communication that builds confidence in Field Operations before their rollout begins.', modalities:['peer'], duration:'One output per participant', creative:'✦ Peer storytelling. More credible than any corporate communication.' },
+      ]},
+      { role:'Field Operations Supervisors', color:'#C4826A', phases:[
+        { num:1, phase:'Pre-requisite', title:'Briefing before training', desc:'Field supervisor must receive the formal briefing about the new analytical expectation from their manager before any training begins. Training assumes the supervisor knows what is being asked of them.', modalities:['coach'], duration:'Manager conversation — 30 minutes', creative:'Training cannot begin until this conversation has happened. The system flags if a supervisor has been scheduled for training before the briefing is confirmed.' },
+        { num:2, phase:'Core learning', title:'Reading the AI — what it means in the field', desc:'Peer-facilitated session using real AI-generated field reports from the pilot. What does this data mean for my site? What should I act on? What should I escalate?', modalities:['peer','job'], duration:'1 day — small groups by site', creative:'✦ Facilitated by a pilot cohort supervisor from another site. Not a corporate trainer. Someone who has been through it.' },
+        { num:3, phase:'Practice', title:'Live reports, real decisions', desc:'Supervisors begin receiving AI-generated reports for their own sites 4 weeks before rollout. Manager available to review decisions together. Regulatory review protocol applied from day one.', modalities:['job','coach'], duration:'4 weeks pre-rollout', creative:'' },
+      ]},
+    ],
+    roleCards:[
+      { role:'Data & Analytics Analyst', org:'Nova Energy', change:'The routine parts of your role — standard data pulls, regular report builds, templated analysis — will be handled by AI tools. Your role shifts to the work that actually requires you: interpreting what the data means for a specific situation, making recommendations, telling the story behind the numbers.', gains:'Less time on work that is repetitive. More time on work that is genuinely interesting. The chance to build skills in a capability that is growing in value across the industry.', support:'3-day immersive with your team. 6 weeks of real project practice. Peer group every week. You help design the training.', journey:'Co-design → 3-day immersive → 6-week practice → Share your story', colour:'#00A896' },
+      { role:'Field Operations Supervisor', org:'Nova Energy', change:'You will start receiving AI-generated operational reports for your site. Your job is to read them, understand what they are showing, and decide what to do — or what to ask your team to do. This is a new responsibility. Your manager will have a conversation with you about it before any training begins.', gains:'Better visibility into your site\'s operational patterns. Earlier warning of issues that used to only become visible when something went wrong.', support:'Peer-facilitated session with supervisors from other sites who have been through the pilot. 4 weeks of live reports before rollout with manager available to review together.', journey:'Manager briefing → Peer learning session → 4-week live practice with support', colour:'#C4826A' },
+    ],
+    curriculum:[
+      { icon:'🤖', title:'AI immersive — Data & Analytics pilot', sub:'Co-designed with the team', items:[
+        { type:'guide', text:'Co-design workshop guide: how to run the 2-hour curriculum co-design session with the pilot cohort' },
+        { type:'ppt', text:'Azure OpenAI session deck: tools, prompting, validation, governance — co-facilitated by team member' },
+        { type:'ref', text:'Governance protocol card: what you can do, what requires review, what to escalate — one page, field-tested' },
+        { type:'assess', text:'Validation checklist: how to evaluate AI output quality before using it in a deliverable' },
+      ]},
+      { icon:'🏗', title:'Field supervisor learning kit', sub:'Peer-facilitated, field-appropriate', items:[
+        { type:'guide', text:'Peer facilitator guide: how a pilot-cohort supervisor runs the field supervisor session for their peers' },
+        { type:'ref', text:'AI report reading guide: what each section of the operational report means and what to do with it' },
+        { type:'guide', text:'Regulatory review protocol: the human review checklist for AI-generated operational recommendations in regulated states' },
+        { type:'card', text:'Field supervisor role card: what changes, what the new expectation is, what support is available' },
+      ]},
+      { icon:'📹', title:'Peer storytelling kit', sub:'Pilot cohort shares their experience', items:[
+        { type:'video', text:'Video guide: how pilot cohort members can record a 3-minute "what I learned" video — unscripted, real' },
+        { type:'guide', text:'Written story template: for participants who prefer writing to video' },
+        { type:'ref', text:'Distribution plan: how the stories reach Field Operations before the national rollout begins' },
+      ]},
+    ],
+    schedule:[
+      { cohort:'Data & Analytics — Pilot', training:'Co-design working session', format:'Peer-facilitated workshop', duration:'2 hrs', date:'May 5, 2026', goLiveGap:'Pilot goes live May 2026', saturation:'ok', owner:'Practitioner + team lead' },
+      { cohort:'Data & Analytics — Pilot', training:'3-day AI immersive', format:'Classroom + hands-on', duration:'3 days', date:'May 12–14, 2026', goLiveGap:'Pilot active', saturation:'ok', owner:'Training lead + team facilitator' },
+      { cohort:'Field Supervisors — TX, CO (pilot)', training:'Briefing conversation', format:'Manager 1:1', duration:'30 min', date:'Before July 1, 2026', goLiveGap:'8 weeks', saturation:'ok', owner:'Direct manager (each supervisor)' },
+      { cohort:'Field Supervisors — TX, CO (pilot)', training:'AI report reading — peer session', format:'Peer-facilitated, site-based', duration:'1 day', date:'July 2026', goLiveGap:'4 weeks', saturation:'moderate', owner:'Pilot cohort supervisor + practitioner' },
+      { cohort:'Field Supervisors — TX, CO (pilot)', training:'Live reports — supported practice', format:'On-the-job with manager', duration:'4 weeks', date:'July–August 2026', goLiveGap:'0–4 weeks', saturation:'high', owner:'Direct manager' },
+    ],
+    tiers:[
+      { num:1, color:'#C4A882', name:'Attendance and completion', desc:'Session attendance and pilot programme completion.', examples:['Session attendance','Pilot programme completion sign-off'], restriction:false, restrictNote:'' },
+      { num:2, color:'#C4826A', name:'Knowledge check', desc:'Scenario-based validation — can they evaluate an AI output and identify when it should not be trusted?', examples:['AI output evaluation exercise','Governance protocol application check'], restriction:false, restrictNote:'' },
+      { num:3, color:'#8B7BA8', name:'Application observation', desc:'Are they actually using the tools in their real work? Peer review of first AI-assisted deliverable.', examples:['Peer review of first AI-assisted output','Manager sign-off on first supervisor AI report review'], restriction:false, restrictNote:'' },
+      { num:4, color:'#4A8FA8', name:'Behaviour change signal', desc:'D&A Commitment signal. Are Field Supervisors requesting the AI reports proactively?', examples:['D&A signal reading update in Unit 1','Field supervisor report review frequency'], restriction:false, restrictNote:'' },
+      { num:5, color:'#7B9E87', name:'Business outcome indicator', desc:'Time saved on routine analysis. Quality and speed of field operational decisions.', examples:['Hours spent on routine reporting pre vs post','Supervisor decision confidence self-assessment at 90 days'], restriction:false, restrictNote:'' },
+    ],
+    groupMeasures:[
+      { group:'Data & Analytics', color:'#00A896', tiers:[1,2,3,4,5], tiersApply:[true,true,true,true,true], note:'All five tiers appropriate. Peer review of first AI-assisted deliverable (Tier 3) is the most meaningful measure. The team co-designed the curriculum — they are invested in demonstrating mastery.', union:false },
+      { group:'Field Operations Supervisors', color:'#C4826A', tiers:[1,2,3,4,5], tiersApply:[true,false,true,true,true], note:'Tier 2 not appropriate in field context — practical demonstration is the equivalent. Regulatory review compliance (Tier 3) is mandatory in regulated states regardless of other measurement.', union:false },
+    ],
+  }
+};
+
+// ══════════════════════════════════════════
+// CULTURAL DESIGN PROFILES
+// ══════════════════════════════════════════
+const CULTURAL_PROFILES = {
+  meridian: {
+    'Finance Managers — Global': {
+      meyer: {
+        communicating:{score:4,label:'Low-context (US/UK) to high-context (France)',flag:'US/UK expect direct explicit instruction. France cohort reads context. Design two version openings.'},
+        evaluating:{score:5,label:'Mixed by sub-group',flag:'Direct feedback OK for US/UK in private. France and Brazil prefer indirect in group settings.'},
+        leading:{score:6,label:'Moderately hierarchical',flag:'Facilitator credibility matters. Senior Finance Managers disengage from facilitators perceived as junior or lacking domain expertise.'},
+        deciding:{score:5,label:'Mixed',flag:'US/UK comfortable with individual decisions in exercises. France prefers more deliberation before committing.'},
+        trusting:{score:6,label:'Relationship leaning',flag:'France and Brazil need 15-20 min relationship time before content. Do not open immediately with system demos.'},
+        disagreeing:{score:5,label:'Mixed',flag:'France will disagree openly. Brazil avoids public disagreement. Allow private written reflection before group discussion.'},
+        scheduling:{score:6,label:'Moderately linear',flag:'Detailed agenda expected — publish 1 week before. Build time buffers. Do not appear to rush.'},
+        persuading:{score:7,label:'Principles first',flag:'France especially expects theoretical grounding before practical application. Start with why and framework, not system demo.'},
+      },
+      hofstede: {
+        powerDistance:{score:6,label:'Moderate-high',flag:'Finance Managers will not admit confusion to a senior facilitator. Build in peer discussion and written reflection to surface understanding gaps.'},
+        individualism:{score:7,label:'Individualistic (US/UK) — collectivist lean (Brazil)',flag:'Self-paced pre-work appropriate for most. Brazil sub-group benefits from group-based exercises.'},
+        uncertaintyAvoidance:{score:7,label:'High',flag:'France and Brazil: very detailed session structure required. Publish agenda with timing. Set explicit success criteria at start of each session.'},
+        longTermOrientation:{score:5,label:'Mixed',flag:'Frame learning as building career capability, not just completing a compliance exercise.'},
+      },
+      saturation:{level:'High',note:'Role identity change and process change simultaneously. Do not layer multiple training events in the same week.'},
+      readiness:{level:'Low',score:28,note:'Commitment at 28%. Trust rebuild is the prerequisite — not a nice-to-have before training begins.'},
+      seniority:{level:'Senior individual contributors',note:'Experienced professionals whose expertise is being disrupted. Honour existing knowledge — position new capabilities as upgrade, not replacement.'},
+    },
+    'Finance Frontline — France': {
+      meyer: {
+        communicating:{score:7,label:'High-context',flag:'French communication is layered. Instructions that feel complete to a US designer may feel incomplete to a French learner expecting implicit context.'},
+        evaluating:{score:3,label:'Indirect',flag:'Assessment feedback must be private and specific. Public correction in France is experienced as deeply disrespectful.'},
+        leading:{score:8,label:'Hierarchical',flag:'Facilitator needs visible credibility — ideally endorsed by their manager or a known domain expert.'},
+        deciding:{score:4,label:'Consensual',flag:'Build in group deliberation time. Avoid exercises that push to fast individual decisions.'},
+        trusting:{score:8,label:'Relationship-based',flag:'Significant relationship-building required before content. A French group that does not feel seen will not engage regardless of content quality.'},
+        disagreeing:{score:7,label:'Confrontational',flag:'Will disagree openly. Do not interpret as resistance — it is engagement. Equip the facilitator to receive and use disagreement productively.'},
+        scheduling:{score:8,label:'Linear',flag:'Strict agenda adherence expected. Overrunning or changing order without explanation damages trust.'},
+        persuading:{score:9,label:'Principles first',flag:'Must establish theoretical framework and rationale before any practical exercise. A French learner who does not understand why will not engage with the how.'},
+      },
+      hofstede: {
+        powerDistance:{score:7,label:'High',flag:'Learners will not challenge facilitator even when confused. Use anonymous question mechanisms — written cards or digital polls.'},
+        individualism:{score:7,label:'Individualistic',flag:'Individual accountability appropriate but group exercises still benefit from structured contribution.'},
+        uncertaintyAvoidance:{score:9,label:'Very high',flag:'Exceptionally detailed structure required. Published agenda with precise timing, stated objectives, and explicit success criteria at session start.'},
+        longTermOrientation:{score:4,label:'Short-term',flag:'Frame learning around immediate application and visible short-term benefit. Long-term capability framing is less motivating.'},
+      },
+      saturation:{level:'High',note:'CSE consultation adds uncertainty which compounds saturation. Group experiencing change and process uncertainty simultaneously.'},
+      readiness:{level:'Unknown',score:null,note:'Insufficient listening data. Design hold applies. Do not design training until data is sufficient.'},
+      seniority:{level:'Frontline',note:'Established routines being disrupted. Training must acknowledge disruption without dismissing it.'},
+    },
+    'Supply Chain Frontline — Brazil': {
+      meyer: {
+        communicating:{score:6,label:'High-context',flag:'Brazilian Portuguese communication is relationship-rich and contextual. Plain language instructions need warmth — not just clarity.'},
+        evaluating:{score:4,label:'Indirect',flag:'Avoid any form of public assessment or correction. Supervisor-observed practice is culturally appropriate.'},
+        leading:{score:6,label:'Moderately hierarchical',flag:'Supervisor is the natural learning authority for this group. Peer facilitation works within the team but needs supervisor endorsement.'},
+        deciding:{score:5,label:'Mixed',flag:'Group discussion before practice exercises is natural and productive. Do not rush to individual application.'},
+        trusting:{score:9,label:'Relationship-based',flag:'The supervisor relationship is the learning relationship. Training delivered by or endorsed by the direct supervisor will land significantly better.'},
+        disagreeing:{score:4,label:'Avoids confrontation',flag:'Will not surface confusion or resistance publicly. Create safe private channels for questions — supervisor 1:1 or written card.'},
+        scheduling:{score:5,label:'Flexible time',flag:'Exact timing less important than completion. Build in buffer and do not create anxiety about the clock.'},
+        persuading:{score:5,label:'Applications first',flag:'Concrete, practical demonstration first — then brief explanation. This group learns by doing before understanding the framework.'},
+      },
+      hofstede: {
+        powerDistance:{score:8,label:'High',flag:'Supervisor authority is strong. Training endorsed by supervisor will have significantly higher engagement than training positioned as external.'},
+        individualism:{score:4,label:'Collectivist',flag:'Group-based learning strongly preferred. Individual performance assessment may feel isolating and threatening.'},
+        uncertaintyAvoidance:{score:7,label:'High',flag:'Clear, simple instructions. One step at a time. Do not present the full complexity of the new system upfront — sequence the learning.'},
+        longTermOrientation:{score:4,label:'Short-term',flag:'Frame training around immediate benefit in tomorrow's work. Long-term capability arguments are less motivating.'},
+      },
+      saturation:{level:'High',note:'Device access uncertainty adds to saturation. Group cannot prepare mentally for training they do not know will happen.'},
+      readiness:{level:'Unknown',score:null,note:'Device availability TBC. Cannot confirm readiness until access is confirmed.'},
+      seniority:{level:'Frontline / deskless',note:'Physical, manual work context. Training design must fit the physical environment — not a training room.'},
+    },
+  },
+  fusion: {
+    'US Executive Leadership': {
+      meyer: {
+        communicating:{score:2,label:'Low-context — very direct',flag:'Will expect explicit, efficient communication. Do not build in relationship time before content — US executives find it patronising.'},
+        evaluating:{score:2,label:'Very direct',flag:'Will accept and expect direct feedback on performance in cross-cultural sessions. May not realise their own directness reads as aggressive to NL/DE counterparts.'},
+        leading:{score:2,label:'Egalitarian',flag:'Comfortable with peer facilitation. Expert title is less important than demonstrated competence.'},
+        deciding:{score:2,label:'Top-down',flag:'Expects clear action items and individual decisions. Consensual exercises may feel slow and inconclusive.'},
+        trusting:{score:2,label:'Task-based',flag:'Gets to work quickly. Relationship is built through competent task delivery. Does not need social time before content.'},
+        disagreeing:{score:3,label:'Direct confrontation',flag:'Will push back openly. Important for the facilitator to model how to receive pushback in a cross-cultural context.'},
+        scheduling:{score:7,label:'Linear',flag:'Respects tight timing. Will become visibly impatient if sessions overrun or feel inefficient.'},
+        persuading:{score:2,label:'Applications first',flag:'Needs to see practical relevance immediately. Lead with the business case and the concrete what-to-do before any theoretical framing.'},
+      },
+      hofstede: {
+        powerDistance:{score:3,label:'Low',flag:'Will challenge the facilitator. Expects to be challenged in return. Horizontal power dynamic in the room is appropriate.'},
+        individualism:{score:9,label:'Highly individualistic',flag:'Individual accountability and recognition motivates this group. Group-based outcomes feel diffuse.'},
+        uncertaintyAvoidance:{score:4,label:'Low-moderate',flag:'Comfortable with ambiguity and iterative approaches. Will not need exhaustive structure upfront.'},
+        longTermOrientation:{score:4,label:'Short-term',flag:'Frame learning around immediate behavioural change and visible near-term results.'},
+      },
+      saturation:{level:'Moderate',note:'Integration complexity is high but this group has capacity for learning. The challenge is relevance, not bandwidth.'},
+      readiness:{level:'Willing but unaware',score:null,note:'Willing to learn but do not yet appreciate the scope of their own cultural blind spot. This needs to be surfaced carefully, not confrontationally.'},
+      seniority:{level:'C-suite / SVP',note:'High ego investment in current communication style. Learning must be framed as competitive advantage, not personal correction.'},
+    },
+  },
+  nova: {
+    'Data & Analytics — Pilot cohort': {
+      meyer: {
+        communicating:{score:3,label:'Low-context — direct',flag:'Prefers explicit, efficient communication. Will not read between the lines. Gets frustrated by vague instructions.'},
+        evaluating:{score:3,label:'Direct',flag:'Comfortable with direct peer feedback. Peer review of AI outputs is culturally appropriate for this group.'},
+        leading:{score:2,label:'Egalitarian',flag:'Peer facilitation strongly appropriate. Expert title matters less than demonstrated technical competence.'},
+        deciding:{score:4,label:'Collaborative',flag:'Enjoys group problem-solving but will reach individual conclusions. Build in both collaborative exploration and individual application.'},
+        trusting:{score:3,label:'Task-based',flag:'Builds trust through shared technical work. The co-design session is the relationship-building moment, not separate from it.'},
+        disagreeing:{score:3,label:'Direct',flag:'Will challenge the content, the tools, and the facilitator. This is healthy — equip facilitators to receive technical challenge productively.'},
+        scheduling:{score:5,label:'Flexible',flag:'Results-oriented rather than clock-oriented. Less concerned about agenda timing than whether they are learning something real.'},
+        persuading:{score:3,label:'Applications first',flag:'Must demonstrate practical value immediately. Theory-first sessions will lose this group in the first 20 minutes.'},
+      },
+      hofstede: {
+        powerDistance:{score:3,label:'Low',flag:'Will question and challenge. Horizontal dynamic in the room is expected and productive.'},
+        individualism:{score:8,label:'Highly individualistic',flag:'Individual recognition of technical achievement motivates this group. Peer recognition within the team is also highly valued.'},
+        uncertaintyAvoidance:{score:3,label:'Low',flag:'Comfortable with ambiguity and exploration. Rigid structure feels constraining. Build in open exploration time.'},
+        longTermOrientation:{score:7,label:'Long-term',flag:'Frame learning as building skills that will matter increasingly. Career capability argument resonates strongly.'},
+      },
+      saturation:{level:'Low',note:'Enthusiastic and ready. The risk is overconfidence and moving faster than governance allows, not saturation.'},
+      readiness:{level:'High',score:82,note:'Clarity signal at 85%, Commitment at 75%. Ready to go. Channel their energy productively.'},
+      seniority:{level:'Individual contributor — technical specialist',note:'Strong professional identity built on technical expertise. Training must challenge them intellectually or they will disengage.'},
+    },
+    'Field Operations Supervisors — pilot states': {
+      meyer: {
+        communicating:{score:3,label:'Direct — practical',flag:'Plain language. Concrete examples from actual field context. No corporate framing.'},
+        evaluating:{score:4,label:'Moderately indirect',flag:'Will not surface confusion publicly. Supervisor-to-supervisor private conversation is the appropriate feedback channel.'},
+        leading:{score:5,label:'Moderate hierarchy',flag:'Supervisor from pilot cohort as facilitator is the right choice — peer authority with lived experience of the change.'},
+        deciding:{score:5,label:'Practical consensus',flag:'Will discuss as a group and reach practical agreement. Do not rush to individual decision — let the group work through it.'},
+        trusting:{score:7,label:'Relationship-based',flag:'Trust is earned through shared field experience. A facilitator with no field context will not be trusted regardless of their expertise.'},
+        disagreeing:{score:4,label:'Avoids open confrontation',flag:'Will express disagreement through silence or non-participation, not direct challenge. Watch for disengagement signals.'},
+        scheduling:{score:5,label:'Flexible',flag:'Field operations run on operational time, not training schedules. Build significant flexibility into timing.'},
+        persuading:{score:2,label:'Applications first — strongly',flag:'Must see what this means in their actual field context within the first 15 minutes. Abstract framing will lose them immediately.'},
+      },
+      hofstede: {
+        powerDistance:{score:5,label:'Moderate',flag:'Respect for experience and field knowledge. A facilitator who demonstrates understanding of field operations will be trusted. One who does not will not.'},
+        individualism:{score:6,label:'Moderately individualistic',flag:'Individual accountability within a team context. Recognition of individual site performance resonates.'},
+        uncertaintyAvoidance:{score:6,label:'Moderate-high',flag:'Clear, specific instructions for the new analytical responsibility. Do not present it as an exploratory journey — present it as a defined new task with defined support.'},
+        longTermOrientation:{score:4,label:'Short-term pragmatic',flag:'Frame training around what is immediately useful for their site. Long-term industry trends are less motivating than tomorrow's operational decision.'},
+      },
+      saturation:{level:'High',note:'Safety protocol implementation and AI adoption landing simultaneously. Sequencing is critical — do not compress.'},
+      readiness:{level:'Low-moderate',score:35,note:'Clarity at 42% after supervisor briefing. Readiness improving but not sufficient for complex training yet.'},
+      seniority:{level:'Frontline supervisor',note:'Bridge between corporate and field. High accountability, limited support. Training design must acknowledge the weight of their position.'},
+    },
+  },
+};
+
+const MEYER_DIMS = ['communicating','evaluating','leading','deciding','trusting','disagreeing','scheduling','persuading'];
+const MEYER_DIM_LABELS = {
+  communicating:['Low-context','High-context'],
+  evaluating:['Direct feedback','Indirect feedback'],
+  leading:['Egalitarian','Hierarchical'],
+  deciding:['Top-down','Consensual'],
+  trusting:['Task-based','Relationship-based'],
+  disagreeing:['Avoids conflict','Confrontational'],
+  scheduling:['Flexible time','Linear time'],
+  persuading:['Applications first','Principles first'],
+};
+const HOFSTEDE_DIMS = ['powerDistance','individualism','uncertaintyAvoidance','longTermOrientation'];
+const HOFSTEDE_LABELS = {powerDistance:'Power distance',individualism:'Individualism vs collectivism',uncertaintyAvoidance:'Uncertainty avoidance',longTermOrientation:'Long-term orientation'};
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let currentScenario = 'meridian';
+let currentJourneyRole = 0;
+
+// ══════════════════════════════════════════
+// MODULE NAV
+// ══════════════════════════════════════════
+function showModule(n, el) {
+  // Hide all views, show target
+  document.querySelectorAll('.module-view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById('module-'+n);
+  if (target) target.classList.add('active');
+  // Update tab active state — always use the index to find the right tab
+  document.querySelectorAll('.module-tab').forEach((t,i)=>{
+    t.classList.toggle('active', i === n-1);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════
+// SCENARIO LOAD
+// ══════════════════════════════════════════
+function loadScenario(key) {
+  currentScenario = key;
+  currentJourneyRole = 0;
+  renderTNA();
+  renderCohorts();
+  renderJourneys();
+  renderRoleCards();
+  renderCurriculum();
+  renderSchedule();
+  renderAdoption();
+}
+
+// ══════════════════════════════════════════
+// MODULE 1 — TNA
+// ══════════════════════════════════════════
+function renderTNA() {
+  const s = SCENARIOS[currentScenario];
+  const critical = s.tna.filter(t=>t.severity==='Critical').length;
+  const modalities = new Set(s.tna.flatMap(t=>t.modalities));
+  document.getElementById('tna-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${s.tna.length}</div><div class="stat-label">Training needs</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--risk-high);"><div class="stat-num" style="color:var(--risk-high);">${critical}</div><div class="stat-label">Critical</div></div>
+    <div class="stat-card"><div class="stat-num">${[...new Set(s.tna.map(t=>t.group))].length}</div><div class="stat-label">Groups</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--u4);"><div class="stat-num" style="color:var(--u4);">${modalities.size}</div><div class="stat-label">Modalities</div></div>
+    <div class="stat-card"><div class="stat-num">${s.cohorts.length}</div><div class="stat-label">Cohorts</div></div>`;
+
+  const MODAL_LABELS = {classroom:'Classroom',digital:'Digital / e-learning',peer:'Peer learning',coach:'Coaching',micro:'Microlearning',sim:'Simulation',job:'On-the-job'};
+  const MODAL_CLASSES = {classroom:'mb-classroom',digital:'mb-digital',peer:'mb-peer',coach:'mb-coach',micro:'mb-micro',sim:'mb-sim',job:'mb-job'};
+  const SEV_CLASSES = {Critical:'sev-critical',High:'sev-high',Medium:'sev-medium',Low:'sev-low'};
+
+  document.getElementById('tna-list').innerHTML = s.tna.map((t,i)=>`
+    <div class="tna-row" id="tna-${i}">
+      <div class="tna-header" onclick="this.parentElement.classList.toggle('open')">
+        <span class="tna-sev ${SEV_CLASSES[t.severity]||'sev-low'}">${t.severity}</span>
+        <div class="tna-change">${t.change}</div>
+        <div class="tna-meta">${t.group}</div>
+        <div class="tna-caret">▼</div>
+      </div>
+      <div class="tna-body">
+        <div class="tna-detail-grid">
+          <div class="tna-detail"><div class="tna-detail-label">As-is</div>${t.asIs}</div>
+          <div class="tna-detail"><div class="tna-detail-label">To-be</div>${t.toBe}</div>
+          <div class="tna-detail"><div class="tna-detail-label">Primary group</div>${t.group}</div>
+        </div>
+        <div class="tna-need">
+          <div class="tna-need-label">Training need — knowledge</div>${t.knowledgeNeeds}
+        </div>
+        <div class="tna-need">
+          <div class="tna-need-label">Training need — skill</div>${t.skillNeeds}
+        </div>
+        <div class="tna-need" style="background:rgba(196,168,130,.06);border-color:var(--clay-light);color:var(--clay-dark);">
+          <div class="tna-need-label" style="color:var(--clay-dark);">Attitude and readiness consideration</div>${t.attitude}
+        </div>
+        <div style="margin-top:10px;">
+          <div style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px;">Recommended modalities</div>
+          ${t.modalities.map(m=>`<span class="modality-badge ${MODAL_CLASSES[m]||'mb-job'}">${MODAL_LABELS[m]||m}</span>`).join('')}
+          <div style="font-size:11px;color:var(--ink-muted);font-weight:300;margin-top:4px;font-style:italic;">Estimated duration: ${t.duration}</div>
+        </div>
+        ${t.flag?`<div class="flag-pill">⚑ ${t.flag}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// MODULE 2 — COHORTS
+// ══════════════════════════════════════════
+function renderCohorts() {
+  const s = SCENARIOS[currentScenario];
+  const MODAL_LABELS = {classroom:'Classroom',digital:'Digital',peer:'Peer learning',coach:'Coaching',micro:'Microlearning',sim:'Simulation',job:'On-the-job'};
+
+  document.getElementById('cohort-list').innerHTML = s.cohorts.map(c=>`
+    <div class="cohort-card">
+      <div class="cc-header">
+        <div class="cc-color" style="background:${c.color};"></div>
+        <div style="flex:1;">
+          <div class="cc-name">${c.name}</div>
+          <div class="cc-sub">${c.size} people &nbsp;·&nbsp; ${c.location} &nbsp;·&nbsp; Go-live: ${c.goLive}</div>
+          <div class="cc-badges">
+            <span class="cc-badge" style="background:${c.priority==='Critical'?'var(--risk-high-bg)':'var(--risk-low-bg)'};color:${c.priority==='Critical'?'var(--risk-high)':'var(--tile-2)'};">${c.priority}</span>
+            <span class="cc-badge" style="background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);">${c.timing}</span>
+            ${c.union?`<span class="cc-badge" style="background:#F5F0FB;color:var(--tile-3);">Union / Works Council</span>`:''}
+            ${c.regulatory?`<span class="cc-badge" style="background:var(--risk-mod-bg);color:var(--risk-mod);">Regulatory constraint</span>`:''}
+          </div>
+        </div>
+      </div>
+      <div class="cc-body">
+        <div class="cc-grid">
+          <div>
+            <div class="cc-field-label">Language</div>
+            <div class="cc-field">${c.language}</div>
+          </div>
+          <div>
+            <div class="cc-field-label">Digital access profile</div>
+            <div class="tech-indicator"><div class="tech-dot" style="background:${c.device.includes('No')?'var(--risk-high)':'var(--tile-2)'}"></div>Device: ${c.device}</div>
+            <div class="tech-indicator"><div class="tech-dot" style="background:${c.connectivity==='Reliable'?'var(--tile-2)':c.connectivity.includes('intermittent')||c.connectivity.includes('Variable')?'var(--risk-mod)':'var(--risk-high)'}"></div>Connectivity: ${c.connectivity}</div>
+            <div class="tech-indicator"><div class="tech-dot" style="background:${c.lms.includes('No')?'var(--risk-high)':c.lms.includes('TBC')?'var(--risk-mod)':'var(--tile-2)'}"></div>LMS: ${c.lms}</div>
+          </div>
+          <div>
+            <div class="cc-field-label">Working environment</div>
+            <div class="cc-field">${c.workEnv}</div>
+            <div style="margin-top:8px;"><div class="cc-field-label">Recommended modalities</div>
+            ${c.modalities.map(m=>`<span class="modality-badge mb-${m}">${MODAL_LABELS[m]||m}</span>`).join('')}</div>
+          </div>
+        </div>
+        ${c.union?`<div class="union-flag"><div class="uf-label">⚖ Union / Works Council constraint</div>${c.unionNote}</div>`:''}
+        ${c.regulatory?`<div class="union-flag" style="background:var(--risk-mod-bg);border-color:var(--risk-mod);"><div class="uf-label" style="color:var(--risk-mod);">⚑ Regulatory constraint</div>${c.regNote}</div>`:''}
+        ${c.satFlag?`<div style="padding:8px 10px;background:var(--risk-high-bg);border:1px solid var(--risk-high);border-radius:var(--radius);font-size:12px;color:var(--ink-soft);font-weight:300;margin-top:8px;"><strong style="color:var(--risk-high);">Scheduling flag:</strong> ${c.satFlag}</div>`:''}
+      <div class="cultural-profile-placeholder" data-cohort="${c.name}"></div>
+      </div>
+    </div>`).join('');
+
+  // Inject cultural profiles after render (avoids nested template literal freeze)
+  setTimeout(function() {
+    document.querySelectorAll('.cultural-profile-placeholder').forEach(function(el) {
+      const cohortName = el.getAttribute('data-cohort');
+      el.innerHTML = buildCulturalProfileHTML(cohortName);
+    });
+  }, 50);
+}
+
+function buildCulturalProfileHTML(cohortName) {
+  const scen = CULTURAL_PROFILES[currentScenario];
+  if (!scen) return '';
+  const profile = scen[cohortName];
+  if (!profile) {
+    return '<div style="margin-top:14px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12px;color:var(--ink-muted);font-weight:300;font-style:italic;">Cultural design profile not yet captured for this cohort. Add observations in the Cultural Intelligence module to generate the profile.</div>';
+  }
+
+  const meyerColors = ['#C4826A','#8B7BA8','#4A8FA8','#7B9E87','#C4A840','#C4826A','#4A6FA8','#7B9E87'];
+  const MEYER_DIMS = ['communicating','evaluating','leading','deciding','trusting','disagreeing','scheduling','persuading'];
+  const MEYER_LABELS = {
+    communicating:['Low-context','High-context'], evaluating:['Direct feedback','Indirect feedback'],
+    leading:['Egalitarian','Hierarchical'], deciding:['Top-down','Consensual'],
+    trusting:['Task-based','Relationship-based'], disagreeing:['Avoids conflict','Confrontational'],
+    scheduling:['Flexible time','Linear time'], persuading:['Applications first','Principles first']
+  };
+  const HOFSTEDE_DIMS = ['powerDistance','individualism','uncertaintyAvoidance','longTermOrientation'];
+  const HOFSTEDE_LABELS = {
+    powerDistance:'Power distance', individualism:'Individualism vs collectivism',
+    uncertaintyAvoidance:'Uncertainty avoidance', longTermOrientation:'Long-term orientation'
+  };
+
+  var meyerHTML = '';
+  MEYER_DIMS.forEach(function(dim, i) {
+    var d = profile.meyer && profile.meyer[dim];
+    if (!d) return;
+    var labels = MEYER_LABELS[dim] || ['Low','High'];
+    meyerHTML += '<div class="meyer-dim">';
+    meyerHTML += '<div class="md-name">' + dim + '</div>';
+    meyerHTML += '<div class="md-bar-wrap">';
+    meyerHTML += '<div style="font-size:9px;color:var(--ink-muted);font-weight:300;width:55px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + labels[0] + '">' + labels[0] + '</div>';
+    meyerHTML += '<div class="md-bar-track"><div class="md-bar-fill" style="width:' + (d.score*10) + '%;background:' + meyerColors[i] + ';"></div></div>';
+    meyerHTML += '<div style="font-size:9px;color:var(--ink-muted);font-weight:300;width:55px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;" title="' + labels[1] + '">' + labels[1] + '</div>';
+    meyerHTML += '</div>';
+    meyerHTML += '<div class="md-label">' + d.label + '</div>';
+    meyerHTML += '<div class="md-flag">' + d.flag + '</div>';
+    meyerHTML += '</div>';
+  });
+
+  var hofstedHTML = '';
+  HOFSTEDE_DIMS.forEach(function(dim) {
+    var d = profile.hofstede && profile.hofstede[dim];
+    if (!d) return;
+    hofstedHTML += '<div class="hf-dim">';
+    hofstedHTML += '<div class="md-name">' + (HOFSTEDE_LABELS[dim]||dim) + '</div>';
+    hofstedHTML += '<div class="md-bar-wrap">';
+    hofstedHTML += '<div class="md-bar-track"><div class="md-bar-fill" style="width:' + (d.score*10) + '%;background:var(--tile-3);"></div></div>';
+    hofstedHTML += '<div class="md-score">' + d.score + '</div>';
+    hofstedHTML += '</div>';
+    hofstedHTML += '<div class="md-label">' + d.label + '</div>';
+    hofstedHTML += '<div class="md-flag">' + d.flag + '</div>';
+    hofstedHTML += '</div>';
+  });
+
+  var sat = profile.saturation || {};
+  var ready = profile.readiness || {};
+  var sen = profile.seniority || {};
+  var satColors = {Low:'var(--risk-low)',Moderate:'var(--risk-mod)',High:'var(--risk-high)',Unknown:'var(--tile-5)'};
+  var readyColors = {Low:'var(--risk-high)','Low-moderate':'var(--risk-mod)',Moderate:'var(--risk-mod)',High:'var(--tile-2)',Unknown:'var(--tile-5)','Willing but unaware':'var(--risk-mod)'};
+  var satC = satColors[sat.level] || 'var(--surface)';
+  var readC = readyColors[ready.level] || 'var(--surface)';
+
+  var html = '<div class="cultural-profile">';
+  html += '<div class="cp-section-title">Erin Meyer — cultural design profile &nbsp;&middot;&nbsp; 8 dimensions</div>';
+  html += '<div style="font-size:11px;color:var(--ink-muted);font-weight:300;margin-bottom:10px;font-style:italic;">Each dimension shows where this cohort sits on the spectrum. The flag tells you what it means for training design — not a stereotype, a design parameter.</div>';
+  html += '<div class="meyer-grid">' + meyerHTML + '</div>';
+  html += '<div class="cp-section-title">Hofstede dimensions</div>';
+  html += '<div class="hofstede-grid">' + hofstedHTML + '</div>';
+  html += '<div class="cp-section-title">Readiness &amp; saturation</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">';
+  html += '<div class="readiness-strip" style="background:' + satC + '18;border:1px solid ' + satC + '40;">';
+  html += '<div class="rs-label" style="color:' + satC + ';">Change saturation &mdash; ' + (sat.level||'Unknown') + '</div>';
+  html += (sat.note||'') + '</div>';
+  html += '<div class="readiness-strip" style="background:' + readC + '18;border:1px solid ' + readC + '40;">';
+  html += '<div class="rs-label" style="color:' + readC + ';">Readiness' + (ready.score!=null?' &mdash; '+ready.score+'%':'') + ' &mdash; ' + (ready.level||'Unknown') + '</div>';
+  html += (ready.note||'') + '</div>';
+  html += '<div class="readiness-strip" style="background:rgba(28,26,23,.03);border:1px solid var(--border);">';
+  html += '<div class="rs-label">Seniority &amp; identity context</div>';
+  html += (sen.level||'') + '<br><span style="font-size:11px;color:var(--ink-muted);font-style:italic;">' + (sen.note||'') + '</span>';
+  html += '</div></div></div>';
+  return html;
+}
+
+// ══════════════════════════════════════════
+// MODULE 3 — JOURNEYS & ROLE CARDS
+// ══════════════════════════════════════════
+function renderJourneys() {
+  const s = SCENARIOS[currentScenario];
+  const MODAL_LABELS = {classroom:'Classroom',digital:'Digital',peer:'Peer',coach:'Coaching',micro:'Micro',sim:'Simulation',job:'On-the-job'};
+  const MODAL_CLASSES = {classroom:'mb-classroom',digital:'mb-digital',peer:'mb-peer',coach:'mb-coach',micro:'mb-micro',sim:'mb-sim',job:'mb-job'};
+
+  // Tab bar
+  document.getElementById('journey-tabs').innerHTML = s.journeys.map((j,i)=>`
+    <div class="journey-tab ${i===currentJourneyRole?'active':''}" onclick="selectJourney(${i})">${j.role}</div>`).join('');
+
+  // Journey content
+  const j = s.journeys[currentJourneyRole];
+  if (!j) { document.getElementById('journey-content').innerHTML = ''; return; }
+
+  document.getElementById('journey-content').innerHTML = `
+    <div class="card">
+      <div class="card-title" style="color:${j.color};">${j.role} — learning journey</div>
+      <div class="journey-track">
+        <div class="jt-spine"></div>
+        ${j.phases.map((p,pi)=>`
+          <div class="jt-phase">
+            <div class="jt-dot" style="background:${j.color};box-shadow:0 0 0 2px ${j.color};">${p.num}</div>
+            <div class="jt-phase-label">${p.phase}</div>
+            <div class="jt-phase-title">${p.title}</div>
+            <div class="jt-phase-desc">${p.desc}</div>
+            <div class="jt-modalities">${p.modalities.map(m=>`<span class="modality-badge ${MODAL_CLASSES[m]}">${MODAL_LABELS[m]}</span>`).join('')}</div>
+            <div class="jt-duration">${p.duration}</div>
+            ${p.creative?`<div class="creative-flag"><div class="cf-label">✦ Creative design note</div>${p.creative}</div>`:''}
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function selectJourney(idx) {
+  currentJourneyRole = idx;
+  renderJourneys();
+}
+
+function renderRoleCards() {
+  const s = SCENARIOS[currentScenario];
+  document.getElementById('role-cards').innerHTML = s.roleCards.map(rc=>`
+    <div class="role-card" style="background:linear-gradient(135deg,#1C1A17 0%,${rc.colour}22 100%);">
+      <div class="rc-bg-tile">
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2px;">
+          ${Array(16).fill(0).map((_,i)=>`<div style="background:${rc.colour};opacity:${i%3===0?.4:.15};height:18px;border-radius:1px;"></div>`).join('')}
+        </div>
+      </div>
+      <div class="rc-eyebrow">Tessera™ &nbsp;·&nbsp; Role card &nbsp;·&nbsp; ${rc.org}</div>
+      <div class="rc-role">${rc.role}</div>
+      <div class="rc-divider"></div>
+      <div class="rc-section">
+        <div class="rc-section-label">What is changing for you</div>
+        <div class="rc-text">${rc.change}</div>
+      </div>
+      <div class="rc-section">
+        <div class="rc-section-label">What you gain</div>
+        <div class="rc-text">${rc.gains}</div>
+      </div>
+      <div class="rc-section">
+        <div class="rc-section-label">Your learning journey</div>
+        <div class="rc-text">${rc.journey.split('→').map(s=>`<span class="rc-tag">${s.trim()}</span>`).join('')}</div>
+      </div>
+      <div class="rc-section">
+        <div class="rc-section-label">Your support</div>
+        <div class="rc-text">${rc.support}</div>
+      </div>
+      <div class="rc-footer">
+        <div class="rc-footer-label">Mosaic Bridge Advisory &nbsp;·&nbsp; Tessera™</div>
+        <div class="rc-footer-val">© 2026</div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// MODULE 4 — CURRICULUM
+// ══════════════════════════════════════════
+function renderCurriculum() {
+  const s = SCENARIOS[currentScenario];
+  document.getElementById('curriculum-list').innerHTML = s.curriculum.map(c=>`
+    <div class="deliverable-build">
+      <div class="db-header">
+        <div class="db-icon">${c.icon}</div>
+        <div>
+          <div class="db-title">${c.title}</div>
+          <div class="db-sub">${c.sub}</div>
+        </div>
+        <button class="btn-ghost" style="font-size:11px;margin-left:auto;" onclick="alert('Generates the deliverable structure and first draft in the content library. Connect Claude API to activate AI generation.')">✦ Generate</button>
+      </div>
+      <div class="db-items">
+        ${c.items.map(item=>`<div class="db-item">
+          <span class="db-item-type dbt-${item.type}">${{guide:'Guide',ppt:'Deck',ref:'Reference',video:'Video',card:'Card',assess:'Assessment'}[item.type]||item.type}</span>
+          ${item.text}
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// MODULE 5 — SCHEDULE
+// ══════════════════════════════════════════
+function renderSchedule() {
+  const s = SCENARIOS[currentScenario];
+  document.getElementById('saturation-text').textContent = s.saturation;
+  const SAT_CLASS = {ok:'sf-ok',moderate:'sf-mod',high:'sf-high',block:'sf-block'};
+  const SAT_LABEL = {ok:'Low','moderate':'Moderate',high:'High','block':'Blocked'};
+  document.getElementById('sched-tbody').innerHTML = s.schedule.map((r,i)=>`
+    <tr style="${i%2===0?'':'background:var(--surface);'}">
+      <td style="font-weight:500;color:var(--ink);font-size:12px;">${r.cohort}</td>
+      <td style="font-size:12px;color:var(--ink-soft);font-weight:300;">${r.training}</td>
+      <td style="font-size:12px;color:var(--ink-muted);font-weight:300;">${r.format}</td>
+      <td style="font-size:12px;color:var(--ink-muted);font-weight:300;white-space:nowrap;">${r.duration}</td>
+      <td style="font-size:12px;color:var(--ink-soft);font-weight:300;white-space:nowrap;">${r.date}</td>
+      <td style="font-size:12px;color:var(--ink-muted);font-weight:300;">${r.goLiveGap}</td>
+      <td><span class="saturation-flag ${SAT_CLASS[r.saturation]||'sf-ok'}">${SAT_LABEL[r.saturation]||r.saturation}</span></td>
+      <td style="font-size:11px;color:var(--ink-muted);font-weight:300;">${r.owner}</td>
+    </tr>`).join('');
+}
+
+// ══════════════════════════════════════════
+// MODULE 6 — ADOPTION
+// ══════════════════════════════════════════
+function renderAdoption() {
+  const s = SCENARIOS[currentScenario];
+
+  document.getElementById('tier-list').innerHTML = s.tiers.map(t=>`
+    <div class="tier-card">
+      <div class="tier-num" style="background:${t.color};">${t.num}</div>
+      <div class="tier-meta">
+        <div class="tier-name">${t.name}</div>
+        <div class="tier-desc">${t.desc}</div>
+        <div class="tier-examples">${t.examples.map(e=>`<span class="tier-tag">${e}</span>`).join('')}</div>
+        ${t.restriction?`<div class="tier-restriction"><div class="restriction-label">⚖ Constraint</div>${t.restrictNote}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  document.getElementById('group-measures').innerHTML = s.groupMeasures.map(g=>`
+    <div class="group-measure-row">
+      <div class="gm-color" style="background:${g.color};"></div>
+      <div style="flex:1;">
+        <div class="gm-group">${g.group}</div>
+        <div class="gm-tiers">
+          ${g.tiers.map((tier,i)=>`
+            <span class="gm-tier-pill" style="background:${g.tiersApply[i]?s.tiers[i].color+'18':'var(--surface)'};color:${g.tiersApply[i]?s.tiers[i].color:'var(--ink-muted)'};border:1px solid ${g.tiersApply[i]?s.tiers[i].color+'40':'var(--border)'};">
+              ${g.tiersApply[i]?'✓':'✗'} Tier ${tier}
+            </span>`).join('')}
+        </div>
+        <div class="gm-note">${g.note}</div>
+        ${g.union?`<div class="tier-restriction" style="margin-top:8px;"><div class="restriction-label">⚖ Union / Works Council applies</div>Measurement approach subject to union agreement. Confirm before any assessment is deployed to this group.</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// EXPORTS
+// ══════════════════════════════════════════
+function exportTNA() {
+  const s = SCENARIOS[currentScenario];
+  const data = { _meta:{version:'1.0',tool:'Tessera™',unit:'Unit 4 — Learning & capability',module:'Training needs analysis',scenario:currentScenario,exportedAt:new Date().toISOString()}, scenario:s.name, trainingNeeds:s.tna, cohorts:s.cohorts };
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `tessera-tna-${currentScenario}-${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+function exportSchedule() {
+  const s = SCENARIOS[currentScenario];
+  const data = { _meta:{version:'1.0',tool:'Tessera™',unit:'Unit 4',module:'Training schedule',scenario:currentScenario,exportedAt:new Date().toISOString()}, schedule:s.schedule, saturationNote:s.saturation };
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `tessera-training-schedule-${currentScenario}-${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+function exportUnit4() {
+  const s = SCENARIOS[currentScenario];
+  const data = { _meta:{version:'1.0',tool:'Tessera™',unit:'Unit 4 — Learning & capability',scenario:currentScenario,exportedAt:new Date().toISOString()}, trainingNeeds:s.tna, cohorts:s.cohorts, journeys:s.journeys, curriculum:s.curriculum, schedule:s.schedule, adoptionTiers:s.tiers, groupMeasures:s.groupMeasures };
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `tessera-unit4-${currentScenario}-${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{ loadScenario('meridian'); });
+
+// Mosaic
+const colors=['#C4A882','#7B9E87','#8B7BA8','#C4826A','#EAF5F0','#4A8FA8','#E8D9C4'];
+const mosaic=document.getElementById('mosaic');
+for(let i=0;i<40;i++){const t=document.createElement('div');t.className='mosaic-tile';t.style.background=colors[i%colors.length];t.style.animationDelay=(0.02+i*0.012)+'s';mosaic.appendChild(t);}
+
+// Shell integration — hide own nav when running inside tessera.html shell
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('shell') === '1') {
+    // Hide nav immediately
+    const style = document.createElement('style');
+    style.textContent = '.t-nav{display:none!important;} .app{min-height:100vh;}';
+    document.head.appendChild(style);
+  }
+  // Auto-navigate to specified module after page and data are fully loaded
+  // Use setTimeout to ensure loadScenario() and all renders have completed
+  const mod = parseInt(p.get('module') || p.get('tab') || '0');
+  const view = p.get('view');
+  if (mod > 1 || view) {
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        if (mod > 1 && typeof showModule === 'function') {
+          showModule(mod, null);
+        }
+        if (view && typeof switchView === 'function') {
+          const viewTab = document.querySelector('[onclick*="switchView(\''+view+'"]') ||
+                          document.querySelector('[onclick*="switchView(\"'+view+'"]');
+          if (viewTab) switchView(view, viewTab);
+        }
+      }, 150);
+    });
+  }
+})();
+</script>
+</body>
+</html>
