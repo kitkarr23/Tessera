@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera™ — Mosaic Bridge Advisory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root{--clay:#C4A882;--clay-light:#E8D9C4;--clay-dark:#8B7355;--ink:#1C1A17;--ink-soft:#4A4640;--ink-muted:#8A8480;--surface:#F7F3ED;--surface-raised:#FDFAF6;--u1:#C4826A;--u2:#4A8FA8;--u3:#4A6FA8;--u4:#2A7A5A;--u5:#5A3A8B;--border:rgba(28,26,23,0.12);--radius:3px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--ink);color:white;min-height:100vh;}
+    .hero{min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+    .mosaic-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(24,1fr);grid-template-rows:repeat(16,1fr);gap:2px;padding:2px;opacity:.06;pointer-events:none;}
+    .mt{border-radius:1px;opacity:0;animation:tileIn .6s forwards;}
+    @keyframes tileIn{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+    .hero-inner{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;max-width:960px;margin:0 auto;width:100%;padding:80px 48px 40px;}
+    .wordmark{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--clay);margin-bottom:28px;}
+    .hero-title{font-family:'DM Serif Display',serif;font-size:58px;font-weight:400;line-height:1.08;color:white;margin-bottom:18px;max-width:620px;}
+    .hero-title em{font-style:italic;color:var(--clay);}
+    .hero-sub{font-size:17px;color:rgba(255,255,255,.5);font-weight:300;line-height:1.8;max-width:480px;margin-bottom:44px;}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+    .cta-p{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--clay);color:white;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;}
+    .cta-p:hover{background:var(--clay-dark);transform:translateY(-1px);}
+    .cta-s{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:transparent;color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.2);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;cursor:pointer;text-decoration:none;transition:all .2s;}
+    .cta-s:hover{border-color:rgba(255,255,255,.5);color:white;}
+    .scroll-hint{position:relative;z-index:1;text-align:center;padding:20px;font-size:11px;color:rgba(255,255,255,.2);font-weight:300;letter-spacing:.1em;text-transform:uppercase;animation:bounce 2s infinite;}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+    .section{background:var(--surface-raised);}
+    .section-inner{max-width:960px;margin:0 auto;padding:72px 48px;}
+    .section-dark{background:var(--ink);}
+    .section-mid{background:var(--surface);}
+    .eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-dark);margin-bottom:12px;}
+    .eyebrow-light{color:var(--clay);}
+    .stitle{font-family:'DM Serif Display',serif;font-size:34px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:16px;}
+    .stitle em{font-style:italic;color:var(--clay-dark);}
+    .stitle-light{color:white;}
+    .stitle-light em{color:var(--clay);}
+    .btext{font-size:15px;color:var(--ink-soft);font-weight:300;line-height:1.85;max-width:580px;margin-bottom:14px;}
+    .btext-light{color:rgba(255,255,255,.55);}
+    .definition{background:var(--ink);border-radius:var(--radius);padding:24px 28px;margin:28px 0;max-width:480px;border-left:4px solid var(--clay);}
+    .def-word{font-family:'DM Serif Display',serif;font-size:36px;color:var(--clay);font-style:italic;margin-bottom:4px;}
+    .def-origin{font-size:10px;color:rgba(255,255,255,.35);font-weight:300;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+    .def-text{font-size:14px;color:rgba(255,255,255,.6);font-weight:300;line-height:1.7;}
+    .principle{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:20px 24px;margin-top:24px;max-width:560px;}
+    .principle-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--clay);margin-bottom:8px;}
+    .principle-text{font-family:'DM Serif Display',serif;font-size:20px;color:white;font-weight:400;line-height:1.4;font-style:italic;}
+    .built-grid{display:flex;flex-direction:column;gap:2px;margin-top:28px;}
+    .area-block{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:var(--surface-raised);}
+    .area-header{display:flex;align-items:center;gap:14px;padding:18px 22px;cursor:pointer;transition:background .15s;user-select:none;}
+    .area-header:hover{background:var(--surface);}
+    .area-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:white;flex-shrink:0;}
+    .area-info{flex:1;}
+    .area-name{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+    .area-tagline{font-size:12px;color:var(--ink-muted);font-weight:300;}
+    .area-right{display:flex;align-items:center;gap:10px;}
+    .area-status{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:500;}
+    .as-built{background:#F0F7F2;color:var(--u4);}
+    .as-system{background:#F5F0FB;color:var(--u5);}
+    .as-coming{background:var(--surface);color:var(--ink-muted);border:1px solid var(--border);}
+    .area-caret{font-size:11px;color:var(--ink-muted);transition:transform .25s;flex-shrink:0;}
+    .area-block.open .area-caret{transform:rotate(180deg);}
+    .area-modules{display:none;border-top:1px solid var(--border);}
+    .area-block.open .area-modules{display:block;}
+    .module-list{padding:12px 22px 16px 70px;}
+    .module-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);text-decoration:none;transition:all .15s;}
+    .module-item:last-child{border-bottom:none;}
+    .mi-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .mi-name{font-size:13px;font-weight:400;color:var(--ink-soft);flex:1;transition:color .15s;}
+    .module-item:hover .mi-name{color:var(--ink);}
+    .mi-desc{font-size:11px;color:var(--ink-muted);font-weight:300;max-width:340px;text-align:right;line-height:1.4;}
+    .mi-arrow{font-size:14px;color:var(--ink-muted);flex-shrink:0;}
+    .module-item:hover .mi-arrow{color:var(--clay-dark);}
+    .area-coming-note{padding:14px 22px 14px 70px;font-size:12px;color:var(--ink-muted);font-weight:300;font-style:italic;line-height:1.7;}
+    .system-area-block{border-radius:var(--radius);overflow:hidden;border:1px solid rgba(90,58,139,.25);background:var(--surface-raised);}
+    .system-area-header{display:flex;align-items:center;gap:14px;padding:18px 22px;cursor:pointer;transition:background .15s;}
+    .system-area-header:hover{background:#FAF8FD;}
+    .system-area-block.open .area-caret{transform:rotate(180deg);}
+    .system-area-block .area-modules{display:none;border-top:1px solid rgba(90,58,139,.15);}
+    .system-area-block.open .area-modules{display:block;}
+    .src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px;}
+    .src-card{padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);}
+    .sc-a{font-size:13px;font-weight:500;color:white;margin-bottom:2px;}
+    .sc-w{font-size:12px;color:var(--clay);font-style:italic;font-weight:300;margin-bottom:6px;}
+    .sc-t{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;}
+    .t-cm{background:rgba(74,111,168,.2);color:#8AB0D8;}
+    .t-cu{background:rgba(196,130,106,.2);color:#D4A090;}
+    .t-l{background:rgba(123,158,135,.2);color:#9ABFAA;}
+    .t-h{background:rgba(139,123,168,.2);color:#B8A8D8;}
+    .t-d{background:rgba(196,168,130,.2);color:#D4B890;}
+    .footer{background:rgba(0,0,0,.4);border-top:1px solid rgba(255,255,255,.06);padding:20px 48px;text-align:center;}
+    .fw{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;}
+    .ft{font-size:11px;color:rgba(255,255,255,.25);font-weight:300;}
+    @media(max-width:640px){
+      .hero-inner,.section-inner,.footer{padding-left:24px;padding-right:24px;}
+      .hero-title{font-size:38px;}
+      .src-grid{grid-template-columns:1fr 1fr;}
+      .mi-desc{display:none;}
+      .module-list{padding-left:44px;}
+      .what-grid{grid-template-columns:1fr!important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="mosaic-bg" id="mosaic"></div>
+  <div class="hero-inner">
+    <div class="wordmark">Tessera™ &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+    <h1 class="hero-title">Built for <em>people,</em><br>not projects.</h1>
+    <p class="hero-sub">A human-centered change intelligence platform. The project is the context. The person is the center.</p>
+    <div class="cta-row">
+      <a href="tessera.html?mode=demo&scenario=meridian" class="cta-p">Explore the demo →</a>
+      <a href="tessera.html" class="cta-s">Use the tool</a>
+    </div>
+  </div>
+  <div class="scroll-hint">↓ &nbsp; Learn more</div>
+</div>
+
+<div class="section">
+  <div class="section-inner what-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;">
+    <div>
+      <div class="eyebrow">What this is</div>
+      <h2 class="stitle">A consulting <em>delivery engine.</em></h2>
+      <p class="btext">Most change management tools are built around the project. Tessera™ flips that. Every recommendation — every communication, every training experience, every leadership action — starts with a specific human being and their full context, and works outward from there.</p>
+      <p class="btext">The practitioner is always in the room. Tessera™ handles the analytical, generative, and synthesis work so they have the time and headspace to be fully human in the moments that require it.</p>
+      <div class="principle">
+        <div class="principle-label">The organising principle</div>
+        <div class="principle-text">"The project is the context.<br>The person is the center."</div>
+      </div>
+    </div>
+    <div>
+      <div class="definition">
+        <div class="def-word">Tessera</div>
+        <div class="def-origin">Latin &nbsp;·&nbsp; noun &nbsp;·&nbsp; from Greek tessares</div>
+        <div class="def-text">A single tile in a mosaic — complete in itself and essential to the whole. Every person in an organisation is a distinct piece. The job of change management is to understand each one and design an experience that honours that.</div>
+      </div>
+      <div style="margin-top:20px;padding:18px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--clay-dark);margin-bottom:12px;">Three demo scenarios — no login required</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="tessera.html?mode=demo&scenario=meridian" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;" onmouseover="this.style.borderColor='var(--u1)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--u1);flex-shrink:0;"></div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--ink);">Meridian Global</div><div style="font-size:11px;color:var(--ink-muted);font-weight:300;">ERP &amp; Restructure &nbsp;·&nbsp; 340 people &nbsp;·&nbsp; 4 countries</div></div>
+            <div style="font-size:12px;color:var(--ink-muted);">→</div>
+          </a>
+          <a href="tessera.html?mode=demo&scenario=fusion" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;" onmouseover="this.style.borderColor='var(--u2)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--u2);flex-shrink:0;"></div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--ink);">Fusion Dynamics</div><div style="font-size:11px;color:var(--ink-muted);font-weight:300;">M&amp;A Integration &nbsp;·&nbsp; 280 people &nbsp;·&nbsp; US, NL, DE</div></div>
+            <div style="font-size:12px;color:var(--ink-muted);">→</div>
+          </a>
+          <a href="tessera.html?mode=demo&scenario=nova" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);text-decoration:none;" onmouseover="this.style.borderColor='var(--u4)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:8px;height:8px;border-radius:50%;background:var(--u4);flex-shrink:0;"></div>
+            <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--ink);">Nova Energy</div><div style="font-size:11px;color:var(--ink-muted);font-weight:300;">Workforce Transformation &nbsp;·&nbsp; 520 people &nbsp;·&nbsp; 12 states</div></div>
+            <div style="font-size:12px;color:var(--ink-muted);">→</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section section-mid">
+  <div class="section-inner">
+    <div class="eyebrow">How it works</div>
+    <h2 class="stitle">Five areas. <em>One connected system.</em></h2>
+    <p class="btext" style="margin-bottom:28px;">Click any area to see what is inside and go directly to that part of the tool.</p>
+    <div class="built-grid">
+
+      <div class="area-block" id="area-1">
+        <div class="area-header" onclick="toggleArea('area-1')">
+          <div class="area-num" style="background:var(--u1);">1</div>
+          <div class="area-info">
+            <div class="area-name">Discover</div>
+            <div class="area-tagline">Understand what you are dealing with before designing anything</div>
+          </div>
+          <div class="area-right"><span class="area-status as-built">Built</span><span class="area-caret">▼</span></div>
+        </div>
+        <div class="area-modules">
+          <div class="module-list">
+            <a href="tessera.html?mode=demo&scenario=meridian" class="module-item"><div class="mi-dot" style="background:var(--u1);"></div><div class="mi-name">Project context</div><div class="mi-desc">Change landscape, strategic intent, saturation, cultural signals</div><div class="mi-arrow">→</div></a>
+            <a href="tessera.html?mode=demo&scenario=meridian" class="module-item"><div class="mi-dot" style="background:var(--u1);"></div><div class="mi-name">Listening tour &amp; person profiles</div><div class="mi-desc">Structured interviews, three capture layers, practitioner debrief</div><div class="mi-arrow">→</div></a>
+            <a href="tessera.html?mode=demo&scenario=meridian" class="module-item"><div class="mi-dot" style="background:var(--u1);"></div><div class="mi-name">Stakeholder mapping</div><div class="mi-desc">Signal heat map, cultural tension map, design holds</div><div class="mi-arrow">→</div></a>
+            <a href="tessera.html?mode=demo&scenario=meridian" class="module-item"><div class="mi-dot" style="background:var(--u1);"></div><div class="mi-name">Experience design</div><div class="mi-desc">Tailored recommendations per group — from signal to strategy</div><div class="mi-arrow">→</div></a>
+            <a href="tessera.html?mode=demo&scenario=meridian" class="module-item"><div class="mi-dot" style="background:var(--u1);"></div><div class="mi-name">Diagnostic output</div><div class="mi-desc">Dashboard, narrative, programme plan, presentation builder</div><div class="mi-arrow">→</div></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="area-block" id="area-2">
+        <div class="area-header" onclick="toggleArea('area-2')">
+          <div class="area-num" style="background:var(--u2);">2</div>
+          <div class="area-info">
+            <div class="area-name">Analyse</div>
+            <div class="area-tagline">Build the data picture — who is affected, what is changing, what the project tells you</div>
+          </div>
+          <div class="area-right"><span class="area-status as-built">Built</span><span class="area-caret">▼</span></div>
+        </div>
+        <div class="area-modules">
+          <div class="module-list">
+            <a href="tessera-roster.html" class="module-item"><div class="mi-dot" style="background:var(--u2);"></div><div class="mi-name">Employee roster &amp; people data</div><div class="mi-desc">Import, field mapping, pivot views by department and location</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-team.html" class="module-item"><div class="mi-dot" style="background:var(--u2);"></div><div class="mi-name">Project team directory</div><div class="mi-desc">Sponsors, workstream leads, reviewer chains, engagement intelligence</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-intake.html" class="module-item"><div class="mi-dot" style="background:var(--u2);"></div><div class="mi-name">Document intake &amp; case for change</div><div class="mi-desc">Upload project docs, AI extraction, open questions from gaps</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-cia.html" class="module-item"><div class="mi-dot" style="background:var(--u2);"></div><div class="mi-name">Change impact analysis</div><div class="mi-desc">What changes, for whom, how significantly — heat map and pivots</div><div class="mi-arrow">→</div></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="area-block" id="area-3">
+        <div class="area-header" onclick="toggleArea('area-3')">
+          <div class="area-num" style="background:var(--u3);">3</div>
+          <div class="area-info">
+            <div class="area-name">Communicate</div>
+            <div class="area-tagline">Strategy through to tracking — not just email, not just cascades</div>
+          </div>
+          <div class="area-right"><span class="area-status as-built">Built</span><span class="area-caret">▼</span></div>
+        </div>
+        <div class="area-modules">
+          <div class="module-list">
+            <a href="tessera-comms.html" class="module-item"><div class="mi-dot" style="background:var(--u3);"></div><div class="mi-name">Strategy &amp; message architecture</div><div class="mi-desc">Research-grounded principles, channel strategy, WIIFM by group</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-comms.html" class="module-item"><div class="mi-dot" style="background:var(--u3);"></div><div class="mi-name">Cascade model</div><div class="mi-desc">Full cascade with manager enablement packs — draft messages for leadership to react to</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-comms.html" class="module-item"><div class="mi-dot" style="background:var(--u3);"></div><div class="mi-name">Plan, calendar &amp; tracking</div><div class="mi-desc">Multi-layer calendar, draft editor, approval states, signal movement</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-content-library.html" class="module-item"><div class="mi-dot" style="background:var(--u3);"></div><div class="mi-name">Content library &amp; deliverable builder</div><div class="mi-desc">Shared blocks that cascade updates across all deliverables automatically</div><div class="mi-arrow">→</div></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="area-block" id="area-4">
+        <div class="area-header" onclick="toggleArea('area-4')">
+          <div class="area-num" style="background:var(--u4);">4</div>
+          <div class="area-info">
+            <div class="area-name">Learn</div>
+            <div class="area-tagline">Culturally designed training — completion is not adoption</div>
+          </div>
+          <div class="area-right"><span class="area-status as-built">Built</span><span class="area-caret">▼</span></div>
+        </div>
+        <div class="area-modules">
+          <div class="module-list">
+            <a href="tessera-learning.html" class="module-item"><div class="mi-dot" style="background:var(--u4);"></div><div class="mi-name">Training needs analysis</div><div class="mi-desc">Generated from the CIA — what each person needs to know, do, and believe</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-learning.html" class="module-item"><div class="mi-dot" style="background:var(--u4);"></div><div class="mi-name">Cohort design</div><div class="mi-desc">Who trains together — language, location, technology access, union flags, cultural profiles</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-learning.html" class="module-item"><div class="mi-dot" style="background:var(--u4);"></div><div class="mi-name">Learning journeys &amp; role cards</div><div class="mi-desc">Role-specific paths with creative modalities. Role cards as designed deliverables.</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-learning.html" class="module-item"><div class="mi-dot" style="background:var(--u4);"></div><div class="mi-name">Curriculum, scheduling &amp; adoption</div><div class="mi-desc">What gets built, when it lands, and how you know it worked — five-tier adoption measurement</div><div class="mi-arrow">→</div></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="system-area-block" id="area-cult">
+        <div class="system-area-header" onclick="toggleArea('area-cult')">
+          <div class="area-num" style="background:var(--u5);font-size:16px;">✦</div>
+          <div class="area-info">
+            <div class="area-name" style="color:var(--u5);">Cultural intelligence <span style="font-size:11px;font-weight:400;color:var(--ink-muted);margin-left:6px;">System level — every area draws from this</span></div>
+            <div class="area-tagline">Six frameworks integrated — Meyer, Hofstede, Schwartz, Trompenaars, GLOBE, Lewis</div>
+          </div>
+          <div class="area-right"><span class="area-status as-system">System level</span><span class="area-caret">▼</span></div>
+        </div>
+        <div class="area-modules">
+          <div class="module-list">
+            <a href="tessera-culture.html" class="module-item"><div class="mi-dot" style="background:var(--u5);"></div><div class="mi-name">Group profiles — integrated &amp; framework views</div><div class="mi-desc">Design decision flags organised by what the practitioner needs to decide</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-culture.html" class="module-item"><div class="mi-dot" style="background:var(--u5);"></div><div class="mi-name">Cross-group comparison</div><div class="mi-desc">Where the gap between groups is the design risk</div><div class="mi-arrow">→</div></a>
+            <a href="tessera-culture.html" class="module-item"><div class="mi-dot" style="background:var(--u5);"></div><div class="mi-name">Intelligence input</div><div class="mi-desc">Update profiles from voice, text, or document upload</div><div class="mi-arrow">→</div></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="area-block" id="area-coming" style="opacity:.6;">
+        <div class="area-header" onclick="toggleArea('area-coming')">
+          <div class="area-num" style="background:var(--ink-muted);font-size:11px;">5–7</div>
+          <div class="area-info">
+            <div class="area-name">Engage, Lead &amp; Measure</div>
+            <div class="area-tagline">Leadership engagement, stakeholder readiness, reporting and measurement — in development</div>
+          </div>
+          <div class="area-right"><span class="area-status as-coming">In development</span><span class="area-caret">▼</span></div>
+        </div>
+        <div class="area-modules">
+          <div class="area-coming-note">
+            <strong style="color:var(--ink-soft);">Engage</strong> — Leadership engagement. Sponsor action plans, leadership coalition, visibility strategy, people briefs. What leadership needs to do — not just say — and who they need to do it for.<br><br>
+            <strong style="color:var(--ink-soft);">Lead</strong> — Stakeholder engagement and readiness. Change network design, readiness measurement, resistance management, adoption tracking from first conversation to sustained behaviour change.<br><br>
+            <strong style="color:var(--ink-soft);">Measure</strong> — Reporting and measurement. Three views from one source — sponsor dashboard, project team view, practitioner view. Signal readings over time.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="section section-dark">
+  <div class="section-inner">
+    <div class="eyebrow eyebrow-light">The foundation</div>
+    <h2 class="stitle stitle-light">Grounded in <em>credible research.</em></h2>
+    <p class="btext btext-light" style="margin-bottom:0;">Every diagnostic question, cultural dimension, and design recommendation is traceable to established research — not window dressing, the intellectual architecture of the system.</p>
+    <div class="src-grid">
+      <div class="src-card"><div class="sc-a">Prosci / Jeff Hiatt</div><div class="sc-w">ADKAR Model</div><span class="sc-t t-cm">Change management</span></div>
+      <div class="src-card"><div class="sc-a">William Bridges</div><div class="sc-w">Managing Transitions</div><span class="sc-t t-cm">Change management</span></div>
+      <div class="src-card"><div class="sc-a">John Kotter</div><div class="sc-w">Leading Change</div><span class="sc-t t-cm">Change management</span></div>
+      <div class="src-card"><div class="sc-a">Erin Meyer</div><div class="sc-w">The Culture Map</div><span class="sc-t t-cu">Culture</span></div>
+      <div class="src-card"><div class="sc-a">Geert Hofstede</div><div class="sc-w">Culture's Consequences</div><span class="sc-t t-cu">Culture</span></div>
+      <div class="src-card"><div class="sc-a">Shalom Schwartz</div><div class="sc-w">Basic Human Values</div><span class="sc-t t-cu">Culture</span></div>
+      <div class="src-card"><div class="sc-a">Fons Trompenaars</div><div class="sc-w">Riding the Waves of Culture</div><span class="sc-t t-cu">Culture</span></div>
+      <div class="src-card"><div class="sc-a">GLOBE Study</div><div class="sc-w">House et al. — 62 societies</div><span class="sc-t t-cu">Culture</span></div>
+      <div class="src-card"><div class="sc-a">Malcolm Knowles</div><div class="sc-w">Andragogy</div><span class="sc-t t-l">Adult learning</span></div>
+      <div class="src-card"><div class="sc-a">David Kolb</div><div class="sc-w">Experiential Learning Cycle</div><span class="sc-t t-l">Adult learning</span></div>
+      <div class="src-card"><div class="sc-a">Amy Edmondson</div><div class="sc-w">The Fearless Organisation</div><span class="sc-t t-h">Human dynamics</span></div>
+      <div class="src-card"><div class="sc-a">Lily Zheng</div><div class="sc-w">DEI Deconstructed</div><span class="sc-t t-d">Equity &amp; inclusion</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="fw">Tessera™ &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+  <div class="ft">&copy; 2026 Mosaic Bridge Advisory &nbsp;&middot;&nbsp; Tessera&trade; is a trademark of Mosaic Bridge Advisory &nbsp;&middot;&nbsp; All rights reserved</div>
+</div>
+
+<script>
+const COLORS=['#C4A882','#7B9E87','#8B7BA8','#C4826A','#4A8FA8','#1C1A17','#E8D9C4','#2A7A5A','#5A3A8B'];
+const mosaic=document.getElementById('mosaic');
+for(let i=0;i<384;i++){const t=document.createElement('div');t.className='mt';t.style.background=COLORS[i%COLORS.length];t.style.animationDelay=(i*.004)+'s';mosaic.appendChild(t);}
+
+const openAreas=new Set();
+function toggleArea(id){
+  const block=document.getElementById(id);
+  if(!block)return;
+  if(openAreas.has(id)){openAreas.delete(id);block.classList.remove('open');}
+  else{openAreas.add(id);block.classList.add('open');}
+}
+toggleArea('area-1');
+</script>
+</body>
+</html>
