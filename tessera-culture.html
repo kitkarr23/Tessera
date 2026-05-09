@@ -1,0 +1,1591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera™ — Cultural Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay:#C4A882;--clay-light:#E8D9C4;--clay-dark:#8B7355;
+      --ink:#1C1A17;--ink-soft:#4A4640;--ink-muted:#8A8480;
+      --surface:#F7F3ED;--surface-raised:#FDFAF6;
+      --tile-2:#7B9E87;--tile-3:#8B7BA8;--tile-4:#C4826A;--tile-5:#4A8FA8;
+      --border:rgba(28,26,23,0.12);--radius:2px;
+      /* Cultural intelligence accent */
+      --cult:#5A3A8B;--cult-light:#F5F0FB;--cult-dark:#3A2060;
+      /* Framework colours */
+      --meyer:#4A6FA8;--meyer-bg:#EEF2FB;
+      --hofstede:#7B9E87;--hofstede-bg:#F0F7F2;
+      --schwartz:#C4826A;--schwartz-bg:#FDF2EE;
+      --trompenaars:#C4A840;--trompenaars-bg:#FDFAEE;
+      --globe:#8B7BA8;--globe-bg:#F5F0FB;
+      --lewis:#4A8FA8;--lewis-bg:#EEF3FB;
+      /* Design decision colours */
+      --dd-open:#C4826A;--dd-seq:#4A6FA8;--dd-facil:#7B9E87;
+      --dd-assess:#8B7BA8;--dd-motiv:#C4A840;--dd-sched:#4A8FA8;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;}
+
+    /* Nav */
+    .t-nav{background:var(--ink);padding:0 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;flex-wrap:wrap;position:sticky;top:0;z-index:200;}
+    .t-nav-brand{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);text-decoration:none;padding:14px 0;}
+    .t-nav-pills{display:flex;gap:4px;flex-wrap:wrap;}
+    .t-nav-pill{padding:4px 12px;border-radius:10px;font-size:11px;color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.1);text-decoration:none;white-space:nowrap;}
+    .t-nav-pill.active{color:var(--clay);border-color:var(--clay);}
+    .system-badge{padding:3px 10px;border-radius:10px;font-size:10px;font-weight:500;background:rgba(90,58,139,.4);color:#C4A8F0;border:1px solid rgba(90,58,139,.5);}
+
+    .app{max-width:1100px;margin:0 auto;background:var(--surface-raised);min-height:100vh;box-shadow:0 0 80px rgba(0,0,0,.07);padding-bottom:80px;}
+
+    /* Header */
+    .header{padding:32px 48px 22px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;background:linear-gradient(135deg,var(--surface-raised) 0%,#F5F0FB 100%);}
+    .mosaic-accent{position:absolute;top:0;right:0;display:grid;grid-template-columns:repeat(10,12px);grid-template-rows:repeat(4,12px);gap:2px;padding:10px;opacity:.25;pointer-events:none;}
+    .mosaic-tile{border-radius:1px;opacity:0;animation:tileIn .4s forwards;}
+    @keyframes tileIn{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+    .wordmark{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cult);margin-bottom:8px;}
+    .header h1{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;color:var(--ink);margin-bottom:4px;}
+    .header h1 em{font-style:italic;color:var(--cult);}
+    .header p{font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;max-width:640px;}
+
+    /* Foundation statement */
+    .foundation-bar{background:var(--cult-dark);padding:14px 48px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .fb-text{font-size:13px;color:rgba(255,255,255,.7);font-weight:300;line-height:1.6;font-style:italic;flex:1;}
+    .fb-text strong{color:white;font-weight:500;font-style:normal;}
+
+    /* Scenario & group selectors */
+    .selector-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 48px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+    .sel-label{font-size:11px;color:var(--ink-muted);font-weight:300;flex-shrink:0;}
+    .sel{padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink);background:var(--surface-raised);}
+    .sel:focus{outline:none;border-color:var(--cult);}
+    .view-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-left:auto;}
+    .vt-btn{padding:6px 14px;font-size:11px;font-weight:500;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;background:var(--surface-raised);color:var(--ink-muted);transition:all .15s;}
+    .vt-btn:not(:last-child){border-right:1px solid var(--border);}
+    .vt-btn.active{background:var(--cult);color:white;}
+
+    /* View tabs */
+    .view-bar{display:flex;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;}
+    .view-tab{padding:11px 20px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;}
+    .view-tab.active{border-bottom-color:var(--cult);background:var(--surface-raised);}
+    .vt-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:2px;}
+    .view-tab.active .vt-label{color:var(--cult);}
+    .vt-title{font-size:12px;color:var(--ink-soft);}
+    .view-tab.active .vt-title{color:var(--ink);font-weight:500;}
+
+    .view{display:none;animation:fadeUp .25s ease forwards;}
+    .view.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .view-pad{padding:28px 48px;}
+
+    /* Section headers */
+    .section-eyebrow{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--cult);margin-bottom:6px;}
+    .section-title{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;color:var(--ink);margin-bottom:6px;}
+    .section-title em{font-style:italic;color:var(--cult);}
+    .section-sub{font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;max-width:640px;margin-bottom:20px;}
+
+    /* Buttons */
+    .btn-primary{padding:9px 20px;background:var(--cult);color:white;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+    .btn-ghost{padding:8px 16px;border:1px solid var(--border);background:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--ink-soft);cursor:pointer;}
+    .btn-ghost:hover{border-color:var(--cult);color:var(--cult);}
+
+    /* Framework badges */
+    .fw-badge{display:inline-flex;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;flex-shrink:0;}
+    .fw-meyer{background:var(--meyer-bg);color:var(--meyer);}
+    .fw-hofstede{background:var(--hofstede-bg);color:var(--hofstede);}
+    .fw-schwartz{background:var(--schwartz-bg);color:var(--schwartz);}
+    .fw-trompenaars{background:var(--trompenaars-bg);color:#8B5A00;}
+    .fw-globe{background:var(--globe-bg);color:var(--globe);}
+    .fw-lewis{background:var(--lewis-bg);color:var(--lewis);}
+
+    /* ── INTEGRATED VIEW ── */
+    /* Design decision cards */
+    .dd-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;}
+    .dd-header{padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;}
+    .dd-header:hover{background:var(--surface);}
+    .dd-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .dd-name{font-size:14px;font-weight:500;color:var(--ink);flex:1;}
+    .dd-summary{font-size:12px;color:var(--ink-muted);font-weight:300;font-style:italic;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .dd-caret{font-size:10px;color:var(--ink-muted);transition:transform .2s;}
+    .dd-card.open .dd-caret{transform:rotate(180deg);}
+    .dd-body{display:none;padding:0 18px 18px;border-top:1px solid var(--border);}
+    .dd-card.open .dd-body{display:block;}
+
+    /* Design flags */
+    .flag-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--surface);border-radius:var(--radius);margin-bottom:6px;border-left:3px solid transparent;}
+    .fi-fw{flex-shrink:0;margin-top:1px;}
+    .fi-content{flex:1;}
+    .fi-label{font-size:11px;font-weight:500;color:var(--ink-soft);margin-bottom:3px;}
+    .fi-flag{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;}
+    .fi-confidence{font-size:10px;color:var(--ink-muted);font-weight:300;margin-top:4px;font-style:italic;}
+
+    /* Confidence indicator */
+    .confidence-dots{display:flex;gap:3px;margin-top:3px;}
+    .cd-dot{width:7px;height:7px;border-radius:50%;}
+
+    /* ── FRAMEWORK VIEW ── */
+    .fw-section{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;}
+    .fw-header{padding:14px 18px;display:flex;align-items:center;gap:12px;background:var(--surface);border-bottom:1px solid var(--border);}
+    .fw-name{font-size:14px;font-weight:500;color:var(--ink);flex:1;}
+    .fw-author{font-size:12px;color:var(--ink-muted);font-weight:300;}
+    .fw-body{padding:16px 18px;}
+    .dim-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+    .dim-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+    .dim-name{font-size:11px;font-weight:500;color:var(--ink-soft);width:160px;flex-shrink:0;}
+    .dim-bar-wrap{flex:1;display:flex;flex-direction:column;gap:4px;}
+    .dim-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--ink-muted);font-weight:300;}
+    .dim-bar-track{height:8px;background:rgba(28,26,23,.07);border-radius:4px;overflow:hidden;position:relative;}
+    .dim-bar-fill{height:100%;border-radius:4px;transition:width .8s ease;}
+    .dim-score-label{font-size:11px;color:var(--ink-muted);font-weight:300;width:100px;flex-shrink:0;text-align:right;}
+    .dim-flag{font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;font-style:italic;width:220px;flex-shrink:0;}
+
+    /* Lewis type indicator */
+    .lewis-type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
+    .lt-cell{padding:14px;text-align:center;}
+    .lt-name{font-size:12px;font-weight:500;color:white;margin-bottom:4px;}
+    .lt-desc{font-size:10px;color:rgba(255,255,255,.6);font-weight:300;line-height:1.4;}
+    .lt-score{font-family:'DM Serif Display',serif;font-size:22px;color:white;margin-bottom:2px;}
+    .lt-active{opacity:1;}
+    .lt-inactive{opacity:.25;}
+
+    /* Schwartz values wheel */
+    .schwartz-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .sv-item{padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);}
+    .sv-name{font-size:11px;font-weight:500;color:var(--ink-soft);margin-bottom:4px;}
+    .sv-bar-track{height:5px;background:rgba(28,26,23,.07);border-radius:3px;overflow:hidden;margin-bottom:4px;}
+    .sv-bar-fill{height:100%;border-radius:3px;background:var(--schwartz);}
+    .sv-desc{font-size:10px;color:var(--ink-muted);font-weight:300;line-height:1.4;}
+
+    /* ── CROSS-GROUP COMPARISON ── */
+    .compare-controls{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+    .compare-group-a{border:2px solid var(--meyer);border-radius:var(--radius);padding:6px 14px;background:var(--meyer-bg);font-size:12px;font-weight:500;color:var(--meyer);}
+    .compare-group-b{border:2px solid var(--schwartz);border-radius:var(--radius);padding:6px 14px;background:var(--schwartz-bg);font-size:12px;font-weight:500;color:var(--schwartz);}
+    .gap-table{width:100%;border-collapse:collapse;font-size:12px;}
+    .gap-table th{background:var(--ink);color:rgba(255,255,255,.65);padding:9px 12px;text-align:left;font-weight:400;font-size:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;}
+    .gap-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    .gap-table tr:last-child td{border-bottom:none;}
+    .gap-bar-wrap{display:flex;align-items:center;gap:6px;}
+    .gap-score-a{font-size:12px;font-weight:500;color:var(--meyer);width:24px;text-align:right;flex-shrink:0;}
+    .gap-score-b{font-size:12px;font-weight:500;color:var(--schwartz);width:24px;flex-shrink:0;}
+    .gap-bar-track{flex:1;height:10px;background:rgba(28,26,23,.06);border-radius:5px;position:relative;overflow:hidden;}
+    .gap-bar-a{position:absolute;left:0;top:0;height:100%;border-radius:5px 0 0 5px;background:var(--meyer);opacity:.7;}
+    .gap-bar-b{position:absolute;right:0;top:0;height:100%;border-radius:0 5px 5px 0;background:var(--schwartz);opacity:.7;}
+    .gap-indicator{font-size:11px;font-weight:500;padding:2px 7px;border-radius:8px;flex-shrink:0;}
+    .gap-high{background:#FDF2EE;color:var(--tile-4);}
+    .gap-mod{background:#FDFAEE;color:#8B5A00;}
+    .gap-low{background:#F0F7F2;color:var(--tile-2);}
+    .gap-risk-card{padding:12px 14px;border-radius:var(--radius);margin-bottom:8px;border-left:3px solid transparent;}
+    .gr-high{background:var(--schwartz-bg);border-left-color:var(--schwartz);}
+    .gr-mod{background:var(--trompenaars-bg);border-left-color:var(--trompenaars);}
+    .gr-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;}
+    .gr-text{font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.5;}
+
+    /* ── FRAMEWORK LIBRARY ── */
+    .fw-lib-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:12px;}
+    .fwl-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;}
+    .fwl-icon{width:40px;height:40px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .fwl-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+    .fwl-author{font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:4px;}
+    .fwl-use{font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.5;}
+    .fwl-dims{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+    .fwl-dim{padding:3px 9px;border-radius:8px;font-size:11px;font-weight:400;background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);}
+
+    /* ── INTELLIGENCE INPUT ── */
+    .intel-area{background:var(--ink);border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+    .intel-title{font-family:'DM Serif Display',serif;font-size:18px;color:white;margin-bottom:6px;}
+    .intel-sub{font-size:12px;color:rgba(255,255,255,.4);font-weight:300;line-height:1.6;margin-bottom:14px;}
+    .intel-ta{width:100%;padding:10px 12px;border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:white;background:rgba(255,255,255,.06);resize:none;min-height:80px;font-weight:300;line-height:1.6;}
+    .intel-ta:focus{outline:none;border-color:var(--clay);}
+    .intel-ta::placeholder{color:rgba(255,255,255,.25);}
+    .intel-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+    .intel-btn{padding:7px 14px;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);background:none;transition:all .15s;}
+    .intel-btn:hover{border-color:var(--clay);color:var(--clay);}
+    .intel-btn.primary{background:var(--clay);border-color:var(--clay);color:white;}
+    .intel-mic{display:none;}
+
+    /* Confidence system */
+    .inclusion-section{margin-top:20px;}
+    .incl-header{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#8B4A6A;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+    .incl-badge{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;background:#FBF0F5;color:#8B4A6A;border:1px solid rgba(139,74,106,.2);}
+    .incl-prompt{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;}
+    .incl-prompt.flagged{border-left:3px solid #8B4A6A;background:#FBF0F5;}
+    .incl-prompt.gap{border-left:3px solid var(--risk-mod);}
+    .incl-prompt.ok{border-left:3px solid var(--tile-2);}
+    .ip-icon{font-size:18px;flex-shrink:0;margin-top:1px;}
+    .ip-content{flex:1;}
+    .ip-label{font-size:11px;font-weight:500;color:var(--ink-soft);margin-bottom:3px;}
+    .ip-text{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;}
+    .ip-obs{font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.6;margin-top:4px;font-style:italic;}
+    .ip-obs::before{content:"Practitioner note: ";font-weight:500;font-style:normal;color:#8B4A6A;}
+    .ip-add{padding:4px 10px;border:1px dashed var(--border);border-radius:var(--radius);font-family:"DM Sans",sans-serif;font-size:11px;color:var(--ink-muted);background:none;cursor:pointer;margin-top:8px;}
+    .ip-add:hover{border-color:#8B4A6A;color:#8B4A6A;}
+    .incl-note{font-size:11px;color:var(--ink-muted);font-weight:300;font-style:italic;margin-top:10px;padding:8px 10px;background:rgba(139,74,106,.04);border-radius:var(--radius);}
+    .confidence-legend{display:flex;gap:16px;margin-bottom:16px;padding:10px 14px;background:var(--surface);border-radius:var(--radius);flex-wrap:wrap;}
+    .cl-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);font-weight:300;}
+    .cl-dots{display:flex;gap:2px;}
+    .cl-dot{width:6px;height:6px;border-radius:50%;}
+
+    @media(max-width:700px){
+      .t-nav,.view-pad,.header,.foundation-bar,.selector-bar{padding-left:20px;padding-right:20px;}
+      .dim-flag{display:none;}
+      .dim-name{width:120px;}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="t-nav">
+  <a href="tessera-app.html" class="t-nav-brand" style="text-decoration:none;">Tessera™</a>
+  <div class="t-nav-pills">
+    <a href="tessera-app.html" class="t-nav-pill">Unit 1</a>
+    <a href="tessera-cia.html" class="t-nav-pill">Unit 2</a>
+    <a href="tessera-comms.html" class="t-nav-pill">Unit 3</a>
+    <a href="tessera-learning.html" class="t-nav-pill">Unit 4</a>
+    <span class="t-nav-pill active">Cultural intelligence</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="system-badge">System-level · All units</span>
+    <button class="btn-ghost" style="font-size:11px;" onclick="exportCulture()">Export →</button>
+  </div>
+</nav>
+
+<div class="app">
+  <div class="header">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera™ &nbsp;·&nbsp; Cultural intelligence &nbsp;·&nbsp; System level</div>
+    <h1>The people behind <em>every decision</em></h1>
+    <p>Cultural context is not a feature of the training module or the communications workstream. It is the foundation every design decision in every unit is built on. This module is the source. Every other unit in Tessera™ draws from what is captured here.</p>
+  </div>
+
+  <!-- Foundation statement -->
+  <div class="foundation-bar">
+    <div class="fb-text">
+      <strong>The organising principle:</strong> the project is the context. The person is the center. Every recommendation this system generates — every communication, every learning experience, every leadership action, every readiness measure — starts with a specific human being and their cultural context, and works outward from there.
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.3);font-weight:300;flex-shrink:0;">Six frameworks &nbsp;·&nbsp; One integrated view</div>
+  </div>
+
+  <!-- Selectors -->
+  <div class="selector-bar">
+    <div class="sel-label">Engagement</div>
+    <select class="sel" id="scenario-sel" onchange="loadScenario(this.value)">
+      <option value="meridian">Meridian Global — ERP &amp; Restructure</option>
+      <option value="fusion">Fusion Dynamics — M&amp;A Integration</option>
+      <option value="nova">Nova Energy — Workforce Transformation</option>
+    </select>
+    <div class="sel-label" style="margin-left:12px;">Group</div>
+    <select class="sel" id="group-sel" onchange="loadGroup(this.value)"></select>
+    <div class="view-toggle" id="view-toggle">
+      <button class="vt-btn active" onclick="setProfileView('integrated',this)">Integrated view</button>
+      <button class="vt-btn" onclick="setProfileView('framework',this)">Framework view</button>
+    </div>
+  </div>
+
+  <!-- View tabs -->
+  <div class="view-bar">
+    <div class="view-tab active" onclick="switchView('profile',this)">
+      <div class="vt-label">View A</div>
+      <div class="vt-title">Group profile</div>
+    </div>
+    <div class="view-tab" onclick="switchView('compare',this)">
+      <div class="vt-label">View B</div>
+      <div class="vt-title">Cross-group comparison</div>
+    </div>
+    <div class="view-tab" onclick="switchView('library',this)">
+      <div class="vt-label">View C</div>
+      <div class="vt-title">Framework library</div>
+    </div>
+    <div class="view-tab" onclick="switchView('intelligence',this)">
+      <div class="vt-label">View D</div>
+      <div class="vt-title">Intelligence input</div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW A: GROUP PROFILE ══ -->
+  <div class="view active" id="view-profile">
+    <div class="view-pad">
+
+      <!-- Profile header -->
+      <div id="profile-header" style="margin-bottom:20px;"></div>
+
+      <!-- Confidence legend -->
+      <div class="confidence-legend">
+        <div style="font-size:11px;font-weight:500;color:var(--ink-muted);margin-right:4px;">Data confidence:</div>
+        <div class="cl-item"><div class="cl-dots"><div class="cl-dot" style="background:var(--cult);"></div><div class="cl-dot" style="background:var(--cult);"></div><div class="cl-dot" style="background:var(--cult);"></div></div>High — from listening data</div>
+        <div class="cl-item"><div class="cl-dots"><div class="cl-dot" style="background:var(--cult);"></div><div class="cl-dot" style="background:var(--cult);"></div><div class="cl-dot" style="background:rgba(28,26,23,.15);"></div></div>Moderate — inferred from context</div>
+        <div class="cl-item"><div class="cl-dots"><div class="cl-dot" style="background:var(--cult);"></div><div class="cl-dot" style="background:rgba(28,26,23,.15);"></div><div class="cl-dot" style="background:rgba(28,26,23,.15);"></div></div>Low — framework default, practitioner verify</div>
+        <div style="margin-left:auto;font-size:11px;color:var(--ink-muted);font-weight:300;font-style:italic;">Not stereotypes — design parameters. Always verify with practitioner knowledge of this specific group.</div>
+      </div>
+
+      <!-- Integrated / Framework content -->
+      <div id="profile-content"></div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW B: CROSS-GROUP COMPARISON ══ -->
+  <div class="view" id="view-compare">
+    <div class="view-pad">
+      <div class="section-eyebrow">Cross-group comparison</div>
+      <div class="section-title">Where the <em>gap</em> is the design risk</div>
+      <div class="section-sub">When two groups that must interact — in the same training session, the same leadership cascade, the same change network — sit far apart on a cultural dimension, the gap itself becomes a design constraint. This view surfaces the gaps that matter most for this engagement.</div>
+
+      <div class="compare-controls">
+        <div class="sel-label">Group A</div>
+        <select class="sel" id="compare-a" onchange="renderComparison()"></select>
+        <div class="sel-label">vs</div>
+        <select class="sel" id="compare-b" onchange="renderComparison()"></select>
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+          <div class="compare-group-a" id="compare-a-label">Group A</div>
+          <div style="font-size:12px;color:var(--ink-muted);">vs</div>
+          <div class="compare-group-b" id="compare-b-label">Group B</div>
+        </div>
+      </div>
+
+      <div id="comparison-content"></div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW C: FRAMEWORK LIBRARY ══ -->
+  <div class="view" id="view-library">
+    <div class="view-pad">
+      <div class="section-eyebrow">Framework library</div>
+      <div class="section-title">Six frameworks. <em>One integrated picture.</em></div>
+      <div class="section-sub">No single framework captures everything. Each one adds something the others do not. The system draws from all six and cites the source of every design flag so the practitioner can go deeper when they need to.</div>
+      <div id="library-content"></div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW D: INTELLIGENCE INPUT ══ -->
+  <div class="view" id="view-intelligence">
+    <div class="view-pad">
+      <div class="section-eyebrow">Intelligence input</div>
+      <div class="section-title">Update the profile from <em>what you heard</em></div>
+      <div class="section-sub">The cultural profile is generated from structured frameworks and validated against what the practitioner heard in the listening tour. New observations, interview notes, or debrief reflections can be added here. The system reads them, suggests profile updates, and the practitioner confirms.</div>
+
+      <div class="intel-area">
+        <div class="intel-title">Add observation</div>
+        <div class="intel-sub">Type, paste, or dictate what you observed about this group's cultural operating style. The system will identify which dimensions it affects and surface suggested profile updates for your review.</div>
+        <textarea class="intel-ta" id="intel-input" rows="4" placeholder="e.g. In the France Finance Manager session the team spent 45 minutes on the theoretical rationale before engaging with the system demo. When I tried to move to the practical exercise before that was complete, they went quiet. As soon as I went back to the framework they re-engaged..."></textarea>
+        <input type="file" id="intel-file" class="intel-mic" accept=".pdf,.docx,.txt,.csv" onchange="handleIntelFile(event)">
+        <div class="intel-actions">
+          <button class="intel-btn primary" onclick="analyseIntelligence()">✦ Analyse observation</button>
+          <button class="intel-btn" onclick="startVoice()" id="voice-btn">🎙 Dictate</button>
+          <button class="intel-btn" onclick="document.getElementById('intel-file').click()">⬆ Upload notes</button>
+        </div>
+      </div>
+
+      <!-- Analysis result -->
+      <div id="intel-result" style="display:none;"></div>
+
+      <!-- Version history -->
+      <div style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;font-weight:500;color:var(--ink);">Profile update history</div>
+        <div style="font-size:11px;color:var(--ink-muted);font-weight:300;font-style:italic;">All updates to cultural profiles across the engagement</div>
+      </div>
+      <div id="intel-history"></div>
+    </div>
+  </div>
+
+</div>
+
+<div style="background:#1C1A17;padding:10px 48px;text-align:center;border-top:1px solid rgba(255,255,255,.06);">
+  <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.25);font-weight:300;">&copy; 2026 Mosaic Bridge Advisory &nbsp;&middot;&nbsp; Tessera&trade; is a trademark of Mosaic Bridge Advisory &nbsp;&middot;&nbsp; All rights reserved</span>
+</div>
+
+<script>
+
+// ══════════════════════════════════════════
+// FRAMEWORK DEFINITIONS
+// ══════════════════════════════════════════
+const FRAMEWORKS = {
+  meyer: {
+    name: 'Culture Map', author: 'Erin Meyer', icon: '🗺',
+    color: 'var(--meyer)', bg: 'var(--meyer-bg)',
+    useFor: 'Communication style, feedback norms, hierarchy, decision-making, and the specific friction points when two cultures work together. Strongest for professional and managerial populations in global organisations.',
+    dims: ['communicating','evaluating','leading','deciding','trusting','disagreeing','scheduling','persuading'],
+    dimLabels: {
+      communicating:['Low-context','High-context'],
+      evaluating:['Direct negative feedback','Indirect negative feedback'],
+      leading:['Egalitarian','Hierarchical'],
+      deciding:['Consensual','Top-down'],
+      trusting:['Task-based','Relationship-based'],
+      disagreeing:['Confrontational','Avoids confrontation'],
+      scheduling:['Linear time','Flexible time'],
+      persuading:['Applications first','Principles first'],
+    }
+  },
+  hofstede: {
+    name: 'Cultural Dimensions', author: 'Geert Hofstede', icon: '📊',
+    color: 'var(--hofstede)', bg: 'var(--hofstede-bg)',
+    useFor: 'Structural design of learning environments, assessment approach, motivation framing, and whether self-directed or directed learning will work. Broader research base than Meyer — covers more countries and more workforce types including blue collar and manufacturing populations.',
+    dims: ['powerDistance','individualism','uncertaintyAvoidance','longTermOrientation'],
+    dimLabels: {
+      powerDistance:['Low — flat hierarchy','High — hierarchical'],
+      individualism:['Collectivist','Individualist'],
+      uncertaintyAvoidance:['Low — tolerates ambiguity','High — needs structure'],
+      longTermOrientation:['Short-term orientation','Long-term orientation'],
+    }
+  },
+  schwartz: {
+    name: 'Basic Human Values', author: 'Shalom Schwartz', icon: '🧭',
+    color: 'var(--schwartz)', bg: 'var(--schwartz-bg)',
+    useFor: 'Understanding what a change threatens or enables at a values level. Explains resistance that is not about the process but about what the process implies about worth, identity, and meaning. Operates at the individual and societal level simultaneously.',
+    dims: ['power','achievement','hedonism','stimulation','selfdirection','universalism','benevolence','tradition','conformity','security'],
+    dimLabels: {}
+  },
+  trompenaars: {
+    name: 'Riding the Waves of Culture', author: 'Fons Trompenaars & Charles Hampden-Turner', icon: '🌊',
+    color: 'var(--trompenaars)', bg: 'var(--trompenaars-bg)',
+    useFor: 'Universalism vs particularism (rules vs relationships), sequential vs synchronic time (training scheduling), internal vs external direction (tech adoption readiness). Particularly useful for Latin American and Southeast Asian contexts where Meyer and Hofstede have less granularity.',
+    dims: ['universalism','individualism','neutral','specific','achievement','sequential','internal'],
+    dimLabels: {
+      universalism:['Particularist — relationships over rules','Universalist — rules over relationships'],
+      individualism:['Communitarian','Individualist'],
+      neutral:['Affective — emotions shown','Neutral — emotions controlled'],
+      specific:['Diffuse — whole person','Specific — role-based'],
+      achievement:['Ascription — status by birth/role','Achievement — status by results'],
+      sequential:['Synchronic — parallel time','Sequential — linear time'],
+      internal:['External direction — adapt to environment','Internal direction — control environment'],
+    }
+  },
+  globe: {
+    name: 'GLOBE Study', author: 'Robert J. House et al.', icon: '🌐',
+    color: 'var(--globe)', bg: 'var(--globe-bg)',
+    useFor: 'Leadership effectiveness across cultures — who should deliver training, who should sponsor it, what leadership visibility looks like for this group. The largest cross-cultural leadership study ever conducted. 62 societies, 9 dimensions.',
+    dims: ['performanceOrientation','humaneOrientation','assertiveness','institutionalCollectivism','inGroupCollectivism','powerDistance','uncertaintyAvoidance','futureOrientation','genderEgalitarianism'],
+    dimLabels: {
+      performanceOrientation:['Low — relationships/tradition valued','High — achievement/results drive value'],
+      humaneOrientation:['Low — self-interest focus','High — others/community focus'],
+      assertiveness:['Low — harmony, modesty','High — assertive, direct'],
+      institutionalCollectivism:['Low — individual interest','High — collective interest'],
+      inGroupCollectivism:['Low — institutional loyalty','High — family/group loyalty'],
+      powerDistance:['Low — equality','High — hierarchy accepted'],
+      uncertaintyAvoidance:['Low — comfortable with ambiguity','High — prefer rules and order'],
+      futureOrientation:['Low — present focus','High — future focus, planning'],
+      genderEgalitarianism:['Low — gender role differentiation','High — minimise gender differences'],
+    }
+  },
+  lewis: {
+    name: 'CultureActive / Lewis Model', author: 'Richard D. Lewis', icon: '🔺',
+    color: 'var(--lewis)', bg: 'var(--lewis-bg)',
+    useFor: 'Quick categorisation of a group for broad training design decisions before detailed Meyer and Hofstede work. Three cultural types: linear-active (task, factual, direct), multi-active (people, emotional, relationship), reactive (respectful, listening, process-oriented). Particularly accessible for practitioners who need to make fast design decisions.',
+    dims: ['linearActive','multiActive','reactive'],
+    dimLabels: {}
+  }
+};
+
+// ══════════════════════════════════════════
+// CULTURAL PROFILE DATA
+// ══════════════════════════════════════════
+const PROFILES = {
+  meridian: {
+    groups: ['Finance Managers — Global','Finance Frontline — France','Supply Chain Frontline — Brazil','HR Partners','Senior Leadership'],
+    data: {
+      'Finance Managers — Global': {
+        color: '#C4826A',
+        description: 'Multi-national group spanning US, UK, France, and Brazil. Significant sub-group variation — design cannot treat them as one cohort.',
+        designDecisions: {
+          opening: {
+            flags: [
+              {framework:'trompenaars',fw:'Trompenaars',label:'Relationship before task — France and Brazil sub-groups',text:'France and Brazil cohorts are particularist — relationships matter more than formal structure. Build 15-20 minutes of genuine connection before content begins. US and UK cohorts are more universalist and will find this slow.',confidence:2},
+              {framework:'meyer',fw:'Meyer',label:'Trust is task-based (US/UK) and relationship-based (France/Brazil)',text:'US and UK Finance Managers build trust through demonstrated competence — get to the point. France and Brazil build trust through personal connection — failing to allow for this creates a cold room that does not learn well.',confidence:3},
+            ]
+          },
+          sequencing: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Principles first — especially for the France sub-group',text:'Score 7/10 on persuading. Must establish the theoretical framework and rationale before practical application. A French Finance Manager who does not understand why the new close process was designed this way will not engage with how to operate it.',confidence:3},
+              {framework:'hofstede',fw:'Hofstede',label:'High uncertainty avoidance — France and Brazil',text:'Very detailed session structure required. Publish agenda with timing one week before. Set explicit learning objectives and success criteria at the start of each session. Ambiguity produces anxiety, not curiosity.',confidence:3},
+            ]
+          },
+          facilitation: {
+            flags: [
+              {framework:'hofstede',fw:'Hofstede',label:'Moderate-high power distance — facilitator credibility is a prerequisite',text:'Senior Finance Managers will not engage with a facilitator they perceive as lacking domain expertise. The facilitator must be visibly credible — ideally endorsed by the programme director or a senior Finance leader.',confidence:2},
+              {framework:'globe',fw:'GLOBE',label:'High performance orientation — frame around excellence, not compliance',text:'This group is motivated by achievement and being recognised as expert. Frame the learning as building mastery in the new operating model — not completing a training requirement.',confidence:2},
+            ]
+          },
+          assessment: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Evaluation style varies significantly by sub-group',text:'US and UK cohorts accept direct feedback in small group settings. France cohort requires feedback to be private and specific — public correction is experienced as disrespectful. Design assessment so feedback can be delivered individually regardless of the group format.',confidence:3},
+              {framework:'hofstede',fw:'Hofstede',label:'Individualism — individual accountability appropriate for most sub-groups',text:'US, UK, and France cohorts are individualistic. Individual performance assessment is appropriate. Brazil is more collectivist — adjust assessment approach for Brazil sub-group to include peer observation.',confidence:2},
+            ]
+          },
+          motivation: {
+            flags: [
+              {framework:'schwartz',fw:'Schwartz',label:'Achievement and power values at stake',text:'Finance Manager identity is built on expertise and control. The change challenges both. Training must acknowledge the genuine loss of hard-won expertise in the current system and reframe the new role as an expansion of authority — not a reduction.',confidence:2},
+              {framework:'globe',fw:'GLOBE',label:'In-group collectivism — peer credibility matters',text:'What respected peers think of the new system will influence adoption more than what leadership says. Identify Finance Manager champions before training begins and involve them visibly.',confidence:1},
+            ]
+          },
+          scheduling: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Moderately linear — schedules are commitments',text:'Finance Managers expect schedules to be honoured. Overrunning a session or changing agenda without explanation damages trust. Build buffer into timing — do not appear rushed.',confidence:2},
+              {framework:'trompenaars',fw:'Trompenaars',label:'Sequential time orientation (US/UK) — synchronic (France/Brazil)',text:'US and UK cohorts expect linear progression through the agenda. France and Brazil cohorts are more comfortable with discussion that ranges across topics. Facilitate for both in mixed sessions.',confidence:2},
+            ]
+          },
+        },
+        meyer: {communicating:4,evaluating:5,leading:6,deciding:5,trusting:6,disagreeing:5,scheduling:6,persuading:7},
+        hofstede: {powerDistance:6,individualism:7,uncertaintyAvoidance:7,longTermOrientation:5},
+        schwartz: {power:7,achievement:8,hedonism:4,stimulation:3,selfdirection:6,universalism:5,benevolence:5,tradition:4,conformity:5,security:6},
+        trompenaars: {universalism:6,individualism:6,neutral:6,specific:6,achievement:7,sequential:6,internal:6},
+        globe: {performanceOrientation:8,humaneOrientation:5,assertiveness:6,institutionalCollectivism:5,inGroupCollectivism:6,powerDistance:6,uncertaintyAvoidance:7,futureOrientation:6,genderEgalitarianism:6},
+        lewis: {linearActive:55,multiActive:30,reactive:15},
+        confidence: 'moderate',
+        confidenceNote: 'Profile based on listening tour data (18 interviews) plus framework defaults for country-level data. France and Brazil sub-group data has higher confidence than UK and US. Practitioner validation recommended before final training design.',
+      },
+      'Finance Frontline — France': {
+        color: '#8B7BA8',
+        description: 'French Finance Frontline — Paris office. 42 people. Design hold applies — insufficient listening data. Cultural profile is framework-default until listening data is collected.',
+        designDecisions: {
+          opening: {
+            flags: [
+              {framework:'trompenaars',fw:'Trompenaars',label:'Particularist — relationship is everything',text:'French Finance Frontline will not engage with a training programme delivered by someone they have no relationship with. The facilitator must be introduced by a trusted senior person — ideally their direct manager — before the training begins.',confidence:1},
+              {framework:'lewis',fw:'Lewis',label:'Multi-active lean — people and relationships before content',text:'Multi-active cultures learn better when the human relationship with the facilitator is established first. Allow 20-30 minutes of genuine relational opening before moving to content.',confidence:1},
+            ]
+          },
+          sequencing: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Principles first — score 9/10',text:'The strongest principles-first orientation of any group in this engagement. Must begin with the theoretical framework, the business rationale, and the design logic before any practical application. Moving to the practical without this foundation will produce passive resistance.',confidence:2},
+              {framework:'hofstede',fw:'Hofstede',label:'Very high uncertainty avoidance — score 9',text:'Exceptionally detailed structure required. Session agenda published one week before. Learning objectives stated explicitly at the start. Success criteria defined before the first exercise. Any deviation from the published structure requires explanation.',confidence:3},
+            ]
+          },
+          facilitation: {
+            flags: [
+              {framework:'hofstede',fw:'Hofstede',label:'High power distance — facilitator authority must be visible',text:'Learners will not challenge the facilitator even when confused. This is the highest risk in French learning environments — silent confusion is read as engagement. Build in anonymous mechanisms to surface understanding gaps.',confidence:3},
+              {framework:'globe',fw:'GLOBE',label:'Institutional collectivism — Works Council process must be honoured',text:'The CSE consultation is not a procedural hurdle — it is an expression of a deeply held cultural norm around institutional rights. Treating it as a delay will damage trust with the group before training begins.',confidence:2},
+            ]
+          },
+          assessment: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Indirect negative feedback — strongly',text:'Assessment feedback must be delivered privately and specifically. No correction in group settings. No comparative performance data shared publicly. Individual written feedback after every exercise.',confidence:3},
+              {framework:'trompenaars',fw:'Trompenaars',label:'Diffuse — the whole person, not just the role',text:'French learners do not separate their professional performance from their personal identity the way US or UK learners might. Criticism of their work performance may be experienced as criticism of them as a person.',confidence:2},
+            ]
+          },
+          motivation: {
+            flags: [
+              {framework:'schwartz',fw:'Schwartz',label:'Security and conformity values prominent',text:'French Finance Frontline are likely motivated by stability and belonging. The change threatens both. Frame learning as building security in the new environment — not as abandoning the familiar.',confidence:1},
+              {framework:'hofstede',fw:'Hofstede',label:'Short-term orientation — immediate application',text:'Frame learning around what changes tomorrow and what gets easier immediately. Long-term capability arguments are less motivating for this group.',confidence:2},
+            ]
+          },
+          scheduling: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Linear time — strict agenda adherence',text:'Do not overrun. Do not re-order without explanation. If a discussion runs long, explicitly acknowledge it and tell the group what you are adjusting and why.',confidence:3},
+              {framework:'trompenaars',fw:'Trompenaars',label:'Sequential time orientation',text:'Activities should follow a logical, predictable sequence. Surprise changes to the agenda create anxiety in a group that is already high on uncertainty avoidance.',confidence:2},
+            ]
+          },
+        },
+        meyer: {communicating:7,evaluating:3,leading:8,deciding:4,trusting:8,disagreeing:7,scheduling:8,persuading:9},
+        hofstede: {powerDistance:7,individualism:7,uncertaintyAvoidance:9,longTermOrientation:4},
+        schwartz: {power:4,achievement:5,hedonism:5,stimulation:4,selfdirection:6,universalism:6,benevolence:7,tradition:7,conformity:7,security:8},
+        trompenaars: {universalism:4,individualism:5,neutral:7,specific:4,achievement:6,sequential:8,internal:5},
+        globe: {performanceOrientation:5,humaneOrientation:6,assertiveness:5,institutionalCollectivism:6,inGroupCollectivism:7,powerDistance:7,uncertaintyAvoidance:9,futureOrientation:5,genderEgalitarianism:5},
+        lewis: {linearActive:35,multiActive:50,reactive:15},
+        confidence: 'low',
+        confidenceNote: 'Design hold applies. Profile is framework-default for French workforce context. Listening data is insufficient. Do not finalise training design for this group until listening data is collected.',
+      },
+      'Supply Chain Frontline — Brazil': {
+        color: '#4A8FA8',
+        description: 'São Paulo warehouse. 36 people. Deskless. Portuguese-speaking. Device availability TBC.',
+        designDecisions: {
+          opening: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Relationship-based trust — score 9/10',text:'The supervisor relationship is the learning relationship for this group. Training delivered without supervisor endorsement will not land. The opening of any learning experience must include visible supervisor involvement.',confidence:3},
+              {framework:'lewis',fw:'Lewis',label:'Multi-active — people, warmth, and connection before content',text:'Multi-active cultures learn better in environments that feel warm and relational. A clinical training room setup will create distance. Bring the training to where they work.',confidence:2},
+            ]
+          },
+          sequencing: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Applications first — strongly',text:'Score 2/10 on persuading. Concrete, practical demonstration first — then brief explanation. This group learns by doing. The theoretical rationale can come after the first successful completion, not before.',confidence:3},
+              {framework:'hofstede',fw:'Hofstede',label:'High uncertainty avoidance — sequence one step at a time',text:'Present the new process as a clear, numbered sequence. Do not show the full complexity upfront. Each step should be practised and confirmed before the next is introduced.',confidence:2},
+            ]
+          },
+          facilitation: {
+            flags: [
+              {framework:'hofstede',fw:'Hofstede',label:'High power distance — supervisor is the authority',text:'The direct supervisor has more credibility with this group than any external facilitator. Training endorsed and ideally co-facilitated by the supervisor will have significantly higher engagement.',confidence:3},
+              {framework:'hofstede',fw:'Hofstede',label:'Collectivist — group-based learning',text:'This group learns better together. Individual performance measurement during the learning session is culturally inappropriate. Observe group practice and sign off by group, not by individual.',confidence:2},
+            ]
+          },
+          assessment: {
+            flags: [
+              {framework:'meyer',fw:'Meyer',label:'Indirect feedback — strongly',text:'Individual public correction will be experienced as humiliating and will produce disengagement. Supervisor observation of first real-world application is the culturally appropriate assessment mechanism.',confidence:3},
+              {framework:'trompenaars',fw:'Trompenaars',label:'Particularist — relationships inform how rules are applied',text:'This group may seek informal workarounds that feel more relationship-appropriate than the rigid digital approval process. Acknowledge this tendency directly and explain why the digital trail matters, without framing it as distrust.',confidence:2},
+            ]
+          },
+          motivation: {
+            flags: [
+              {framework:'schwartz',fw:'Schwartz',label:'Benevolence and security values prominent',text:'This group is motivated by belonging, team support, and stability. Frame the change as something the team is navigating together, with support from their supervisor and colleagues.',confidence:1},
+              {framework:'hofstede',fw:'Hofstede',label:'Short-term — tomorrow\'s work',text:'Frame training around what is immediately useful in tomorrow\'s shift. Abstract rationale about digital transformation is not motivating for this group.',confidence:2},
+            ]
+          },
+          scheduling: {
+            flags: [
+              {framework:'trompenaars',fw:'Trompenaars',label:'Synchronic time — flexible, not clock-driven',text:'Exact timing is less important than completion and understanding. Build significant buffer into session timing. Do not create anxiety about the clock — it will rush learning that needs to be secure.',confidence:2},
+              {framework:'meyer',fw:'Meyer',label:'Floor-based — meet them where they work',text:'Training delivered at the actual workstation where the change happens will land better than training in a separate room. Physical context is part of the learning for this group.',confidence:3},
+            ]
+          },
+        },
+        meyer: {communicating:6,evaluating:4,leading:6,deciding:5,trusting:9,disagreeing:4,scheduling:5,persuading:2},
+        hofstede: {powerDistance:8,individualism:4,uncertaintyAvoidance:7,longTermOrientation:4},
+        schwartz: {power:3,achievement:4,hedonism:5,stimulation:4,selfdirection:5,universalism:5,benevolence:8,tradition:6,conformity:6,security:7},
+        trompenaars: {universalism:3,individualism:4,neutral:3,specific:4,achievement:5,sequential:4,internal:4},
+        globe: {performanceOrientation:5,humaneOrientation:8,assertiveness:4,institutionalCollectivism:6,inGroupCollectivism:8,powerDistance:8,uncertaintyAvoidance:7,futureOrientation:4,genderEgalitarianism:4},
+        lewis: {linearActive:20,multiActive:65,reactive:15},
+        confidence: 'moderate',
+        confidenceNote: 'Profile from listening data (4 interviews) plus framework defaults for Brazilian manufacturing workforce context. Device access data gap means physical modality constraints cannot be fully resolved.',
+      },
+    }
+  },
+  fusion: {
+    groups: ['US Executive Leadership','Acquired Team (NL/DE)','Middle Management','Individual Contributors'],
+    data: {
+      'US Executive Leadership': {
+        color: '#2D5016',
+        description: 'US-based senior leadership. High autonomy, direct communicators. Low awareness of own cultural blind spots.',
+        designDecisions: {
+          opening: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Task-based trust — get to the point',text:'US executives build trust through competent task delivery. Opening with relationship time will feel slow and patronising. Lead with the business case and what you need from them.',confidence:3},
+            {framework:'lewis',fw:'Lewis',label:'Linear-active — efficient, results-focused',text:'This group expects efficient use of their time. Every minute of the session should feel purposeful. No warm-up exercises that lack obvious business relevance.',confidence:3},
+          ]},
+          sequencing: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Applications first — strongly',text:'Score 2/10 on persuading. Must demonstrate practical relevance within the first 15 minutes. Theoretical frameworks should follow the practical demonstration, not precede it.',confidence:3},
+            {framework:'globe',fw:'GLOBE',label:'High performance orientation — connect to business outcomes immediately',text:'This group is motivated by achievement and results. Frame every learning moment around a measurable business outcome. Cultural effectiveness is a competitive advantage — not a sensitivity initiative.',confidence:3},
+          ]},
+          facilitation: {flags:[
+            {framework:'hofstede',fw:'Hofstede',label:'Low power distance — expect to be challenged',text:'This group will challenge the facilitator directly and expects to be challenged in return. Horizontal dynamic in the room. The facilitator must be prepared to receive direct pushback and use it productively.',confidence:3},
+            {framework:'meyer',fw:'Meyer',label:'Confrontational — disagreement is engagement',text:'Direct challenge from this group is a sign of engagement. A quiet room is a disengaged room. Design the session to welcome and use disagreement.',confidence:3},
+          ]},
+          assessment: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Direct feedback appropriate and expected',text:'US executives accept and expect direct feedback. Indirect feedback feels dishonest. Be specific, be direct, and connect feedback to business impact.',confidence:3},
+            {framework:'hofstede',fw:'Hofstede',label:'Highly individualistic — individual accountability',text:'Individual accountability and recognition strongly motivate this group. Group outcomes feel diffuse and unsatisfying.',confidence:3},
+          ]},
+          motivation: {flags:[
+            {framework:'schwartz',fw:'Schwartz',label:'Achievement and self-direction values dominant',text:'This group is motivated by accomplishment and autonomy. Frame cross-cultural effectiveness as a leadership capability that expands their range and impact — not as correcting a deficit.',confidence:2},
+            {framework:'globe',fw:'GLOBE',label:'Low in-group collectivism — institutional over personal loyalty',text:'Loyalty is to the organisation and its results, not primarily to the team or individuals within it. Frame change as organisational effectiveness.',confidence:2},
+          ]},
+          scheduling: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Linear time — time is a resource to be managed',text:'Sessions that overrun without acknowledgement damage credibility. Respect time commitments absolutely. If discussion runs long, call it, adjust, and explain.',confidence:3},
+            {framework:'trompenaars',fw:'Trompenaars',label:'Sequential — one thing at a time',text:'Prefers to address one issue completely before moving to the next. Parallel discussion threads feel chaotic.',confidence:2},
+          ]},
+        },
+        meyer:{communicating:2,evaluating:2,leading:2,deciding:2,trusting:2,disagreeing:2,scheduling:7,persuading:2},
+        hofstede:{powerDistance:3,individualism:9,uncertaintyAvoidance:4,longTermOrientation:4},
+        schwartz:{power:5,achievement:9,hedonism:5,stimulation:6,selfdirection:8,universalism:4,benevolence:4,tradition:3,conformity:3,security:4},
+        trompenaars:{universalism:8,individualism:8,neutral:2,specific:8,achievement:9,sequential:8,internal:8},
+        globe:{performanceOrientation:9,humaneOrientation:4,assertiveness:8,institutionalCollectivism:4,inGroupCollectivism:3,powerDistance:3,uncertaintyAvoidance:4,futureOrientation:5,genderEgalitarianism:7},
+        lewis:{linearActive:75,multiActive:20,reactive:5},
+        confidence:'high',
+        confidenceNote:'Profile from listening tour (8 interviews) plus strong framework data for US executive populations in technology and operations sectors.',
+      },
+      'Acquired Team (NL/DE)': {
+        color: '#8B7BA8',
+        description: 'Netherlands and Germany combined. Significant internal variation — Dutch are more direct, Germans more structured. Both experience the acquisition as an identity threat.',
+        designDecisions: {
+          opening: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Consensus and deliberation before commitment',text:'NL/DE teams need time to process before committing to a position. Build in pre-meeting written input opportunities. Do not force decisions in real time — allow asynchronous contribution.',confidence:3},
+            {framework:'schwartz',fw:'Schwartz',label:'Security and conformity values under threat',text:'The acquisition threatens the stability and belonging this group has built. The opening of any session must explicitly acknowledge what they have built and what transfers forward — not just what is changing.',confidence:2},
+          ]},
+          sequencing: {flags:[
+            {framework:'hofstede',fw:'Hofstede',label:'High uncertainty avoidance (DE) — detailed structure required',text:'German cohort especially needs detailed structure, explicit objectives, and clear success criteria. Dutch cohort is slightly more tolerant of ambiguity but still prefers structure to openness.',confidence:3},
+            {framework:'meyer',fw:'Meyer',label:'Principles first (DE) — applications acceptable for NL',text:'German cohort expects theoretical framework before practical application. Dutch cohort is more pragmatic — can work with applications first if the rationale is visible.',confidence:2},
+          ]},
+          facilitation: {flags:[
+            {framework:'globe',fw:'GLOBE',label:'High assertiveness (DE) — expect direct challenge',text:'German professionals will disagree directly and specifically. This is not resistance — it is rigorous professional engagement. Equip facilitators to receive and use precise technical challenge.',confidence:3},
+            {framework:'meyer',fw:'Meyer',label:'Hierarchical in formal contexts — egalitarian in expertise domains',text:'Status by expertise rather than title in many NL/DE professional contexts. A facilitator who demonstrates genuine domain knowledge will be respected regardless of seniority.',confidence:2},
+          ]},
+          assessment: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Direct feedback acceptable in Netherlands — more formal in Germany',text:'Dutch professionals accept direct feedback in most settings. German professionals prefer feedback to be structured, specific, and delivered in a defined feedback moment rather than ad hoc.',confidence:2},
+            {framework:'trompenaars',fw:'Trompenaars',label:'Universalist — rules apply consistently',text:'This group expects assessment criteria to be applied consistently and transparently. Exceptions based on relationship or context will damage credibility.',confidence:2},
+          ]},
+          motivation: {flags:[
+            {framework:'schwartz',fw:'Schwartz',label:'Tradition and security values — acknowledge what is being lost',text:'The acquired company culture represents genuine belonging and identity for this group. Communications and training that only speak to the future will feel dismissive of what they built.',confidence:3},
+            {framework:'hofstede',fw:'Hofstede',label:'Long-term orientation — building something worth building',text:'Frame learning and development as building capability that will matter long-term. This group is motivated by mastery and contribution over time.',confidence:2},
+          ]},
+          scheduling: {flags:[
+            {framework:'hofstede',fw:'Hofstede',label:'High uncertainty avoidance — confirm timelines and stick to them',text:'Changes to the schedule create anxiety that compounds existing integration uncertainty. Confirm timelines explicitly and treat changes as requiring formal communication.',confidence:2},
+            {framework:'trompenaars',fw:'Trompenaars',label:'Sequential time (DE) — parallel time (NL)',text:'German cohort expects linear progression. Dutch cohort more comfortable with parallel discussion threads. In mixed NL/DE sessions, acknowledge and bridge the difference explicitly.',confidence:2},
+          ]},
+        },
+        meyer:{communicating:6,evaluating:5,leading:6,deciding:5,trusting:6,disagreeing:6,scheduling:7,persuading:7},
+        hofstede:{powerDistance:5,individualism:7,uncertaintyAvoidance:7,longTermOrientation:7},
+        schwartz:{power:4,achievement:6,hedonism:4,stimulation:4,selfdirection:7,universalism:7,benevolence:6,tradition:6,conformity:6,security:7},
+        trompenaars:{universalism:7,individualism:6,neutral:5,specific:6,achievement:7,sequential:7,internal:7},
+        globe:{performanceOrientation:7,humaneOrientation:5,assertiveness:7,institutionalCollectivism:6,inGroupCollectivism:6,powerDistance:5,uncertaintyAvoidance:7,futureOrientation:7,genderEgalitarianism:6},
+        lewis:{linearActive:55,multiActive:15,reactive:30},
+        confidence:'moderate',
+        confidenceNote:'Profile from listening tour (10 NL/DE interviews). Dutch and German sub-groups have meaningful differences — particularly on directness and time orientation. Profile represents the combined group with sub-group flags noted.',
+      },
+    }
+  },
+  nova: {
+    groups: ['Field Operations','Field Supervisors','Data & Analytics','Corporate Functions','Senior Leadership'],
+    data: {
+      'Data & Analytics': {
+        color: '#00A896',
+        description: 'Houston HQ. 18-person pilot cohort. Digitally native, enthusiastic early adopters. Professional identity built on technical expertise.',
+        designDecisions: {
+          opening: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Task-based trust — let the work speak',text:'This group builds trust through shared technical work. The co-design session is both the relationship-building moment and the first learning activity. Do not separate them.',confidence:3},
+            {framework:'lewis',fw:'Lewis',label:'Linear-active — efficient and results-focused',text:'Gets to work quickly. Values intellectual rigour and technical depth. Will disengage from content that does not challenge them.',confidence:2},
+          ]},
+          sequencing: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Applications first — strongly',text:'Score 3/10 on persuading. Must demonstrate practical value within 15 minutes. Theory without visible application will lose this group immediately.',confidence:3},
+            {framework:'hofstede',fw:'Hofstede',label:'Low uncertainty avoidance — comfortable with exploration',text:'Build in open exploration time. Rigid structure feels constraining. This group learns well through self-directed discovery with a framework to return to.',confidence:3},
+          ]},
+          facilitation: {flags:[
+            {framework:'hofstede',fw:'Hofstede',label:'Low power distance — peer-facilitated strongly appropriate',text:'Expert title matters less than demonstrated competence. A peer facilitator from the pilot cohort will carry more credibility than an external expert.',confidence:3},
+            {framework:'globe',fw:'GLOBE',label:'High performance orientation — frame as professional mastery',text:'This group is motivated by being excellent at their craft. Frame AI adoption as building expertise at the frontier of the profession — not compliance with a corporate initiative.',confidence:3},
+          ]},
+          assessment: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Direct peer feedback — appropriate and preferred',text:'Peer review of AI outputs is culturally natural for this group. Create structured peer feedback mechanisms and let them evaluate each other\'s work.',confidence:3},
+            {framework:'hofstede',fw:'Hofstede',label:'Individualistic — individual achievement recognised',text:'Individual technical achievement is strongly motivating. Public recognition of specific contributions within the peer group resonates.',confidence:3},
+          ]},
+          motivation: {flags:[
+            {framework:'schwartz',fw:'Schwartz',label:'Self-direction and stimulation values dominant',text:'This group is intrinsically motivated by intellectual challenge and autonomy. The most powerful motivator is being trusted to explore and co-design.',confidence:2},
+            {framework:'hofstede',fw:'Hofstede',label:'Long-term orientation — building future-relevant skills',text:'Frame AI adoption as building skills that will matter increasingly across the career. Long-term professional capability argument resonates strongly.',confidence:3},
+          ]},
+          scheduling: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Flexible time — results over clock',text:'Results-oriented rather than schedule-oriented. Less concerned about agenda timing than whether they are learning something real. Build flexibility into the schedule.',confidence:2},
+            {framework:'trompenaars',fw:'Trompenaars',label:'Internal direction — believe they shape their environment',text:'This group believes they can change the tools and systems they work with. The learning programme should honour that belief — position them as co-creators, not recipients.',confidence:2},
+          ]},
+        },
+        meyer:{communicating:3,evaluating:3,leading:2,deciding:4,trusting:3,disagreeing:3,scheduling:5,persuading:3},
+        hofstede:{powerDistance:3,individualism:8,uncertaintyAvoidance:3,longTermOrientation:7},
+        schwartz:{power:4,achievement:8,hedonism:5,stimulation:8,selfdirection:9,universalism:5,benevolence:4,tradition:2,conformity:2,security:3},
+        trompenaars:{universalism:7,individualism:8,neutral:3,specific:7,achievement:9,sequential:5,internal:9},
+        globe:{performanceOrientation:9,humaneOrientation:4,assertiveness:5,institutionalCollectivism:4,inGroupCollectivism:5,powerDistance:3,uncertaintyAvoidance:3,futureOrientation:8,genderEgalitarianism:8},
+        lewis:{linearActive:65,multiActive:20,reactive:15},
+        confidence:'high',
+        confidenceNote:'Profile from listening tour (6 interviews) plus strong framework data for US technical professional populations. Pilot cohort data will refine this profile further.',
+      },
+      'Field Operations': {
+        color: '#C4826A',
+        description: '12-state field workforce. Deskless. Skeptical of corporate communications. Strong regional identity variation across states.',
+        designDecisions: {
+          opening: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Relationship-based — supervisor is the bridge',text:'Trust with this group runs through the direct supervisor. Any learning initiative that does not visibly involve and centre the supervisor will face passive resistance.',confidence:3},
+            {framework:'schwartz',fw:'Schwartz',label:'Security values — commitment before content',text:'The "no redundancies" commitment must be visibly honoured before any learning activity begins. A group worried about their jobs cannot learn.',confidence:3},
+          ]},
+          sequencing: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Applications first — very strongly',text:'Score 2/10 on persuading. Must show what this means in their actual field context within the first 10 minutes. Any abstract framing will produce disengagement. Start with a real example from a site like theirs.',confidence:3},
+            {framework:'lewis',fw:'Lewis',label:'Multi-active lean — people and practical',text:'Learning designed for a multi-active group needs warmth, human connection, and immediate practical relevance. Clinical, efficient, task-focused delivery will not land.',confidence:2},
+          ]},
+          facilitation: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Trust earned through field context — not credentials',text:'A facilitator who demonstrates understanding of field operations will be trusted. One who does not will not — regardless of their expertise or title.',confidence:3},
+            {framework:'hofstede',fw:'Hofstede',label:'Moderate power distance — supervisor authority respected',text:'Supervisor-endorsed training carries significantly more weight than externally delivered training. Co-facilitate with or explicitly endorse by the direct supervisor.',confidence:3},
+          ]},
+          assessment: {flags:[
+            {framework:'meyer',fw:'Meyer',label:'Indirect feedback — supervisor observation most appropriate',text:'Individual public assessment will be experienced as threatening. Supervisor sign-off on first real-world application is the appropriate and credible assessment mechanism.',confidence:3},
+            {framework:'hofstede',fw:'Hofstede',label:'Moderate collectivism — group success matters',text:'Frame performance in terms of the team and the site succeeding, not individual compliance. Recognition of site-level adoption is more motivating than individual recognition.',confidence:2},
+          ]},
+          motivation: {flags:[
+            {framework:'schwartz',fw:'Schwartz',label:'Security and benevolence — belonging and stability',text:'This group is motivated by the security of their team and their site. Frame every learning moment around what is immediately better for their team and their daily work.',confidence:2},
+            {framework:'globe',fw:'GLOBE',label:'High humane orientation — people matter',text:'This group values looking out for each other. Frame AI adoption as something that gives each person more capacity to do the human parts of the job — not something that replaces people.',confidence:2},
+          ]},
+          scheduling: {flags:[
+            {framework:'trompenaars',fw:'Trompenaars',label:'Synchronic time — field operations run on operational time',text:'Field operations schedules are driven by operational demands, not training agendas. Build significant flexibility into timing. Short, repeated sessions work better than long blocks.',confidence:3},
+            {framework:'lewis',fw:'Lewis',label:'Bring training to the work — not work to the training',text:'Training delivered at the actual workstation where the change happens lands better than training in a separate room. The physical context is part of the learning.',confidence:3},
+          ]},
+        },
+        meyer:{communicating:4,evaluating:4,leading:5,deciding:5,trusting:7,disagreeing:4,scheduling:5,persuading:2},
+        hofstede:{powerDistance:5,individualism:5,uncertaintyAvoidance:6,longTermOrientation:4},
+        schwartz:{power:3,achievement:5,hedonism:5,stimulation:4,selfdirection:5,universalism:5,benevolence:7,tradition:6,conformity:5,security:8},
+        trompenaars:{universalism:5,individualism:5,neutral:4,specific:5,achievement:5,sequential:4,internal:5},
+        globe:{performanceOrientation:6,humaneOrientation:8,assertiveness:5,institutionalCollectivism:5,inGroupCollectivism:7,powerDistance:5,uncertaintyAvoidance:6,futureOrientation:4,genderEgalitarianism:5},
+        lewis:{linearActive:30,multiActive:55,reactive:15},
+        confidence:'moderate',
+        confidenceNote:'Profile from listening tour (field interviews across 3 states). 12-state variation means this profile is an average — Texas and Colorado sub-groups have noticeably different profiles. Regional calibration recommended.',
+      },
+    }
+  }
+};
+
+// ══════════════════════════════════════════
+// INCLUSION & INTERSECTIONALITY DATA
+// ══════════════════════════════════════════
+const INCLUSION_PROFILES = {
+  "meridian": {
+    "Finance Managers — Global": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "Group spans approximately 38-57. Three Finance Managers are within 5 years of retirement in UK and France — their relationship to this change is fundamentally different. They are navigating career identity, not career development. The younger Brazil and US managers are early-career invested. Design cannot treat them the same."
+      },
+      "disability": {
+        "flag": "gap",
+        "obs": null
+      },
+      "gender": {
+        "flag": "flagged",
+        "obs": "Finance Manager population skews male (14/18). The four women in the group — all in US and UK — reported in the listening tour feeling less consulted in the legacy process design. Worth watching whether the new role definition creates or closes that gap."
+      },
+      "race_ethnicity": {
+        "flag": "gap",
+        "obs": null
+      },
+      "socioeconomic": {
+        "flag": "ok",
+        "obs": "Senior professional population. Economic security is not the primary stake. Identity and expertise are."
+      },
+      "language_literacy": {
+        "flag": "flagged",
+        "obs": "Three distinct language groups requiring separate session delivery. French and Portuguese not just translation — different register, formality, and relationship to the content. Do not translate the English session. Design the French and Portuguese sessions separately."
+      },
+      "caregiving": {
+        "flag": "gap",
+        "obs": null
+      }
+    },
+    "Supply Chain Frontline — Brazil": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "Predominantly 25-45. Many are primary household earners. This change is not a career development moment — it is a potential threat to stable income. That framing must shape how the change is communicated and supported."
+      },
+      "disability": {
+        "flag": "flagged",
+        "obs": "Physical warehouse environment. Any team members with mobility, hearing, or vision considerations will have specific needs in a floor-based training environment. Practitioner has not yet assessed this — flag for site visit before training design is finalised."
+      },
+      "gender": {
+        "flag": "ok",
+        "obs": "Mixed gender population. No specific flags from listening tour. Worth confirming with supervisors whether there are any dynamics in the floor environment that affect psychological safety in the training context."
+      },
+      "race_ethnicity": {
+        "flag": "gap",
+        "obs": null
+      },
+      "socioeconomic": {
+        "flag": "flagged",
+        "obs": "Frontline workforce. Economic security is the primary stake of this change. The no-redundancies commitment is not just communication strategy — it is the foundation of any willingness to engage with the training."
+      },
+      "language_literacy": {
+        "flag": "flagged",
+        "obs": "Portuguese primary language confirmed. Literacy level not assessed — do not assume. Quick reference card design must work for a range of literacy levels. Visual design and icon-based instruction may need to carry more weight than text."
+      },
+      "caregiving": {
+        "flag": "flagged",
+        "obs": "Multiple supervisors mentioned team members with significant family responsibilities affecting scheduling flexibility. Training during working hours is non-negotiable — any requirement to attend outside shift hours will create barriers that disproportionately affect caregivers."
+      }
+    },
+    "Finance Frontline — France": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "Insufficient data — design hold applies. Age range not captured in listening tour. Flag for initial engagement sessions."
+      },
+      "disability": {
+        "flag": "gap",
+        "obs": null
+      },
+      "gender": {
+        "flag": "gap",
+        "obs": null
+      },
+      "race_ethnicity": {
+        "flag": "gap",
+        "obs": null
+      },
+      "socioeconomic": {
+        "flag": "ok",
+        "obs": null
+      },
+      "language_literacy": {
+        "flag": "ok",
+        "obs": "French-speaking, office-based professional population. Standard literacy assumed — verify in initial session."
+      },
+      "caregiving": {
+        "flag": "gap",
+        "obs": null
+      }
+    }
+  },
+  "fusion": {
+    "US Executive Leadership": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "Senior leadership team averages 51. All built their careers in a pre-digital-native context. Their relationship to the NL/DE team's working style may be filtered through generational assumptions about pace, formality, and hierarchy that they may not be aware of. Worth surfacing in the cross-cultural calibration session."
+      },
+      "disability": {
+        "flag": "gap",
+        "obs": null
+      },
+      "gender": {
+        "flag": "flagged",
+        "obs": "6 of 8 US executive leaders are male. The two women reported in the listening tour that their input in joint sessions is less likely to be amplified by the group. In cross-cultural sessions where the NL/DE team is also present, this dynamic could be compounded."
+      },
+      "race_ethnicity": {
+        "flag": "flagged",
+        "obs": "US leadership team is not racially diverse. When engaging with a European team that may have different racial and ethnic composition, awareness of US racial dynamics and their potential projection onto cross-cultural interactions is relevant."
+      },
+      "socioeconomic": {
+        "flag": "ok",
+        "obs": null
+      },
+      "language_literacy": {
+        "flag": "ok",
+        "obs": "English primary. NL/DE counterparts are English-proficient but this is not their primary language — the cognitive load of cross-cultural negotiation in a second language falls disproportionately on the NL/DE team."
+      },
+      "caregiving": {
+        "flag": "gap",
+        "obs": null
+      }
+    },
+    "Acquired Team (NL/DE)": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "NL/DE team skews younger than the US leadership (average 38 vs 51). This creates both opportunity — more comfort with change — and risk — US leadership may unconsciously undervalue their expertise based on age."
+      },
+      "disability": {
+        "flag": "gap",
+        "obs": null
+      },
+      "gender": {
+        "flag": "ok",
+        "obs": "NL/DE team is more gender-balanced than US leadership. Worth ensuring that in joint sessions, facilitation actively creates space for all voices rather than defaulting to the most vocal participants."
+      },
+      "race_ethnicity": {
+        "flag": "gap",
+        "obs": null
+      },
+      "socioeconomic": {
+        "flag": "ok",
+        "obs": null
+      },
+      "language_literacy": {
+        "flag": "flagged",
+        "obs": "Operating in English as a second language in cross-cultural sessions. Design sessions to allow pre-meeting written input so NL/DE team members can contribute their full thinking without the pressure of real-time English articulation."
+      },
+      "caregiving": {
+        "flag": "gap",
+        "obs": null
+      }
+    }
+  },
+  "nova": {
+    "Data & Analytics": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "Predominantly 26-38. Digital native, comfort with AI tools is a generational baseline not a learned skill for this group. Design cannot treat this as a technology adoption challenge — it is a role identity and governance challenge."
+      },
+      "disability": {
+        "flag": "gap",
+        "obs": null
+      },
+      "gender": {
+        "flag": "flagged",
+        "obs": "D&A field skews male in most organisations. If this cohort follows that pattern, actively designing for psychological safety and equitable voice in the peer facilitation model is important. Peer learning environments can inadvertently amplify existing gender dynamics."
+      },
+      "race_ethnicity": {
+        "flag": "gap",
+        "obs": null
+      },
+      "socioeconomic": {
+        "flag": "ok",
+        "obs": "Professional technical workforce. Economic security is not the primary stake. Professional identity and career trajectory are."
+      },
+      "language_literacy": {
+        "flag": "ok",
+        "obs": "English primary. Houston HQ population."
+      },
+      "caregiving": {
+        "flag": "gap",
+        "obs": null
+      }
+    },
+    "Field Operations": {
+      "generational": {
+        "flag": "flagged",
+        "obs": "Wide generational range — estimated 22-58 across 12 states. Older field workers have built deep operational expertise over careers. The AI adoption framing must explicitly honour that expertise rather than positioning it as obsolete. Younger workers may adapt faster but should not be positioned as more valuable."
+      },
+      "disability": {
+        "flag": "flagged",
+        "obs": "Field operations environment. Hearing protection requirements at many sites. Any worker with existing hearing impairment faces compounded challenges. Any communication relying on verbal instruction in a noisy environment will not reach everyone equally. Written and visual backup for all verbal communication is a design requirement, not an accommodation."
+      },
+      "gender": {
+        "flag": "flagged",
+        "obs": "Field operations skews male. The women in this workforce may have specific dynamics around psychological safety in team learning environments — particularly in peer-facilitated sessions where group dynamics can replicate existing workplace power structures."
+      },
+      "race_ethnicity": {
+        "flag": "flagged",
+        "obs": "12-state workforce will include significant racial and ethnic diversity varying by region. Texas and Colorado sites likely have significant Hispanic and Latino populations. Communications and training that feel culturally specific to white American field worker experience will not land equitably."
+      },
+      "socioeconomic": {
+        "flag": "flagged",
+        "obs": "Frontline field workforce. Economic security is the primary stake. The no-redundancies commitment must be visible and sustained — not a one-time statement. Leaders must be equipped to return to it every time they interact with this population during the change."
+      },
+      "language_literacy": {
+        "flag": "flagged",
+        "obs": "English primary but significant Spanish-language population in Texas and Colorado sites. Any communication or training not available in Spanish will not reach this population equitably. Literacy level not uniformly assessed — visual and icon-based design should carry instruction wherever possible."
+      },
+      "caregiving": {
+        "flag": "flagged",
+        "obs": "Field workers often have limited schedule flexibility. Shift patterns, site locations, and commute times all create caregiving constraints. Training must be site-based, during working hours, and short enough to fit within operational schedules."
+      }
+    }
+  }
+};
+
+const INCLUSION_CATEGORIES = {
+  generational: {label:'Generational context',icon:'🕐',prompt:'What is the age range and generational composition of this group, and how does it shape their relationship to this specific change?'},
+  disability: {label:'Disability & access',icon:'♿',prompt:'Are there visible or invisible disability or access considerations — hearing, vision, mobility, cognitive processing, sensory environment — that the design must account for?'},
+  gender: {label:'Gender dynamics',icon:'⚖',prompt:'Does the gender composition of this group and the nature of the change create specific dynamics in psychological safety, voice, or equity of impact?'},
+  race_ethnicity: {label:'Race & ethnicity',icon:'🌍',prompt:'Are there racial or ethnic dynamics that affect trust in the organisation, psychological safety in learning environments, or equity of impact from this change?'},
+  socioeconomic: {label:'Socioeconomic context',icon:'🏠',prompt:'What economic stakes does this change carry for this group? Is the primary stake identity and career, or economic security and stability?'},
+  language_literacy: {label:'Language & literacy',icon:'📝',prompt:'Beyond primary language — are there literacy level, second-language cognitive load, or language register considerations that affect communication and training design?'},
+  caregiving: {label:'Caregiving & life context',icon:'👨‍👩‍👧',prompt:'Are there caregiving responsibilities, schedule constraints, or life context factors that affect when and how this group can engage with training and communications?'},
+};
+
+const FLAG_CONFIG = {
+  flagged: {color:'#8B4A6A',bg:'#FBF0F5',label:'Needs attention'},
+  gap: {color:'var(--risk-mod)',bg:'var(--risk-mod-bg)',label:'Not yet assessed'},
+  ok: {color:'var(--tile-2)',bg:'var(--risk-low-bg)',label:'No flags raised'},
+};
+
+// ══════════════════════════════════════════
+// UPDATE HISTORY
+// ══════════════════════════════════════════
+let updateHistory = [
+  {date:'May 7, 2026',time:'09:14',group:'Finance Managers — Global',change:'Initial profile generated from listening tour data (18 interviews). France and Brazil sub-group flags added based on practitioner debrief observations.',trigger:'Listening tour complete',confidence:'moderate'},
+  {date:'May 8, 2026',time:'16:30',group:'US Executive Leadership',change:'Cross-cultural blind spot confirmed — US leadership reading European silence as alignment. Disagreeing dimension updated from 3 to 2. Flag added to facilitation decision.',trigger:'Post-session debrief',confidence:'high'},
+  {date:'May 9, 2026',time:'11:00',group:'Acquired Team (NL/DE)',change:'Security values flag strengthened based on brand retirement observation. Schwartz security dimension updated.',trigger:'Practitioner observation',confidence:'moderate'},
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentScenario = 'meridian';
+let currentGroup = '';
+let profileViewMode = 'integrated';
+let isRecording = false;
+let recognition = null;
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.view-tab').forEach(t=>t.classList.remove('active'));
+  const viewEl = document.getElementById('view-'+name);
+  if (viewEl) viewEl.classList.add('active');
+  if (el && el.classList) el.classList.add('active');
+  else {
+    // Programmatic call — find and activate the right tab
+    document.querySelectorAll('.view-tab').forEach(t => {
+      if (t.getAttribute('onclick') && t.getAttribute('onclick').includes("'"+name+"'")) {
+        t.classList.add('active');
+      }
+    });
+  }
+  if (name === 'compare') renderComparison();
+  if (name === 'library') renderLibrary();
+  if (name === 'intelligence') renderHistory();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function setProfileView(mode, el) {
+  profileViewMode = mode;
+  document.querySelectorAll('.vt-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderProfile();
+}
+
+// ══════════════════════════════════════════
+// SCENARIO & GROUP
+// ══════════════════════════════════════════
+function loadScenario(key) {
+  currentScenario = key;
+  const scen = PROFILES[key];
+  if (!scen) return;
+  const groupSel = document.getElementById('group-sel');
+  groupSel.innerHTML = scen.groups.map(g=>`<option value="${g}">${g}</option>`).join('');
+  const compareA = document.getElementById('compare-a');
+  const compareB = document.getElementById('compare-b');
+  if (compareA) compareA.innerHTML = groupSel.innerHTML;
+  if (compareB) compareB.innerHTML = groupSel.innerHTML;
+  if (compareB && scen.groups.length > 1) compareB.selectedIndex = 1;
+  currentGroup = scen.groups[0];
+  renderProfile();
+}
+
+function loadGroup(name) {
+  currentGroup = name;
+  renderProfile();
+}
+
+// ══════════════════════════════════════════
+// VIEW A: PROFILE
+// ══════════════════════════════════════════
+function renderProfile() {
+  const scen = PROFILES[currentScenario];
+  if (!scen) return;
+  const profile = scen.data[currentGroup];
+
+  // Profile header
+  const hEl = document.getElementById('profile-header');
+  if (!profile) {
+    hEl.innerHTML = `<div style="padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--ink-muted);font-style:italic;">Cultural profile not yet captured for ${currentGroup}. Add observations in View D — Intelligence input — to generate the profile from listening tour data.</div>`;
+    document.getElementById('profile-content').innerHTML = '';
+    return;
+  }
+
+  const confColors = {high:'var(--tile-2)',moderate:'var(--risk-mod)',low:'var(--risk-high)'};
+  const confDots = (conf) => {
+    const n = conf==='high'?3:conf==='moderate'?2:1;
+    return Array(3).fill(0).map((_,i)=>`<div class="cd-dot" style="background:${i<n?'var(--cult)':'rgba(28,26,23,.12)'};width:8px;height:8px;border-radius:50%;"></div>`).join('');
+  };
+
+  hEl.innerHTML = `<div style="display:flex;align-items:flex-start;gap:16px;padding:16px 18px;background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);">
+    <div style="width:4px;border-radius:2px;background:${profile.color};align-self:stretch;flex-shrink:0;"></div>
+    <div style="flex:1;">
+      <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink);margin-bottom:4px;">${currentGroup}</div>
+      <div style="font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.5;margin-bottom:10px;">${profile.description}</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-muted);">
+          <div style="display:flex;gap:3px;">${confDots(profile.confidence)}</div>
+          Profile confidence: <strong style="color:${confColors[profile.confidence]};font-weight:500;">${profile.confidence}</strong>
+        </div>
+        <span style="font-size:10px;color:var(--ink-muted);font-weight:300;font-style:italic;">${profile.confidenceNote}</span>
+      </div>
+    </div>
+  </div>`;
+
+  if (profileViewMode === 'integrated') renderIntegratedView(profile);
+  else renderFrameworkView(profile);
+}
+
+function renderIntegratedView(profile) {
+  const DD_CONFIG = [
+    {key:'opening',label:'Session opening',icon:'🤝',color:'var(--dd-open)',desc:'How to begin — relationship vs task, credibility establishment, time before content'},
+    {key:'sequencing',label:'Content sequencing',icon:'📐',color:'var(--dd-seq)',desc:'Principles first or applications first, theoretical framework vs concrete example'},
+    {key:'facilitation',label:'Facilitation approach',icon:'🎯',color:'var(--dd-facil)',desc:'Who facilitates, from where in the hierarchy, how authority and challenge work'},
+    {key:'assessment',label:'Assessment & feedback',icon:'📊',color:'var(--dd-assess)',desc:'Direct or indirect, individual or group, formal or observed'},
+    {key:'motivation',label:'Motivation framing',icon:'🧭',color:'var(--dd-motiv)',desc:'What values are at stake, what this change threatens or enables at a deeper level'},
+    {key:'scheduling',label:'Scheduling & pacing',icon:'🕐',color:'var(--dd-sched)',desc:'Structure, flexibility, time orientation, session length and format'},
+  ];
+
+  const confDots = (n) => Array(3).fill(0).map((_,i)=>`<div class="cd-dot" style="background:${i<n?'var(--cult)':'rgba(28,26,23,.12)'};width:7px;height:7px;border-radius:50%;"></div>`).join('');
+  const FW_CLASS = {Meyer:'fw-meyer',Hofstede:'fw-hofstede',Schwartz:'fw-schwartz',Trompenaars:'fw-trompenaars',GLOBE:'fw-globe',Lewis:'fw-lewis'};
+
+  // Build inclusion section separately to avoid template literal nesting
+  var inclusionHTML = renderInclusionSection(currentGroup);
+  document.getElementById('profile-content').innerHTML = DD_CONFIG.map((dd,i)=>{
+    const dflags = profile.designDecisions?.[dd.key]?.flags || [];
+    const summary = dflags.length > 0 ? dflags[0].text.slice(0,60)+'...' : 'No flags captured yet';
+    return `<div class="dd-card" id="dd-${i}">
+      <div class="dd-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="dd-icon" style="background:${dd.color}18;font-size:18px;">${dd.icon}</div>
+        <div style="flex:1;">
+          <div class="dd-name">${dd.label}</div>
+          <div style="font-size:11px;color:var(--ink-muted);font-weight:300;">${dd.desc}</div>
+        </div>
+        <div style="font-size:11px;color:var(--ink-muted);font-weight:300;font-style:italic;max-width:200px;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${dflags.length} flag${dflags.length!==1?'s':''}</div>
+        <div class="dd-caret" style="margin-left:10px;">▼</div>
+      </div>
+      <div class="dd-body">
+        ${dflags.length ? dflags.map(f=>`
+          <div class="flag-item" style="border-left-color:${dd.color};">
+            <span class="fw-badge fw-${f.framework} fi-fw">${f.fw}</span>
+            <div class="fi-content">
+              <div class="fi-label">${f.label}</div>
+              <div class="fi-flag">${f.text}</div>
+              <div class="confidence-dots">${confDots(f.confidence)}</div>
+            </div>
+          </div>`).join('') :
+          `<div style="padding:12px;font-size:12px;color:var(--ink-muted);font-style:italic;font-weight:300;">No flags captured for this design decision. Add observations in View D to generate flags from listening data.</div>`}
+      </div>
+    </div>`;
+  }).join('') + inclusionHTML;
+}
+
+function renderInclusionSection(groupName) {
+  const scen = INCLUSION_PROFILES[currentScenario];
+  if (!scen) return '';
+  const data = scen[groupName];
+
+  var html = '<div class="inclusion-section">';
+  html += '<div class="incl-header"><span>Inclusion & intersectionality</span><span class="incl-badge">Practitioner observations</span></div>';
+  html += '<div style="font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-bottom:12px;">These are not demographic checkboxes — they are design considerations surfaced from listening tour data. The practitioner adds, edits, and confirms. The system surfaces what to think about at the right moment.</div>';
+
+  Object.entries(INCLUSION_CATEGORIES).forEach(function(entry) {
+    var catKey = entry[0];
+    var cat = entry[1];
+    var item = data && data[catKey];
+    var flag = item ? item.flag : 'gap';
+    var cfg = FLAG_CONFIG[flag] || FLAG_CONFIG.gap;
+    var obs = item && item.obs;
+
+    html += '<div class="incl-prompt ' + flag + '">';
+    html += '<div class="ip-icon">' + cat.icon + '</div>';
+    html += '<div class="ip-content">';
+    html += '<div class="ip-label" style="color:' + cfg.color + ';">' + cat.label + ' &nbsp;<span style="font-size:10px;font-weight:400;padding:1px 6px;border-radius:6px;background:' + cfg.bg + ';">' + cfg.label + '</span></div>';
+    html += '<div class="ip-text">' + cat.prompt + '</div>';
+    if (obs) {
+      html += '<div class="ip-obs">' + obs + '</div>';
+    }
+    html += '<button class="ip-add" onclick="addInclusionNote('' + currentGroup.replace(/'/g,"\'") + '','' + catKey + '')">' + (obs ? '✎ Edit note' : '+ Add practitioner note') + '</button>';
+    html += '</div></div>';
+  });
+
+  html += '<div class="incl-note">These observations inform design decisions across all areas — communications channel selection, training environment design, leadership engagement approach, and what the people brief surfaces for each leader. They are never shared as demographic data about individuals.</div>';
+  html += '</div>';
+  return html;
+}
+
+function addInclusionNote(groupName, catKey) {
+  var cat = INCLUSION_CATEGORIES[catKey];
+  var current = INCLUSION_PROFILES[currentScenario] && INCLUSION_PROFILES[currentScenario][groupName] && INCLUSION_PROFILES[currentScenario][groupName][catKey];
+  var existing = current && current.obs ? current.obs : '';
+  var note = prompt(cat.label + '\n\n' + cat.prompt + '\n\nAdd your observation:', existing);
+  if (note === null) return;
+
+  if (!INCLUSION_PROFILES[currentScenario]) INCLUSION_PROFILES[currentScenario] = {};
+  if (!INCLUSION_PROFILES[currentScenario][groupName]) INCLUSION_PROFILES[currentScenario][groupName] = {};
+  if (!INCLUSION_PROFILES[currentScenario][groupName][catKey]) INCLUSION_PROFILES[currentScenario][groupName][catKey] = {flag:'ok'};
+
+  INCLUSION_PROFILES[currentScenario][groupName][catKey].obs = note;
+  INCLUSION_PROFILES[currentScenario][groupName][catKey].flag = note ? 'flagged' : 'gap';
+
+  updateHistory.unshift({
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+    group: groupName,
+    change: cat.label + ' observation updated for ' + groupName + '.',
+    trigger: 'Practitioner input',
+    confidence: 'high'
+  });
+
+  renderProfile();
+  renderHistory();
+}
+
+function renderFrameworkView(profile) {
+  const fwOrder = ['meyer','hofstede','schwartz','trompenaars','globe','lewis'];
+  const FW_COLORS = {meyer:'var(--meyer)',hofstede:'var(--hofstede)',schwartz:'var(--schwartz)',trompenaars:'var(--trompenaars)',globe:'var(--globe)',lewis:'var(--lewis)'};
+
+  const html = fwOrder.map(fwKey => {
+    const fw = FRAMEWORKS[fwKey];
+    const data = profile[fwKey];
+    if (!data) return '';
+
+    if (fwKey === 'lewis') {
+      const types = [
+        {key:'linearActive',label:'Linear-active',color:'#4A6FA8',desc:'Task-oriented, factual, direct, sequential'},
+        {key:'multiActive',label:'Multi-active',color:'#C4826A',desc:'People-oriented, emotional, relationship-first'},
+        {key:'reactive',label:'Reactive',color:'#7B9E87',desc:'Respectful, listening, harmony, process-oriented'},
+      ];
+      const dominant = types.reduce((a,b) => data[a.key] > data[b.key] ? a : b);
+      return `<div class="fw-section">
+        <div class="fw-header">
+          <span style="font-size:20px;">${fw.icon}</span>
+          <div style="flex:1;"><div class="fw-name">${fw.name}</div><div class="fw-author">${fw.author}</div></div>
+          <span class="fw-badge fw-${fwKey}">${dominant.label}</span>
+        </div>
+        <div class="fw-body">
+          <div class="lewis-type-grid">
+            ${types.map(t=>`<div class="lt-cell ${data[t.key]===Math.max(...types.map(x=>data[x.key]))?'lt-active':'lt-inactive'}" style="background:${t.color};">
+              <div class="lt-score">${data[t.key]}%</div>
+              <div class="lt-name">${t.label}</div>
+              <div class="lt-desc">${t.desc}</div>
+            </div>`).join('')}
+          </div>
+          <div style="font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.6;font-style:italic;">Dominant type: <strong style="color:${dominant.color};font-style:normal;">${dominant.label}</strong> — ${dominant.desc}. ${fw.useFor}</div>
+        </div>
+      </div>`;
+    }
+
+    if (fwKey === 'schwartz') {
+      const svItems = [
+        {key:'power',label:'Power',desc:'Social status, prestige, control over people/resources'},
+        {key:'achievement',label:'Achievement',desc:'Personal success through demonstrated competence'},
+        {key:'stimulation',label:'Stimulation',desc:'Excitement, novelty, challenge'},
+        {key:'selfdirection',label:'Self-direction',desc:'Independent thought and action, creativity'},
+        {key:'universalism',label:'Universalism',desc:'Understanding, tolerance, protection of all people and nature'},
+        {key:'benevolence',label:'Benevolence',desc:'Preservation and enhancement of close others'},
+        {key:'tradition',label:'Tradition',desc:'Respect and acceptance of cultural/religious customs'},
+        {key:'conformity',label:'Conformity',desc:'Restraint of actions/impulses that violate social expectations'},
+        {key:'security',label:'Security',desc:'Safety, harmony, and stability of society and self'},
+      ];
+      return `<div class="fw-section">
+        <div class="fw-header">
+          <span style="font-size:20px;">${fw.icon}</span>
+          <div style="flex:1;"><div class="fw-name">${fw.name}</div><div class="fw-author">${fw.author}</div></div>
+          <span class="fw-badge fw-${fwKey}">Values profile</span>
+        </div>
+        <div class="fw-body">
+          <div style="font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:12px;font-style:italic;">${fw.useFor}</div>
+          <div class="schwartz-grid">
+            ${svItems.map(sv=>{
+              const score = data[sv.key]||5;
+              return `<div class="sv-item">
+                <div class="sv-name">${sv.label}</div>
+                <div class="sv-bar-track"><div class="sv-bar-fill" style="width:${score*10}%;"></div></div>
+                <div class="sv-desc">${sv.desc}</div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Standard dimension view for meyer, hofstede, trompenaars, globe
+    const dims = fw.dims.filter(d => data[d] !== undefined);
+    return `<div class="fw-section">
+      <div class="fw-header">
+        <span style="font-size:20px;">${fw.icon}</span>
+        <div style="flex:1;"><div class="fw-name">${fw.name}</div><div class="fw-author">${fw.author}</div></div>
+        <span class="fw-badge fw-${fwKey}">${dims.length} dimensions</span>
+      </div>
+      <div class="fw-body">
+        <div style="font-size:12px;color:var(--ink-muted);font-weight:300;margin-bottom:14px;font-style:italic;">${fw.useFor}</div>
+        ${dims.map(dim=>{
+          const score = data[dim];
+          const labels = fw.dimLabels[dim] || ['Low','High'];
+          const dimName = dim.replace(/([A-Z])/g,' $1').trim();
+          const flags = Object.values(profile.designDecisions||{}).flatMap(dd=>dd.flags||[]).filter(f=>f.framework===fwKey && f.label.toLowerCase().includes(dimName.toLowerCase().slice(0,6)));
+          return `<div class="dim-row">
+            <div class="dim-name" style="text-transform:capitalize;">${dimName}</div>
+            <div class="dim-bar-wrap">
+              <div class="dim-labels"><span>${labels[0]}</span><span>${labels[1]}</span></div>
+              <div class="dim-bar-track"><div class="dim-bar-fill" style="width:${score*10}%;background:${FW_COLORS[fwKey]};"></div></div>
+            </div>
+            <div class="dim-score-label">${score}/10</div>
+            <div class="dim-flag">${flags[0]?.text?.slice(0,80)||''}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('profile-content').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// VIEW B: CROSS-GROUP COMPARISON
+// ══════════════════════════════════════════
+function renderComparison() {
+  const scen = PROFILES[currentScenario];
+  if (!scen) return;
+  const aName = document.getElementById('compare-a')?.value;
+  const bName = document.getElementById('compare-b')?.value;
+  document.getElementById('compare-a-label').textContent = aName || 'Group A';
+  document.getElementById('compare-b-label').textContent = bName || 'Group B';
+
+  const a = scen.data[aName];
+  const b = scen.data[bName];
+  if (!a || !b || aName === bName) {
+    document.getElementById('comparison-content').innerHTML = '<div style="padding:20px;font-size:13px;color:var(--ink-muted);font-style:italic;">Select two different groups to compare.</div>';
+    return;
+  }
+
+  const DIMS = [
+    {fw:'meyer',dim:'communicating',label:'Communicating',labels:['Low-context','High-context']},
+    {fw:'meyer',dim:'evaluating',label:'Feedback style',labels:['Direct','Indirect']},
+    {fw:'meyer',dim:'leading',label:'Leading',labels:['Egalitarian','Hierarchical']},
+    {fw:'meyer',dim:'trusting',label:'Trust basis',labels:['Task-based','Relationship-based']},
+    {fw:'meyer',dim:'persuading',label:'Persuading',labels:['Applications first','Principles first']},
+    {fw:'meyer',dim:'scheduling',label:'Time orientation',labels:['Flexible','Linear']},
+    {fw:'hofstede',dim:'powerDistance',label:'Power distance',labels:['Low','High']},
+    {fw:'hofstede',dim:'individualism',label:'Individualism',labels:['Collectivist','Individualist']},
+    {fw:'hofstede',dim:'uncertaintyAvoidance',label:'Uncertainty avoidance',labels:['Low','High']},
+  ];
+
+  const gaps = DIMS.map(d => {
+    const scoreA = a[d.fw]?.[d.dim] ?? 5;
+    const scoreB = b[d.fw]?.[d.dim] ?? 5;
+    const gap = Math.abs(scoreA - scoreB);
+    return {...d, scoreA, scoreB, gap, level: gap>=4?'high':gap>=2?'mod':'low'};
+  }).sort((x,y) => y.gap - x.gap);
+
+  const highGaps = gaps.filter(g=>g.level==='high');
+  const FW_COLORS = {meyer:'var(--meyer)',hofstede:'var(--hofstede)'};
+
+  let html = '';
+
+  if (highGaps.length) {
+    html += `<div style="margin-bottom:20px;">
+      <div style="font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--risk-high);margin-bottom:10px;">High-gap dimensions — design risks requiring active mitigation</div>
+      ${highGaps.map(g=>`<div class="gap-risk-card gr-high">
+        <div class="gr-label" style="color:var(--risk-high);">${g.label} &nbsp;·&nbsp; Gap: ${g.gap}/10 &nbsp;·&nbsp; <span class="fw-badge fw-${g.fw}" style="font-size:9px;">${g.fw}</span></div>
+        <div class="gr-text">${a.color?'':''}${aName} scores ${g.scoreA}/10 (${g.scoreA<=5?g.labels[0]:g.labels[1]}). ${bName} scores ${g.scoreB}/10 (${g.scoreB<=5?g.labels[0]:g.labels[1]}). Gap of ${g.gap} points — ${g.gap>=5?'significant design risk when these groups interact':'notable difference requiring design consideration'}.</div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  html += `<div style="overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;">
+    <table class="gap-table">
+      <thead><tr>
+        <th>Dimension</th>
+        <th style="color:#${a.color?.slice(1)||'7B9E87'};">${aName}</th>
+        <th>Gap</th>
+        <th style="color:#${b.color?.slice(1)||'C4826A'};">${bName}</th>
+        <th>Risk</th>
+      </tr></thead>
+      <tbody>
+        ${gaps.map(g=>`<tr>
+          <td style="font-weight:500;font-size:12px;">${g.label}<br><span style="font-size:10px;color:var(--ink-muted);font-weight:300;">${g.labels[0]} ← → ${g.labels[1]}</span></td>
+          <td>
+            <div class="gap-bar-wrap">
+              <div class="gap-score-a" style="color:${a.color||'var(--meyer)'};">${g.scoreA}</div>
+              <div class="gap-bar-track">
+                <div class="gap-bar-a" style="width:${g.scoreA*10}%;background:${a.color||'var(--meyer)'};"></div>
+                <div class="gap-bar-b" style="width:${g.scoreB*10}%;background:${b.color||'var(--schwartz)'};"></div>
+              </div>
+              <div class="gap-score-b" style="color:${b.color||'var(--schwartz)'};">${g.scoreB}</div>
+            </div>
+          </td>
+          <td><strong style="font-size:13px;">${g.gap}</strong></td>
+          <td></td>
+          <td><span class="gap-indicator gap-${g.level}">${g.level==='high'?'High':g.level==='mod'?'Moderate':'Low'}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+
+  document.getElementById('comparison-content').innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// VIEW C: FRAMEWORK LIBRARY
+// ══════════════════════════════════════════
+function renderLibrary() {
+  const FW_COLORS = {meyer:'var(--meyer)',hofstede:'var(--hofstede)',schwartz:'var(--schwartz)',trompenaars:'var(--trompenaars)',globe:'var(--globe)',lewis:'var(--lewis)'};
+  const FW_BGS = {meyer:'var(--meyer-bg)',hofstede:'var(--hofstede-bg)',schwartz:'var(--schwartz-bg)',trompenaars:'var(--trompenaars-bg)',globe:'var(--globe-bg)',lewis:'var(--lewis-bg)'};
+
+  document.getElementById('library-content').innerHTML = Object.entries(FRAMEWORKS).map(([key,fw])=>`
+    <div class="fw-lib-card">
+      <div class="fwl-header">
+        <div class="fwl-icon" style="background:${FW_BGS[key]};">${fw.icon}</div>
+        <div style="flex:1;">
+          <div class="fwl-name">${fw.name}</div>
+          <div class="fwl-author">${fw.author}</div>
+          <div class="fwl-use">${fw.useFor}</div>
+          <div class="fwl-dims">${fw.dims.map(d=>`<span class="fwl-dim">${d.replace(/([A-Z])/g,' $1').trim()}</span>`).join('')}</div>
+        </div>
+        <span class="fw-badge fw-${key}" style="flex-shrink:0;">${fw.dims.length} dimensions</span>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════
+// VIEW D: INTELLIGENCE INPUT
+// ══════════════════════════════════════════
+function renderHistory() {
+  document.getElementById('intel-history').innerHTML = updateHistory.slice().reverse().map(h=>`
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--cult);flex-shrink:0;margin-top:5px;"></div>
+      <div>
+        <div style="font-size:11px;color:var(--ink-muted);font-weight:300;margin-bottom:4px;">${h.date} &nbsp;·&nbsp; ${h.time} &nbsp;·&nbsp; ${h.group} &nbsp;·&nbsp; <span style="color:var(--cult);font-weight:500;">${h.confidence} confidence</span> &nbsp;·&nbsp; Trigger: ${h.trigger}</div>
+        <div style="font-size:13px;color:var(--ink-soft);font-weight:300;line-height:1.5;">${h.change}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function analyseIntelligence() {
+  const input = document.getElementById('intel-input')?.value?.trim();
+  if (!input) { alert('Add an observation first.'); return; }
+
+  await new Promise(r=>setTimeout(r,1500));
+
+  const result = document.getElementById('intel-result');
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--tile-5);margin-bottom:12px;">What was found</div>
+      <div style="padding:8px 10px;background:#EEF3FB;border-radius:var(--radius);margin-bottom:6px;font-size:12px;color:var(--ink-soft);font-weight:300;display:flex;gap:8px;align-items:flex-start;">
+        <input type="checkbox" checked style="margin-top:2px;accent-color:var(--cult);">
+        Signal detected: strong principles-first orientation — group delayed practical engagement until theoretical framework was complete. Meyer Persuading dimension aligned with score 8-9.
+      </div>
+      <div style="padding:8px 10px;background:#EEF3FB;border-radius:var(--radius);margin-bottom:6px;font-size:12px;color:var(--ink-soft);font-weight:300;display:flex;gap:8px;align-items:flex-start;">
+        <input type="checkbox" checked style="margin-top:2px;accent-color:var(--cult);">
+        Signal detected: facilitator-led session structure expected — group re-engaged when facilitator returned to theoretical framing, suggesting high uncertainty avoidance and structured learning preference.
+      </div>
+      <div style="font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--risk-mod);margin-top:14px;margin-bottom:8px;">What might need updating</div>
+      <div style="padding:8px 10px;background:var(--risk-mod-bg);border-radius:var(--radius);margin-bottom:6px;font-size:12px;color:var(--ink-soft);font-weight:300;display:flex;gap:8px;align-items:flex-start;">
+        <input type="checkbox" style="margin-top:2px;accent-color:var(--cult);">
+        Suggest updating Meyer Persuading score from 7 to 9 for this sub-group based on the observed response pattern.
+      </div>
+      <div style="padding:8px 10px;background:var(--risk-mod-bg);border-radius:var(--radius);margin-bottom:6px;font-size:12px;color:var(--ink-soft);font-weight:300;display:flex;gap:8px;align-items:flex-start;">
+        <input type="checkbox" style="margin-top:2px;accent-color:var(--cult);">
+        Suggest adding design flag to Content Sequencing: "Silence during practical exercise is not confusion — it is waiting for theoretical completion. Resume theory before re-attempting the exercise."
+      </div>
+      <div style="font-size:11px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--tile-3);margin-top:14px;margin-bottom:8px;">Uncertain — practitioner call needed</div>
+      <div style="padding:8px 10px;background:#F5F0FB;border-radius:var(--radius);font-size:12px;color:var(--ink-soft);font-weight:300;">⚑ Is this a France sub-group observation or a Finance Managers global observation? Attribution affects which profile is updated.</div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+        <button class="btn-primary" onclick="confirmAnalysis()">Confirm selected updates →</button>
+        <button class="btn-ghost" onclick="document.getElementById('intel-result').style.display='none'">Dismiss</button>
+      </div>
+    </div>`;
+}
+
+function confirmAnalysis() {
+  const group = document.getElementById('group-sel')?.value || currentGroup;
+  updateHistory.unshift({
+    date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    time: new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+    group, change: 'Profile updated from practitioner observation. Meyer Persuading score adjusted. Content Sequencing flag added for principles-first pattern.',
+    trigger: 'Practitioner observation input', confidence: 'moderate'
+  });
+  document.getElementById('intel-result').style.display = 'none';
+  document.getElementById('intel-input').value = '';
+  renderHistory();
+  alert('Profile updates confirmed and logged to version history.');
+}
+
+function startVoice() {
+  const btn = document.getElementById('voice-btn');
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    alert('Voice input supported in Chrome and Edge.'); return;
+  }
+  if (isRecording) {
+    recognition?.stop(); isRecording = false;
+    btn.textContent = '🎙 Dictate'; return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR(); recognition.continuous = true; recognition.interimResults = true;
+  recognition.onresult = e => {
+    document.getElementById('intel-input').value = Array.from(e.results).map(r=>r[0].transcript).join('');
+  };
+  recognition.onend = () => { isRecording = false; btn.textContent = '🎙 Dictate'; };
+  recognition.start(); isRecording = true; btn.textContent = '⏹ Stop';
+}
+
+function handleIntelFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('intel-input').value = `[Uploaded: ${file.name}]\n\nIn the live build the Claude API reads this document and extracts cultural signals automatically. For now paste key observations into the text area and press Analyse.`;
+  e.target.value = '';
+}
+
+function exportCulture() {
+  const scen = PROFILES[currentScenario];
+  const data = {_meta:{version:'1.0',tool:'Tessera™',module:'Cultural intelligence',scenario:currentScenario,exportedAt:new Date().toISOString()}, profiles:scen?.data, frameworks:Object.keys(FRAMEWORKS), updateHistory};
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `tessera-cultural-intelligence-${currentScenario}-${new Date().toISOString().slice(0,10)}.json`; a.click();
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  loadScenario('meridian');
+  renderLibrary();
+  renderHistory();
+  // Populate compare dropdowns
+  const scen = PROFILES['meridian'];
+  ['compare-a','compare-b'].forEach((id,idx) => {
+    const el = document.getElementById(id);
+    if (el) { el.innerHTML = scen.groups.map(g=>`<option value="${g}">${g}</option>`).join(''); if (idx===1&&el.options.length>1) el.selectedIndex=1; }
+  });
+});
+
+// Mosaic
+const colors=['#C4A882','#7B9E87','#8B7BA8','#C4826A','#F5F0FB','#4A8FA8','#E8D9C4'];
+const mosaic=document.getElementById('mosaic');
+for(let i=0;i<40;i++){const t=document.createElement('div');t.className='mosaic-tile';t.style.background=colors[i%colors.length];t.style.animationDelay=(0.02+i*0.012)+'s';mosaic.appendChild(t);}
+
+// Shell integration — hide own nav when running inside tessera.html shell
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('shell') === '1') {
+    const style = document.createElement('style');
+    style.textContent = '.t-nav{display:none!important;}';
+    document.head.appendChild(style);
+  }
+})();</script>
+</body>
+</html>
