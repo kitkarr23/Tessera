@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera™ — Project Team Directory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay: #C4A882; --clay-light: #E8D9C4; --clay-dark: #8B7355;
+      --ink: #1C1A17; --ink-soft: #4A4640; --ink-muted: #8A8480;
+      --surface: #F7F3ED; --surface-raised: #FDFAF6;
+      --tile-2: #7B9E87; --tile-3: #8B7BA8; --tile-4: #C4826A; --tile-5: #4A8FA8;
+      --border: rgba(28,26,23,0.12); --radius: 2px;
+      --risk-high: #C4826A; --risk-high-bg: #FDF2EE;
+      --risk-mod: #C4A840; --risk-mod-bg: #FDFAEE;
+      --risk-low: #7B9E87; --risk-low-bg: #F0F7F2;
+      --team: #2A5DA8; --team-light: #EEF3FB;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+
+    .t-nav { background: var(--ink); padding: 0 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; flex-wrap: wrap; position: sticky; top: 0; z-index: 200; }
+    .t-nav-brand { font-family: 'DM Serif Display', serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--clay); text-decoration: none; padding: 14px 0; }
+    .t-nav-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+    .t-nav-pill { padding: 4px 12px; border-radius: 10px; font-size: 11px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.1); text-decoration: none; white-space: nowrap; }
+    .t-nav-pill.active { color: var(--clay); border-color: var(--clay); }
+
+    .app { max-width: 1080px; margin: 0 auto; background: var(--surface-raised); min-height: 100vh; box-shadow: 0 0 80px rgba(0,0,0,.07); padding-bottom: 80px; }
+
+    .header { padding: 32px 48px 22px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; background: linear-gradient(135deg, var(--surface-raised) 0%, #EEF3FB 100%); }
+    .mosaic-accent { position: absolute; top: 0; right: 0; display: grid; grid-template-columns: repeat(10,12px); grid-template-rows: repeat(4,12px); gap: 2px; padding: 10px; opacity: .25; pointer-events: none; }
+    .mosaic-tile { border-radius: 1px; opacity: 0; animation: tileIn .4s forwards; }
+    @keyframes tileIn { from{opacity:0;transform:scale(.3)} to{opacity:1;transform:scale(1)} }
+    .wordmark { font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--team); margin-bottom: 8px; }
+    .header h1 { font-family: 'DM Serif Display', serif; font-size: 28px; font-weight: 400; color: var(--ink); margin-bottom: 4px; }
+    .header h1 em { font-style: italic; color: var(--team); }
+    .header p { font-size: 13px; color: var(--ink-muted); font-weight: 300; line-height: 1.7; max-width: 560px; }
+
+    /* View tabs */
+    .view-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
+    .view-tab { padding: 11px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; white-space: nowrap; }
+    .view-tab.active { border-bottom-color: var(--team); background: var(--surface-raised); }
+    .view-tab-label { font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 2px; }
+    .view-tab.active .view-tab-label { color: var(--team); }
+    .view-tab-title { font-size: 13px; color: var(--ink-soft); }
+    .view-tab.active .view-tab-title { color: var(--ink); font-weight: 500; }
+
+    .view { display: none; animation: fadeUp .25s ease forwards; }
+    .view.active { display: block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .view-pad { padding: 28px 48px; }
+
+    /* Scenario bar */
+    .scenario-bar { background: var(--team); padding: 10px 48px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .scenario-bar-label { font-size: 11px; color: rgba(255,255,255,.5); font-weight: 300; flex-shrink: 0; }
+    .scenario-sel { padding: 5px 12px; border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; color: white; background: rgba(255,255,255,.1); cursor: pointer; }
+    .scenario-sel option { color: var(--ink); background: white; }
+
+    /* Buttons */
+    .btn-primary { padding: 9px 20px; background: var(--team); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s; }
+    .btn-primary:hover { background: #1A3D78; }
+    .btn-ghost { padding: 8px 16px; border: 1px solid var(--border); background: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink-soft); cursor: pointer; transition: all .15s; }
+    .btn-ghost:hover { border-color: var(--team); color: var(--team); }
+    .btn-row { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; text-align: center; }
+    .stat-num { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--ink); line-height: 1; margin-bottom: 3px; }
+    .stat-label { font-size: 10px; color: var(--ink-muted); font-weight: 300; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* Team member cards */
+    .team-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+    .team-card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; transition: all .15s; cursor: pointer; }
+    .team-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,.08); transform: translateY(-1px); }
+    .team-card-top { padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
+    .team-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 16px; color: white; flex-shrink: 0; }
+    .team-name { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 3px; }
+    .team-title { font-size: 11px; color: var(--ink-muted); font-weight: 300; margin-bottom: 5px; }
+    .team-role-badge { display: inline-flex; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 500; }
+    .team-card-footer { padding: 10px 16px; border-top: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .team-contact { font-size: 11px; color: var(--ink-muted); font-weight: 300; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .team-flag { padding: 2px 7px; border-radius: 8px; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+
+    /* Role types */
+    .role-executive-sponsor { background: #EEF3FB; color: #1A3D78; }
+    .role-sponsor { background: #EEF3FB; color: #2A5DA8; }
+    .role-programme-director { background: #F5F0FB; color: #5A3A8B; }
+    .role-workstream-lead { background: #FDF2EE; color: #8B4A2A; }
+    .role-cm-lead { background: var(--risk-low-bg); color: #2A6B42; }
+    .role-cm-practitioner { background: var(--risk-low-bg); color: #2A6B42; }
+    .role-training-lead { background: var(--risk-mod-bg); color: #8B5A00; }
+    .role-hr-bp { background: #F5F0FB; color: var(--tile-3); }
+    .role-it-pm { background: var(--team-light); color: var(--team); }
+    .role-comms-lead { background: #EEF3FB; color: #2A5DA8; }
+    .role-legal { background: var(--surface); color: var(--ink-muted); border: 1px solid var(--border); }
+    .role-other { background: var(--surface); color: var(--ink-muted); border: 1px solid var(--border); }
+
+    /* Person panel */
+    .person-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 400px; background: white; box-shadow: -8px 0 40px rgba(0,0,0,.1); z-index: 300; overflow-y: auto; transform: translateX(100%); transition: transform .25s ease; }
+    .person-panel.open { transform: translateX(0); }
+    .panel-header { background: var(--team); padding: 24px; }
+    .panel-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 20px; color: white; border: 2px solid rgba(255,255,255,.3); margin-bottom: 12px; }
+    .panel-name { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; font-weight: 400; margin-bottom: 4px; }
+    .panel-title { font-size: 13px; color: rgba(255,255,255,.6); font-weight: 300; margin-bottom: 10px; }
+    .panel-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.15); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; color: white; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .panel-body { padding: 20px 24px; }
+    .panel-section { margin-bottom: 20px; }
+    .panel-section-title { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .panel-field { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; gap: 10px; }
+    .panel-field-label { font-size: 12px; color: var(--ink-muted); font-weight: 300; flex-shrink: 0; }
+    .panel-field-value { font-size: 12px; color: var(--ink); font-weight: 400; text-align: right; }
+    .panel-field-edit { width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink); background: var(--surface); }
+    .panel-field-edit:focus { outline: none; border-color: var(--team); }
+    .reviewer-chain { display: flex; flex-direction: column; gap: 6px; }
+    .rc-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 12px; color: var(--ink-soft); font-weight: 300; }
+    .rc-num { width: 20px; height: 20px; border-radius: 50%; background: var(--team); color: white; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .competing-flag { padding: 8px 10px; background: var(--risk-mod-bg); border: 1px solid var(--risk-mod); border-radius: var(--radius); font-size: 12px; color: var(--ink-soft); font-weight: 300; line-height: 1.5; margin-bottom: 6px; }
+    .cf-label { font-size: 10px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--risk-mod); margin-bottom: 4px; }
+
+    /* Reviewer chains view */
+    .chain-card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 10px; }
+    .chain-type { font-size: 11px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--team); margin-bottom: 8px; }
+    .chain-desc { font-size: 12px; color: var(--ink-muted); font-weight: 300; margin-bottom: 10px; line-height: 1.5; }
+    .chain-people { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chain-person { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; font-size: 11px; color: var(--ink-soft); font-weight: 300; }
+    .chain-person-avatar { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 500; color: white; flex-shrink: 0; }
+    .chain-arrow { font-size: 12px; color: var(--border); align-self: center; }
+
+    /* Intelligence panel */
+    .intel-panel { background: var(--ink); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 20px; }
+    .intel-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: white; font-weight: 400; margin-bottom: 6px; }
+    .intel-sub { font-size: 12px; color: rgba(255,255,255,.45); font-weight: 300; line-height: 1.6; margin-bottom: 14px; }
+    .intel-input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .intel-textarea { flex: 1; padding: 10px 12px; border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; color: white; background: rgba(255,255,255,.07); resize: none; min-height: 60px; font-weight: 300; line-height: 1.6; }
+    .intel-textarea:focus { outline: none; border-color: var(--clay); }
+    .intel-textarea::placeholder { color: rgba(255,255,255,.3); }
+    .intel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .intel-btn { padding: 7px 14px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; transition: all .15s; border: 1px solid rgba(255,255,255,.2); color: rgba(255,255,255,.6); background: none; }
+    .intel-btn:hover { border-color: var(--clay); color: var(--clay); }
+    .intel-btn.primary { background: var(--clay); border-color: var(--clay); color: white; }
+    .intel-btn.primary:hover { background: var(--clay-dark); }
+    .intel-upload { display: none; }
+    .intel-version { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.1); }
+    .intel-version-label { font-size: 11px; color: rgba(255,255,255,.35); font-weight: 300; }
+    .intel-version-sel { padding: 3px 8px; border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 11px; color: rgba(255,255,255,.55); background: rgba(255,255,255,.06); cursor: pointer; }
+    .intel-mic-btn { padding: 5px 10px; border: 1px solid rgba(255,255,255,.15); border-radius: var(--radius); font-size: 11px; color: rgba(255,255,255,.5); background: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+    .intel-mic-btn.recording { border-color: var(--risk-high); color: var(--risk-high); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
+
+    /* Analysis result panel */
+    .analysis-result { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 16px; display: none; }
+    .analysis-result.visible { display: block; }
+    .ar-section { margin-bottom: 16px; }
+    .ar-label { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+    .ar-found { color: var(--tile-5); }
+    .ar-suggests { color: var(--risk-mod); }
+    .ar-uncertain { color: var(--tile-3); }
+    .ar-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border-radius: var(--radius); margin-bottom: 6px; font-size: 12px; font-weight: 300; line-height: 1.5; }
+    .ar-item-found { background: #EEF3FB; color: var(--ink-soft); }
+    .ar-item-suggest { background: var(--risk-mod-bg); color: var(--ink-soft); }
+    .ar-item-uncertain { background: #F5F0FB; color: var(--ink-soft); }
+    .ar-checkbox { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; accent-color: var(--team); }
+    .ar-confirm-btn { padding: 8px 18px; background: var(--team); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; margin-top: 10px; }
+    .ar-dismiss-btn { padding: 8px 14px; border: 1px solid var(--border); background: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink-muted); cursor: pointer; margin-top: 10px; margin-left: 8px; }
+
+    /* Version history */
+    .version-history { }
+    .version-entry { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .version-entry:last-child { border-bottom: none; }
+    .ve-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+    .ve-meta { font-size: 11px; color: var(--ink-muted); font-weight: 300; margin-bottom: 4px; }
+    .ve-desc { font-size: 13px; color: var(--ink-soft); font-weight: 300; line-height: 1.5; }
+    .ve-tag { display: inline-flex; padding: 1px 7px; border-radius: 8px; font-size: 10px; font-weight: 500; margin-left: 6px; }
+
+    /* Hbar */
+    .hbar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .hbar-label { font-size: 12px; color: var(--ink-soft); font-weight: 300; width: 160px; flex-shrink: 0; }
+    .hbar-track { flex: 1; height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .hbar-fill { height: 100%; border-radius: 4px; }
+    .hbar-val { font-size: 11px; color: var(--ink-muted); width: 32px; text-align: right; }
+
+    input[type=text], input[type=email], select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: var(--surface-raised); font-weight: 300; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--team); }
+
+    @media(max-width:700px) {
+      .t-nav, .view-pad, .header, .scenario-bar { padding-left: 20px; padding-right: 20px; }
+      .team-grid { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: repeat(3,1fr); }
+      .person-panel { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="t-nav">
+  <a href="tessera-app.html" class="t-nav-brand" style="text-decoration:none;">Tessera™</a>
+  <div class="t-nav-pills">
+    <a href="tessera-app.html" class="t-nav-pill">Unit 1</a>
+    <a href="tessera-roster.html" class="t-nav-pill">Roster</a>
+    <span class="t-nav-pill active">Project team</span>
+    <a href="tessera-intake.html" class="t-nav-pill">Intake</a>
+    <a href="tessera-cia.html" class="t-nav-pill">CIA</a>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn-ghost" style="font-size:11px;" onclick="loadEngagementFile()">Load engagement ↑</button>
+    <button class="btn-ghost" style="font-size:11px;" onclick="saveEngagementFile()">Save engagement ↓</button>
+    <button class="btn-ghost" style="font-size:11px;" onclick="exportTeam()">Export team →</button>
+  </div>
+  <input type="file" id="engagement-file-input" accept=".json" style="display:none;" onchange="handleEngagementLoad(event)">
+</nav>
+
+<div class="app">
+  <div class="header">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera™ &nbsp;·&nbsp; Unit 2 &nbsp;·&nbsp; Module 2</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <div>
+        <h1>Project team <em>directory</em></h1>
+        <p>The delivery population — everyone who owns, approves, reviews, or decides anything in this engagement. Feeds reviewer chains, RACI assignments, plan ownership, and every place a person needs to be named across all units.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scenario-bar">
+    <div class="scenario-bar-label">Engagement</div>
+    <select class="scenario-sel" onchange="loadScenario(this.value)">
+      <option value="meridian">Meridian Global — ERP &amp; Restructure</option>
+      <option value="fusion">Fusion Dynamics — M&amp;A Integration</option>
+      <option value="nova">Nova Energy — Workforce Transformation</option>
+    </select>
+    <div style="font-size:11px;color:rgba(255,255,255,.35);font-weight:300;margin-left:auto;">Roles feed reviewer chains, RACI, and plan ownership across all units</div>
+  </div>
+
+  <!-- View tabs -->
+  <div class="view-bar">
+    <div class="view-tab active" onclick="switchView('directory',this)">
+      <div class="view-tab-label">View A</div>
+      <div class="view-tab-title">Team directory</div>
+    </div>
+    <div class="view-tab" onclick="switchView('chains',this)">
+      <div class="view-tab-label">View B</div>
+      <div class="view-tab-title">Reviewer chains</div>
+    </div>
+    <div class="view-tab" onclick="switchView('capacity',this)">
+      <div class="view-tab-label">View C</div>
+      <div class="view-tab-title">Capacity &amp; flags</div>
+    </div>
+    <div class="view-tab" onclick="switchView('intelligence',this)">
+      <div class="view-tab-label">View D</div>
+      <div class="view-tab-title">Intelligence &amp; versioning</div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW A: DIRECTORY ══ -->
+  <div class="view active" id="view-directory">
+    <div class="view-pad">
+
+      <div class="stats-row" id="dir-stats"></div>
+
+      <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center;">
+        <input type="text" id="team-search" placeholder="Search by name, role, or organisation..." style="flex:1;max-width:360px;" oninput="filterTeam()">
+        <select id="role-filter" onchange="filterTeam()" style="padding:8px 10px;width:auto;">
+          <option value="">All roles</option>
+          <option value="executive-sponsor">Executive sponsor</option>
+          <option value="sponsor">Sponsor</option>
+          <option value="programme-director">Programme director</option>
+          <option value="cm-lead">CM lead</option>
+          <option value="cm-practitioner">CM practitioner</option>
+          <option value="training-lead">Training lead</option>
+          <option value="workstream-lead">Workstream lead</option>
+          <option value="hr-bp">HR Business Partner</option>
+        </select>
+        <button class="btn-primary" onclick="addTeamMember()">+ Add person</button>
+        <button class="btn-ghost" onclick="importCSV()">Import CSV</button>
+      </div>
+
+      <div class="team-grid" id="team-grid"></div>
+
+      <div style="font-size:12px;color:var(--ink-muted);font-weight:300;" id="team-count"></div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW B: REVIEWER CHAINS ══ -->
+  <div class="view" id="view-chains">
+    <div class="view-pad">
+      <div style="font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-bottom:20px;">Reviewer chains are generated from role assignments. When a practitioner creates a deliverable, the system suggests the review chain based on the deliverable type and audience. The practitioner confirms, adds, or removes. These chains travel with every deliverable through its approval states.</div>
+      <div id="chains-list"></div>
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="addCustomChain()">+ Add custom chain</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW C: CAPACITY ══ -->
+  <div class="view" id="view-capacity">
+    <div class="view-pad">
+      <div style="font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-bottom:20px;">Capacity and competing priority flags for the delivery team. A sponsor who is travelling during the cascade window is a visibility risk. A workstream lead managing three concurrent projects is a delivery risk. These flags inform scheduling and escalation decisions.</div>
+      <div id="capacity-view"></div>
+    </div>
+  </div>
+
+  <!-- ══ VIEW D: INTELLIGENCE & VERSIONING ══ -->
+  <div class="view" id="view-intelligence">
+    <div class="view-pad">
+
+      <!-- Intelligence input panel -->
+      <div class="intel-panel">
+        <div class="intel-title">New intelligence</div>
+        <div class="intel-sub">Add anything that should update the engagement record — an email, a team conversation, feedback from a meeting, a voice note from the field, or an uploaded document. The system reads it, finds the signals, and surfaces what might need to change. Nothing updates without your confirmation.</div>
+
+        <div class="intel-input-row">
+          <textarea class="intel-textarea" id="intel-input" placeholder="Type or paste here — an email, a Slack thread, meeting notes, feedback from a roadshow, anything relevant..." rows="4"></textarea>
+        </div>
+
+        <div class="intel-actions">
+          <button class="intel-btn primary" onclick="analyseIntelligence()">✦ Analyse &amp; surface signals</button>
+          <button class="intel-btn" onclick="startVoiceInput()" id="mic-btn">🎙 Dictate</button>
+          <button class="intel-btn" onclick="document.getElementById('intel-file').click()">⬆ Upload document</button>
+          <input type="file" id="intel-file" class="intel-upload" accept=".pdf,.docx,.csv,.txt,.xlsx,.png,.jpg" onchange="handleIntelFile(event)">
+          <button class="intel-btn" onclick="openChannelImport()">💬 Paste from channel</button>
+        </div>
+
+        <div class="intel-version">
+          <div class="intel-version-label">Version history</div>
+          <select class="intel-version-sel" id="version-sel" onchange="loadVersion(this.value)">
+          </select>
+          <div style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.3);font-weight:300;font-style:italic;">Exports always show current approved state — no internal version tracking</div>
+        </div>
+      </div>
+
+      <!-- Analysis result -->
+      <div class="analysis-result" id="analysis-result">
+        <div class="ar-section">
+          <div class="ar-label ar-found">What was found</div>
+          <div id="ar-found-items"></div>
+        </div>
+        <div class="ar-section">
+          <div class="ar-label ar-suggests">What might need updating</div>
+          <div id="ar-suggest-items"></div>
+        </div>
+        <div class="ar-section">
+          <div class="ar-label ar-uncertain">Uncertain — practitioner call needed</div>
+          <div id="ar-uncertain-items"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="ar-confirm-btn" onclick="confirmAnalysis()">Confirm selected updates →</button>
+          <button class="ar-dismiss-btn" onclick="dismissAnalysis()">Dismiss — nothing to update</button>
+        </div>
+      </div>
+
+      <!-- Version history log -->
+      <div style="margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:12px;font-weight:500;color:var(--ink);">Engagement version history</div>
+        <div style="font-size:11px;color:var(--ink-muted);font-weight:300;font-style:italic;">All updates across all modules</div>
+      </div>
+      <div class="version-history" id="version-history-log"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Person panel -->
+<div class="person-panel" id="person-panel">
+  <div class="panel-header">
+    <button class="panel-close" onclick="closePanel()">✕</button>
+    <div class="panel-avatar" id="pp-avatar"></div>
+    <div class="panel-name" id="pp-name"></div>
+    <div class="panel-title" id="pp-title"></div>
+    <span class="team-role-badge" id="pp-role-badge"></span>
+  </div>
+  <div class="panel-body" id="pp-body"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// SCENARIO DATA
+// ══════════════════════════════════════════
+const SCENARIOS = {
+  meridian: {
+    name: 'Meridian Global',
+    team: [
+      { id:1, name:'Sarah Mitchell', title:'Chief Operating Officer', org:'Meridian Global', role:'executive-sponsor', email:'s.mitchell@meridianglobal.com', phone:'+1 212 555 0101', location:'New York, US', engagementLevel:'High', decisionAuthority:'Final', reviewerFor:['all'], flags:[], notes:'Primary sponsor. Strong change advocate. Monthly steering committee chair.' },
+      { id:2, name:'Antoine Dubois', title:'Regional Director, France & EMEA', org:'Meridian Global', role:'sponsor', email:'a.dubois@meridianglobal.com', phone:'+33 1 555 0202', location:'Paris, France', engagementLevel:'High', decisionAuthority:'Regional', reviewerFor:['Finance Managers','all-france'], flags:[{type:'capacity', note:'Managing two other regional initiatives simultaneously'}], notes:'Relationship-first communicator. Needs separate briefings from US team. Key advocate for France population.' },
+      { id:3, name:'James Hartley', title:'Programme Director', org:'Meridian Global', role:'programme-director', email:'j.hartley@meridianglobal.com', phone:'+44 20 555 0303', location:'London, UK', engagementLevel:'High', decisionAuthority:'Programme', reviewerFor:['all'], flags:[], notes:'Owns the programme timeline. Fixed go-live date — not negotiable.' },
+      { id:4, name:'DD', title:'Change Management Lead', org:'Mosaic Bridge Advisory', role:'cm-lead', email:'dd@mosaicbridge.com', phone:'', location:'Houston, US', engagementLevel:'Full', decisionAuthority:'CM workstream', reviewerFor:['all'], flags:[], notes:'Practitioner. Owns the full change management workstream.' },
+      { id:5, name:'Priya Nair', title:'HR Business Partner', org:'Meridian Global', role:'hr-bp', email:'p.nair@meridianglobal.com', phone:'+1 212 555 0505', location:'New York, US', engagementLevel:'Medium', decisionAuthority:'HR sign-off', reviewerFor:['HR comms','people comms'], flags:[{type:'conflict', note:'Currently supporting two other restructure programmes'}], notes:'Key reviewer for all people-related communications. Advance brief protocol now in place.' },
+      { id:6, name:'Nathan Clarke', title:'IT Systems Lead', org:'Meridian Global', role:'workstream-lead', email:'n.clarke@meridianglobal.com', phone:'+44 20 555 0606', location:'London, UK', engagementLevel:'Medium', decisionAuthority:'IT workstream', reviewerFor:['IT comms','system comms'], flags:[], notes:'Post go-live role ownership still TBD. Engaged and technically confident.' },
+      { id:7, name:'Maria Santos', title:'Finance Workstream Lead', org:'Meridian Global', role:'workstream-lead', email:'m.santos@meridianglobal.com', phone:'+55 11 555 0707', location:'São Paulo, Brazil', engagementLevel:'High', decisionAuthority:'Finance workstream', reviewerFor:['Finance comms','Finance FAQs'], flags:[{type:'stability', note:'Role under review as part of restructure — handle sensitively'}], notes:'Critical reviewer for Finance Manager communications. Brazil context essential.' },
+      { id:8, name:'Tom Whitfield', title:'Change Practitioner', org:'Mosaic Bridge Advisory', role:'cm-practitioner', email:'t.whitfield@mosaicbridge.com', phone:'', location:'London, UK', engagementLevel:'Full', decisionAuthority:'Delivery', reviewerFor:[], flags:[], notes:'Supporting the CM lead. Owns UK and France listening tour coordination.' },
+      { id:9, name:'Raj Patel', title:'Training Lead', org:'Meridian Global', role:'training-lead', email:'r.patel@meridianglobal.com', phone:'+1 212 555 0909', location:'New York, US', engagementLevel:'High', decisionAuthority:'Training workstream', reviewerFor:['Training comms','training plans'], flags:[{type:'conflict', note:'Also assigned to user acceptance testing — practitioner flagged this as a role conflict risk'}], notes:'Testing AND training assignment is a known risk. Flagged to programme director.' },
+    ],
+    chains: [
+      { type:'Executive briefing', audience:'Senior Leadership', desc:'Highest sensitivity. Requires executive sponsor and programme director sign-off before distribution.', people:[1,3,4] },
+      { type:'Finance Manager communication', audience:'Finance Managers', desc:'Requires Finance workstream lead, HR Business Partner, and programme director review. Antoine Dubois signs off France versions.', people:[7,5,3,2] },
+      { type:'All-employee communication', audience:'All employees', desc:'Programme director and executive sponsor approval. HR Business Partner advance review 48 hours prior.', people:[5,3,1] },
+      { type:'Training communication', audience:'Training cohorts', desc:'Training lead and HR Business Partner review. Programme director informed.', people:[9,5,3] },
+      { type:'FAQ document', audience:'Any group', desc:'Relevant workstream lead reviews for accuracy. HR Business Partner reviews people-related content. Practitioner owns final version.', people:[4,5,6,7] },
+    ]
+  },
+  fusion: {
+    name: 'Fusion Dynamics',
+    team: [
+      { id:1, name:'Carol Brennan', title:'SVP Operations, US', org:'Fusion Dynamics (US)', role:'executive-sponsor', email:'c.brennan@fusiondynamics.com', phone:'+1 512 555 0101', location:'Austin, US', engagementLevel:'High', decisionAuthority:'Final (US)', reviewerFor:['all-us'], flags:[{type:'capacity', note:'Also sponsor for two post-acquisition IT programmes'}], notes:'US integration lead. Needs coaching on cross-cultural communication. Initially resistant to slowing down.' },
+      { id:2, name:'Lars van den Berg', title:'MD, Netherlands', org:'Fusion BV (acquired)', role:'sponsor', email:'l.vandenberg@fusionbv.nl', phone:'+31 20 555 0202', location:'Amsterdam, NL', engagementLevel:'High', decisionAuthority:'Final (NL/DE)', reviewerFor:['all-nlde'], flags:[], notes:'NL/DE sponsor. Critical relationship. Trust-first communicator. Must co-design his advocacy approach.' },
+      { id:3, name:'Ingrid Weber', title:'Programme Director', org:'Fusion Dynamics', role:'programme-director', email:'i.weber@fusiondynamics.com', phone:'+49 89 555 0303', location:'Berlin, DE', engagementLevel:'High', decisionAuthority:'Programme', reviewerFor:['all'], flags:[], notes:'German. Direct communication style. Manages the integration timeline.' },
+      { id:4, name:'DD', title:'Change Management Lead', org:'Mosaic Bridge Advisory', role:'cm-lead', email:'dd@mosaicbridge.com', phone:'', location:'Houston, US', engagementLevel:'Full', decisionAuthority:'CM workstream', reviewerFor:['all'], flags:[], notes:'Owns full CM workstream. Cross-cultural communication expertise critical for this engagement.' },
+      { id:5, name:'Anke Hoffmann', title:'HR Director, Germany', org:'Fusion BV (acquired)', role:'hr-bp', email:'a.hoffmann@fusionbv.de', phone:'+49 89 555 0505', location:'Berlin, DE', engagementLevel:'High', decisionAuthority:'HR NL/DE', reviewerFor:['HR comms','people comms','NL/DE comms'], flags:[], notes:'Crucial reviewer for NL/DE communications. Will flag anything that reads as assimilation rather than integration.' },
+      { id:6, name:'Tom Reyes', title:'Programme Manager', org:'Fusion Dynamics', role:'workstream-lead', email:'t.reyes@fusiondynamics.com', phone:'+1 512 555 0606', location:'Austin, US', engagementLevel:'High', decisionAuthority:'Operations workstream', reviewerFor:['Operations comms'], flags:[{type:'capacity', note:'Managing own team through the integration — competing priority'}], notes:'Middle management representative. Anxious about his own role. Important voice for that layer.' },
+    ],
+    chains: [
+      { type:'Integration announcement', audience:'All employees', desc:'Both executive sponsors must approve simultaneously. Programme director coordinates. Dutch and German versions require Lars and Anke sign-off.', people:[1,2,3,4] },
+      { type:'NL/DE population communications', audience:'Acquired team', desc:'Lars van den Berg and Anke Hoffmann must review ALL NL/DE communications before distribution. Translation review required.', people:[2,5,4] },
+      { type:'Manager enablement pack', audience:'Middle management', desc:'Programme manager review for accuracy. HR Director for people content. Both sponsors informed.', people:[6,5,3] },
+    ]
+  },
+  nova: {
+    name: 'Nova Energy',
+    team: [
+      { id:1, name:'Robert Alcott', title:'Chief Operating Officer', org:'Nova Energy', role:'executive-sponsor', email:'r.alcott@novaenergy.com', phone:'+1 713 555 0101', location:'Houston, TX', engagementLevel:'High', decisionAuthority:'Final', reviewerFor:['all'], flags:[{type:'stability', note:'Committed to "no redundancies" publicly — hold him to this in all review conversations'}], notes:'Champion posture but operational blind spot about 12-state complexity. Needs specific briefing on supervisor enablement requirement.' },
+      { id:2, name:'Sandra Kim', title:'VP Human Resources', org:'Nova Energy', role:'sponsor', email:'s.kim@novaenergy.com', phone:'+1 713 555 0202', location:'Houston, TX', engagementLevel:'High', decisionAuthority:'People decisions', reviewerFor:['HR comms','people comms','all'], flags:[], notes:'Strong people advocate. Will push back on anything that could be read as job threat. Essential co-author of the redundancy commitment.' },
+      { id:3, name:'Marcus Webb', title:'Programme Director', org:'Nova Energy', role:'programme-director', email:'m.webb@novaenergy.com', phone:'+1 713 555 0303', location:'Houston, TX', engagementLevel:'High', decisionAuthority:'Programme', reviewerFor:['all'], flags:[{type:'capacity', note:'Also directing the Safety Protocol Implementation — direct conflict in Q2'}], notes:'First large-scale multi-state programme. Underestimating coordination complexity. Needs practitioner challenge on this.' },
+      { id:4, name:'DD', title:'Change Management Lead', org:'Mosaic Bridge Advisory', role:'cm-lead', email:'dd@mosaicbridge.com', phone:'', location:'Houston, US', engagementLevel:'Full', decisionAuthority:'CM workstream', reviewerFor:['all'], flags:[], notes:'Owns full CM workstream. Field Operations is the critical population for this engagement.' },
+      { id:5, name:'Yuki Larson', title:'Data & Analytics Lead', org:'Nova Energy', role:'workstream-lead', email:'y.larson@novaenergy.com', phone:'+1 713 555 0505', location:'Houston, TX', engagementLevel:'High', decisionAuthority:'D&A workstream', reviewerFor:['D&A comms','training comms'], flags:[], notes:'Pilot cohort lead. Enthusiastic — risk of moving faster than org can absorb. Key voice for peer storytelling.' },
+      { id:6, name:'Diana Flores', title:'Training & ID Lead', org:'Mosaic Bridge Advisory', role:'training-lead', email:'d.flores@mosaicbridge.com', phone:'', location:'Denver, CO', engagementLevel:'Full', decisionAuthority:'Training workstream', reviewerFor:['Training comms','training materials'], flags:[{type:'conflict', note:'Also ID lead for a concurrent safety training programme — timeline overlap in Q3'}], notes:'Field Operations training design is the hardest challenge. Must not be classroom-only.' },
+      { id:7, name:'Sandra Kowalski', title:'Field Operations Supervisor (pilot)', org:'Nova Energy', role:'other', email:'s.kowalski@novaenergy.com', phone:'', location:'Denver, CO', engagementLevel:'Medium', decisionAuthority:'Field voice', reviewerFor:['Field comms'], flags:[], notes:'Pilot cohort member. Trusted voice for Field Operations. Magic tick moment in interview. Potential change champion and peer storytelling candidate.' },
+    ],
+    chains: [
+      { type:'CEO/COO commitment communication', audience:'All employees', desc:'COO and VP HR must co-sign. Specific commitment language approved by legal before distribution.', people:[1,2,3,4] },
+      { type:'Field supervisor advance brief', audience:'Field supervisors', desc:'COO signs off. VP HR reviews. Field Operations supervisor (pilot) reviews for field authenticity before wider distribution.', people:[1,2,7,4] },
+      { type:'Training communications', audience:'Training cohorts', desc:'Training lead owns. D&A lead reviews for pilot cohort. HR VP informed.', people:[6,5,2] },
+    ]
+  }
+};
+
+// ══════════════════════════════════════════
+// VERSION HISTORY (engagement-level)
+// ══════════════════════════════════════════
+let versionHistory = [
+  { id:'v1', date:'May 7, 2026', time:'09:14', trigger:'Initial setup', module:'All modules', desc:'Engagement created. Project context, listening tour, and initial diagnostic complete.', type:'setup', confirmed:true },
+  { id:'v2', date:'May 7, 2026', time:'14:32', trigger:'CIA generated', module:'Unit 2 — CIA', desc:'Change impact analysis first draft generated from intake data. 7 change items. Finance Manager trust issue rated Critical.', type:'generation', confirmed:true },
+  { id:'v3', date:'May 8, 2026', time:'10:05', trigger:'Pulse check results uploaded', module:'Unit 3 — Tracking', desc:'All-employee awareness pulse: 87% received, 62% understood. Top questions: role implications, go-live date, Finance Frontline status.', type:'intelligence', confirmed:true },
+  { id:'v4', date:'May 9, 2026', time:'16:45', trigger:'Sponsor feedback — Antoine D.', module:'Unit 3 — Comms', desc:'Antoine Dubois session: confirmed he needs co-designed advocacy approach. France version of all-employee communication requires separate brief. Commitment signal updated.', type:'intelligence', confirmed:true },
+];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentScenario = 'meridian';
+let selectedPerson = null;
+let isRecording = false;
+let recognition = null;
+
+// ══════════════════════════════════════════
+// SCENARIO LOAD
+// ══════════════════════════════════════════
+function loadScenario(key) {
+  currentScenario = key;
+  renderDirectory();
+  renderChains();
+  renderCapacity();
+  renderVersionHistory();
+}
+
+// ══════════════════════════════════════════
+// VIEW NAVIGATION
+// ══════════════════════════════════════════
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  const viewEl = document.getElementById('view-' + name);
+  if (viewEl) viewEl.classList.add('active');
+  if (el && el.classList) el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// DIRECTORY
+// ══════════════════════════════════════════
+const ROLE_LABELS = { 'executive-sponsor':'Executive sponsor', 'sponsor':'Sponsor', 'programme-director':'Programme director', 'cm-lead':'CM lead', 'cm-practitioner':'CM practitioner', 'training-lead':'Training lead', 'workstream-lead':'Workstream lead', 'hr-bp':'HR Business Partner', 'it-pm':'IT PM', 'comms-lead':'Comms lead', 'legal':'Legal', 'other':'Team member' };
+const AVATAR_COLORS = ['#C4826A','#8B7BA8','#4A8FA8','#7B9E87','#C4A840','#2D5016','#1A2E4A'];
+
+function renderDirectory(filter) {
+  const s = SCENARIOS[currentScenario];
+  const search = document.getElementById('team-search')?.value?.toLowerCase() || '';
+  const roleFilter = document.getElementById('role-filter')?.value || '';
+  let team = s.team;
+  if (search) team = team.filter(p => [p.name,p.title,p.role,p.org].some(v => v.toLowerCase().includes(search)));
+  if (roleFilter) team = team.filter(p => p.role === roleFilter);
+
+  // Stats
+  const roles = new Set(s.team.map(p=>p.role));
+  const flagged = s.team.filter(p=>p.flags&&p.flags.length>0).length;
+  document.getElementById('dir-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${s.team.length}</div><div class="stat-label">Team members</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--team);"><div class="stat-num" style="color:var(--team);">${s.team.filter(p=>['executive-sponsor','sponsor'].includes(p.role)).length}</div><div class="stat-label">Sponsors</div></div>
+    <div class="stat-card"><div class="stat-num">${s.team.filter(p=>p.org.includes('Mosaic')||p.org.includes('Advisory')).length}</div><div class="stat-label">CM team</div></div>
+    <div class="stat-card"><div class="stat-num">${roles.size}</div><div class="stat-label">Distinct roles</div></div>
+    <div class="stat-card" style="border-left:3px solid var(--risk-mod);"><div class="stat-num" style="color:${flagged>0?'var(--risk-mod)':'var(--ink)'};">${flagged}</div><div class="stat-label">Capacity flags</div></div>`;
+
+  document.getElementById('team-grid').innerHTML = team.map((p,i) => {
+    const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
+    const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    const flagClass = p.flags?.length ? 'border-left:3px solid var(--risk-mod);' : '';
+    return `<div class="team-card" style="${flagClass}" onclick="openPerson(${p.id})">
+      <div class="team-card-top">
+        <div class="team-avatar" style="background:${color};">${initials}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="team-name">${p.name}</div>
+          <div class="team-title">${p.title}</div>
+          <span class="team-role-badge role-${p.role}">${ROLE_LABELS[p.role]||p.role}</span>
+        </div>
+      </div>
+      <div class="team-card-footer">
+        <div class="team-contact">${p.email||p.location||'—'}</div>
+        ${p.flags?.length ? `<span class="team-flag" style="background:var(--risk-mod-bg);color:var(--risk-mod);">⚑ ${p.flags.length} flag${p.flags.length>1?'s':''}</span>` : ''}
+        ${p.engagementLevel === 'Full' ? `<span class="team-flag" style="background:var(--risk-low-bg);color:var(--tile-2);">Full time</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('team-count').textContent = `${team.length} of ${s.team.length} team members`;
+}
+
+function filterTeam() { renderDirectory(); }
+
+function openPerson(id) {
+  const s = SCENARIOS[currentScenario];
+  selectedPerson = s.team.find(p=>p.id===id);
+  if (!selectedPerson) return;
+  const p = selectedPerson;
+  const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
+  const initials = p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('pp-avatar').style.background = color;
+  document.getElementById('pp-avatar').textContent = initials;
+  document.getElementById('pp-name').textContent = p.name;
+  document.getElementById('pp-title').textContent = p.title + ' · ' + p.org;
+  document.getElementById('pp-role-badge').textContent = ROLE_LABELS[p.role]||p.role;
+  document.getElementById('pp-role-badge').className = `team-role-badge role-${p.role}`;
+
+  // Reviewer chain for this person
+  const s2 = SCENARIOS[currentScenario];
+  const myChains = s2.chains.filter(c => c.people.includes(p.id));
+
+  document.getElementById('pp-body').innerHTML = `
+    <div class="panel-section">
+      <div class="panel-section-title">Contact &amp; location</div>
+      ${[['Email',p.email||'—'],['Phone',p.phone||'—'],['Location',p.location||'—'],['Organisation',p.org]].map(([l,v])=>`<div class="panel-field"><div class="panel-field-label">${l}</div><div class="panel-field-value">${v}</div></div>`).join('')}
+    </div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Engagement details</div>
+      ${[['Engagement level',p.engagementLevel],['Decision authority',p.decisionAuthority]].map(([l,v])=>`<div class="panel-field"><div class="panel-field-label">${l}</div><div class="panel-field-value">${v}</div></div>`).join('')}
+      <div style="margin-top:10px;">
+        <div style="font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px;">Reviews</div>
+        <div style="font-size:12px;color:var(--ink-soft);font-weight:300;">${(p.reviewerFor||[]).join(', ')||'Not assigned as reviewer'}</div>
+      </div>
+    </div>
+
+    ${myChains.length ? `<div class="panel-section">
+      <div class="panel-section-title">Review chains — member of</div>
+      ${myChains.map(c=>`<div style="padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;font-size:12px;color:var(--ink-soft);font-weight:300;">${c.type} — ${c.audience}</div>`).join('')}
+    </div>` : ''}
+
+    ${p.flags?.length ? `<div class="panel-section">
+      <div class="panel-section-title">Capacity &amp; competing priority flags</div>
+      ${p.flags.map(f=>`<div class="competing-flag"><div class="cf-label">${{capacity:'Capacity constraint',conflict:'Role conflict',stability:'Stability risk',change:'Competing change'}[f.type]||f.type}</div>${f.note}</div>`).join('')}
+    </div>` : ''}
+
+    <div class="panel-section">
+      <div class="panel-section-title">Practitioner notes</div>
+      <div style="font-size:13px;color:var(--ink-soft);font-weight:300;line-height:1.6;margin-bottom:10px;">${p.notes||'No notes added.'}</div>
+      <textarea style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;resize:none;min-height:60px;font-weight:300;" placeholder="Add practitioner notes..." onblur="savePersonNote(${p.id},this.value)">${p.notes||''}</textarea>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;">
+      <button class="btn-ghost" style="font-size:11px;" onclick="addFlag(${p.id})">+ Add flag</button>
+      <button class="btn-ghost" style="font-size:11px;" onclick="removePerson(${p.id})">Remove from team</button>
+    </div>`;
+
+  document.getElementById('person-panel').classList.add('open');
+}
+
+function closePanel() { document.getElementById('person-panel').classList.remove('open'); }
+
+function savePersonNote(id, val) {
+  const s = SCENARIOS[currentScenario];
+  const p = s.team.find(t=>t.id===id);
+  if (p) p.notes = val;
+}
+
+function addFlag(id) {
+  const s = SCENARIOS[currentScenario];
+  const p = s.team.find(t=>t.id===id);
+  if (!p) return;
+  const types = ['capacity','conflict','stability','change'];
+  const type = prompt('Flag type: capacity / conflict / stability / change');
+  if (!types.includes(type)) return;
+  const note = prompt('Describe the flag:');
+  if (!note) return;
+  if (!p.flags) p.flags = [];
+  p.flags.push({type, note});
+  openPerson(id);
+  renderDirectory();
+}
+
+function removePerson(id) {
+  if (!confirm('Remove this person from the project team directory?')) return;
+  const s = SCENARIOS[currentScenario];
+  s.team = s.team.filter(p=>p.id!==id);
+  closePanel();
+  renderDirectory();
+}
+
+function addTeamMember() {
+  const name = prompt('Full name:'); if (!name) return;
+  const title = prompt('Job title:') || '';
+  const org = prompt('Organisation:') || '';
+  const role = prompt('Role (executive-sponsor / sponsor / programme-director / cm-lead / cm-practitioner / training-lead / workstream-lead / hr-bp / other):') || 'other';
+  const email = prompt('Email (optional):') || '';
+  const s = SCENARIOS[currentScenario];
+  const newId = Math.max(...s.team.map(p=>p.id)) + 1;
+  s.team.push({ id:newId, name, title, org, role, email, phone:'', location:'', engagementLevel:'Medium', decisionAuthority:'', reviewerFor:[], flags:[], notes:'' });
+  renderDirectory();
+  addVersionEntry('Team member added', 'Unit 2 — Project team', `${name} (${ROLE_LABELS[role]||role}) added to project team directory.`, 'edit');
+}
+
+function importCSV() {
+  alert('CSV import: upload a file with columns Name, Title, Organisation, Role, Email, Phone, Location. Tessera maps to the directory structure and flags any columns it cannot match.');
+}
+
+// ══════════════════════════════════════════
+// REVIEWER CHAINS
+// ══════════════════════════════════════════
+function renderChains() {
+  const s = SCENARIOS[currentScenario];
+  document.getElementById('chains-list').innerHTML = s.chains.map((chain,ci) => {
+    const people = chain.people.map(id => s.team.find(p=>p.id===id)).filter(Boolean);
+    return `<div class="chain-card">
+      <div class="chain-type">${chain.type}</div>
+      <div style="font-size:11px;color:var(--ink-muted);font-weight:300;margin-bottom:6px;">Audience: ${chain.audience}</div>
+      <div class="chain-desc">${chain.desc}</div>
+      <div class="chain-people">
+        ${people.map((p,i) => {
+          const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
+          const initials = p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          return `<div class="chain-person">
+            <div class="chain-person-avatar" style="background:${color};">${initials}</div>
+            <div>
+              <div style="font-weight:500;font-size:11px;">${p.name}</div>
+              <div style="font-size:10px;color:var(--ink-muted);">${ROLE_LABELS[p.role]||p.role}</div>
+            </div>
+          </div>${i<people.length-1?'<div class="chain-arrow">→</div>':''}`;
+        }).join('')}
+        <button onclick="editChain(${ci})" style="padding:3px 8px;border:1px dashed var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:10px;color:var(--ink-muted);background:none;cursor:pointer;margin-left:6px;">Edit</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function editChain(idx) {
+  alert(`Chain editor: in the full build, this opens a drag-and-drop reordering interface where you can add, remove, and reorder reviewers for the "${SCENARIOS[currentScenario].chains[idx].type}" chain.`);
+}
+
+function addCustomChain() {
+  const type = prompt('Deliverable type (e.g. Manager talking points):'); if (!type) return;
+  const audience = prompt('Primary audience:') || '';
+  const desc = prompt('Who reviews this and why:') || '';
+  SCENARIOS[currentScenario].chains.push({ type, audience, desc, people:[] });
+  renderChains();
+}
+
+// ══════════════════════════════════════════
+// CAPACITY VIEW
+// ══════════════════════════════════════════
+function renderCapacity() {
+  const s = SCENARIOS[currentScenario];
+  const flagTypes = { capacity:'Capacity constraint', conflict:'Role conflict', stability:'Stability risk', change:'Competing change' };
+  const flagColors = { capacity:'var(--risk-high)', conflict:'var(--tile-3)', stability:'var(--risk-mod)', change:'var(--tile-5)' };
+
+  const flagged = s.team.filter(p=>p.flags&&p.flags.length>0);
+  const clean = s.team.filter(p=>!p.flags||p.flags.length===0);
+
+  document.getElementById('capacity-view').innerHTML = `
+    ${flagged.length ? `
+      <div style="font-size:12px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--risk-high);margin-bottom:12px;">${flagged.length} team member${flagged.length>1?'s':''} with capacity or conflict flags</div>
+      ${flagged.map(p => {
+        const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
+        const initials = p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+        return `<div style="padding:14px 16px;background:var(--surface-raised);border:1px solid var(--border);border-left:3px solid var(--risk-mod);border-radius:var(--radius);margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:13px;color:white;flex-shrink:0;">${initials}</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px;">${p.name}</div>
+            <div style="font-size:11px;color:var(--ink-muted);font-weight:300;margin-bottom:8px;">${p.title} · ${ROLE_LABELS[p.role]||p.role}</div>
+            ${p.flags.map(f=>`<div style="padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;">
+              <div style="font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:${flagColors[f.type]||'var(--ink-muted)'};margin-bottom:3px;">${flagTypes[f.type]||f.type}</div>
+              <div style="font-size:12px;color:var(--ink-soft);font-weight:300;line-height:1.5;">${f.note}</div>
+            </div>`).join('')}
+          </div>
+          <button class="btn-ghost" style="font-size:11px;" onclick="openPerson(${p.id})">View →</button>
+        </div>`;
+      }).join('')}` : ''}
+
+    <div style="margin-top:${flagged.length?'20px':'0'};">
+      <div style="font-size:12px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--tile-2);margin-bottom:10px;">${clean.length} team member${clean.length>1?'s':''} — no flags</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        ${clean.map(p => {
+          const color = AVATAR_COLORS[p.id % AVATAR_COLORS.length];
+          const initials = p.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+          return `<div style="display:flex;align-items:center;gap:7px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:20px;cursor:pointer;" onclick="openPerson(${p.id})">
+            <div style="width:22px;height:22px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:10px;color:white;flex-shrink:0;">${initials}</div>
+            <div style="font-size:12px;color:var(--ink-soft);font-weight:300;">${p.name}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// INTELLIGENCE & VERSIONING
+// ══════════════════════════════════════════
+function renderVersionHistory() {
+  // Populate version selector
+  const sel = document.getElementById('version-sel');
+  if (sel) {
+    sel.innerHTML = versionHistory.map(v => `<option value="${v.id}">${v.date} ${v.time} — ${v.trigger}</option>`).join('');
+  }
+
+  // Render history log
+  const typeColors = { setup:'var(--tile-5)', generation:'var(--tile-3)', intelligence:'var(--clay)', edit:'var(--tile-2)', flag:'var(--risk-mod)' };
+  const typeLabels = { setup:'Setup', generation:'AI generation', intelligence:'New intelligence', edit:'Practitioner edit', flag:'Flag raised' };
+
+  document.getElementById('version-history-log').innerHTML = versionHistory.slice().reverse().map(v => `
+    <div class="version-entry">
+      <div class="ve-dot" style="background:${typeColors[v.type]||'var(--border)'};"></div>
+      <div style="flex:1;">
+        <div class="ve-meta">${v.date} &nbsp;·&nbsp; ${v.time} &nbsp;·&nbsp; ${v.module}
+          <span class="ve-tag" style="background:${typeColors[v.type]||'var(--surface)'}18;color:${typeColors[v.type]||'var(--ink-muted)'};border:1px solid ${typeColors[v.type]||'var(--border)'}40;">${typeLabels[v.type]||v.type}</span>
+        </div>
+        <div class="ve-desc">${v.desc}</div>
+      </div>
+    </div>`).join('');
+}
+
+function addVersionEntry(trigger, module, desc, type) {
+  const now = new Date();
+  versionHistory.push({
+    id: 'v' + (versionHistory.length + 1),
+    date: now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+    time: now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}),
+    trigger, module, desc, type, confirmed: true
+  });
+  renderVersionHistory();
+}
+
+function loadVersion(id) {
+  const v = versionHistory.find(v=>v.id===id);
+  if (!v) return;
+  alert(`Version snapshot: ${v.date} ${v.time}\n\nTrigger: ${v.trigger}\nModule: ${v.module}\n\n${v.desc}\n\nIn the full build, this loads the engagement state as it was at this moment — all signal readings, all deliverable states, all flag statuses. The current state is not affected.`);
+}
+
+// ── Intelligence input ──
+async function analyseIntelligence() {
+  const input = document.getElementById('intel-input')?.value?.trim();
+  if (!input) { alert('Add some text, paste a document, or upload a file first.'); return; }
+
+  // Simulate analysis — real version calls Claude API
+  await new Promise(r => setTimeout(r, 1500));
+
+  // Generate contextual findings based on input content
+  const lower = input.toLowerCase();
+  const findings = [];
+  const suggestions = [];
+  const uncertain = [];
+
+  if (lower.includes('resist') || lower.includes('concern') || lower.includes('worry') || lower.includes('afraid')) {
+    findings.push('Resistance signal detected — language suggests concern or uncertainty about the change');
+    suggestions.push('Review Commitment signal reading for the relevant group — may need downward adjustment');
+  }
+  if (lower.includes('great') || lower.includes('positive') || lower.includes('excited') || lower.includes('ready')) {
+    findings.push('Positive signal detected — language suggests enthusiasm or readiness');
+    suggestions.push('Consider moving relevant group\'s signal reading upward if this is consistent with other data points');
+  }
+  if (lower.includes('question') || lower.includes('unclear') || lower.includes('confused') || lower.includes('don\'t understand')) {
+    findings.push('Clarity gap detected — questions or confusion signalled');
+    suggestions.push('Add to feedback themes — Clarity signal may need review for affected group');
+    uncertain.push('Which specific group is this feedback from? Attribution needed before updating signal data.');
+  }
+  if (lower.includes('manager') || lower.includes('supervisor')) {
+    findings.push('Manager or supervisor reference — may be relevant to cascade model or manager enablement');
+    suggestions.push('Review manager enablement pack for the relevant group — new information may update talking points');
+  }
+  if (lower.includes('date') || lower.includes('timeline') || lower.includes('delay') || lower.includes('postpone')) {
+    findings.push('Timeline reference detected');
+    suggestions.push('Check communications plan for date-sensitive items that may need updating');
+    uncertain.push('Is this a confirmed timeline change or speculation? Confirm with programme director before updating any plan items.');
+  }
+
+  // Always add generic ones if nothing specific found
+  if (!findings.length) {
+    findings.push('Input received and read — no high-confidence signals automatically detected');
+    uncertain.push('Content may contain relevant intelligence that requires practitioner interpretation before any updates are made');
+  }
+
+  // Show results
+  document.getElementById('ar-found-items').innerHTML = findings.map(f=>
+    `<div class="ar-item ar-item-found"><input type="checkbox" class="ar-checkbox" checked> ${f}</div>`).join('');
+  document.getElementById('ar-suggest-items').innerHTML = suggestions.map(s=>
+    `<div class="ar-item ar-item-suggest"><input type="checkbox" class="ar-checkbox"> ${s}</div>`).join('');
+  document.getElementById('ar-uncertain-items').innerHTML = uncertain.map(u=>
+    `<div class="ar-item ar-item-uncertain">⚑ ${u}</div>`).join('');
+
+  document.getElementById('analysis-result').classList.add('visible');
+}
+
+function confirmAnalysis() {
+  const input = document.getElementById('intel-input')?.value?.trim() || '';
+  const confirmed = [...document.querySelectorAll('#ar-suggest-items .ar-checkbox:checked')].length;
+  addVersionEntry('New intelligence uploaded', 'Multiple modules', `Intelligence analysed: ${input.slice(0,80)}... ${confirmed} suggested update${confirmed!==1?'s':''} confirmed by practitioner.`, 'intelligence');
+  document.getElementById('analysis-result').classList.remove('visible');
+  document.getElementById('intel-input').value = '';
+  alert(`${confirmed} update${confirmed!==1?'s':''} confirmed and logged to version history. Affected modules will surface the changes on next open.`);
+}
+
+function dismissAnalysis() {
+  document.getElementById('analysis-result').classList.remove('visible');
+}
+
+function startVoiceInput() {
+  const btn = document.getElementById('mic-btn');
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    alert('Voice input is supported in Chrome and Edge. Switch to one of these browsers to use dictation.');
+    return;
+  }
+  if (isRecording) {
+    recognition?.stop();
+    isRecording = false;
+    btn.classList.remove('recording');
+    btn.textContent = '🎙 Dictate';
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('intel-input').value = transcript;
+  };
+  recognition.onend = () => {
+    isRecording = false;
+    btn.classList.remove('recording');
+    btn.textContent = '🎙 Dictate';
+  };
+  recognition.start();
+  isRecording = true;
+  btn.classList.add('recording');
+  btn.textContent = '⏹ Stop';
+}
+
+function handleIntelFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ta = document.getElementById('intel-input');
+  ta.value = `[Uploaded: ${file.name} — ${(file.size/1024).toFixed(0)}KB]\n\nIn the live build the Claude API reads this document and extracts relevant signals automatically. For now paste key content from the document into the text area and press Analyse.`;
+  e.target.value = '';
+}
+
+function openChannelImport() {
+  const text = prompt('Paste the Slack, Teams, or email thread content here:');
+  if (!text) return;
+  document.getElementById('intel-input').value = text;
+}
+
+// ══════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════
+function exportTeam() {
+  const s = SCENARIOS[currentScenario];
+  const data = {
+    _meta: { version:'1.0', exportedAt:new Date().toISOString(), tool:'Tessera', unit:'Unit 2 — Project team directory', scenario:currentScenario },
+    projectTeam: s.team,
+    reviewerChains: s.chains,
+    versionHistory,
+  };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tessera-project-team-${currentScenario}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+// ══════════════════════════════════════════
+// UNIFIED ENGAGEMENT FILE — SAVE & LOAD
+// ══════════════════════════════════════════
+function saveEngagementFile() {
+  const s = SCENARIOS[currentScenario];
+  const engagementData = {
+    _meta: {
+      version: '1.0',
+      engagementId: `tessera-${currentScenario}-${Date.now()}`,
+      clientName: s.name,
+      savedAt: new Date().toISOString(),
+      tool: 'Tessera™ — Mosaic Bridge Advisory',
+      units: ['Unit 1 — Diagnostic', 'Unit 2 — Analysis', 'Unit 3 — Communications']
+    },
+    unit1: {
+      projectContext: {
+        name: s.name,
+        type: 'See tessera-app.html scenario data',
+        note: 'Full Unit 1 data exports from tessera-app.html'
+      }
+    },
+    unit2: {
+      roster: { note: 'Full roster data in tessera-roster.html export' },
+      projectTeam: {
+        members: s.team,
+        reviewerChains: s.chains,
+        lastUpdated: new Date().toISOString()
+      },
+      intake: { note: 'Full intake data in tessera-intake.html export' },
+      changeImpactAnalysis: { note: 'Full CIA data in tessera-cia.html export' }
+    },
+    unit3: {
+      note: 'Full communications data in tessera-comms.html export'
+    },
+    versionHistory: versionHistory,
+    changelog: versionHistory.map(v => ({
+      date: v.date,
+      time: v.time,
+      module: v.module,
+      trigger: v.trigger,
+      description: v.desc,
+      type: v.type
+    }))
+  };
+
+  const blob = new Blob([JSON.stringify(engagementData, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const dateStr = new Date().toISOString().slice(0,10);
+  a.download = `tessera-engagement-${currentScenario}-${dateStr}.json`;
+  a.click();
+
+  addVersionEntry('Engagement file saved', 'All units', `Full engagement data exported to tessera-engagement-${currentScenario}-${dateStr}.json`, 'setup');
+  alert(`Engagement file saved: tessera-engagement-${currentScenario}-${dateStr}.json\n\nThis file contains the full engagement state. Load it next session to pick up where you left off. Keep it — it is your engagement record.`);
+}
+
+function loadEngagementFile() {
+  document.getElementById('engagement-file-input').click();
+}
+
+function handleEngagementLoad(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data._meta || !data._meta.tool?.includes('Tessera')) {
+        alert('This does not appear to be a Tessera engagement file. Please check the file and try again.');
+        return;
+      }
+      // Load version history
+      if (data.versionHistory) versionHistory = data.versionHistory;
+      // Load project team if present
+      if (data.unit2?.projectTeam?.members && SCENARIOS[currentScenario]) {
+        SCENARIOS[currentScenario].team = data.unit2.projectTeam.members;
+        if (data.unit2.projectTeam.reviewerChains) {
+          SCENARIOS[currentScenario].chains = data.unit2.projectTeam.reviewerChains;
+        }
+      }
+      renderDirectory();
+      renderChains();
+      renderCapacity();
+      renderVersionHistory();
+      addVersionEntry('Engagement file loaded', 'All units', `Engagement data loaded from ${file.name}. Version history and project team data restored.`, 'setup');
+      alert(`Engagement loaded: ${data._meta.clientName || 'Unknown'}\nSaved: ${data._meta.savedAt ? new Date(data._meta.savedAt).toLocaleDateString() : 'Unknown'}\nVersion entries: ${(data.versionHistory||[]).length}\n\nAll data has been restored. Continue from where you left off.`);
+    } catch(err) {
+      alert('Could not read the engagement file. Make sure it is a valid Tessera JSON export.');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadScenario('meridian');
+});
+
+// Mosaic
+const colors = ['#C4A882','#7B9E87','#8B7BA8','#C4826A','#EEF3FB','#4A8FA8','#E8D9C4'];
+const mosaic = document.getElementById('mosaic');
+for (let i=0;i<40;i++) {
+  const t = document.createElement('div');
+  t.className = 'mosaic-tile';
+  t.style.background = colors[i%colors.length];
+  t.style.animationDelay = (0.02+i*0.012)+'s';
+  mosaic.appendChild(t);
+}
+
+// Shell integration — hide own nav when running inside tessera.html shell
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('shell') === '1') {
+    const style = document.createElement('style');
+    style.textContent = '.t-nav{display:none!important;} .app{min-height:100vh;}';
+    document.head.appendChild(style);
+  }
+  const mod = parseInt(p.get('module') || p.get('tab') || '0');
+  const view = p.get('view');
+  if (mod > 1 || view) {
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        if (mod > 1 && typeof showModule === 'function') showModule(mod, null);
+        if (view && typeof switchView === 'function') {
+          const vt = document.querySelector('[onclick*="switchView"]');
+          if (vt) switchView(view, vt);
+        }
+      }, 150);
+    });
+  }
+})();
+</script>
+<div style="display:none;" id="copyright-meta">&copy; 2026 Mosaic Bridge Advisory. Tessera&trade; is a trademark of Mosaic Bridge Advisory.</div>
+</body>
+</html>
