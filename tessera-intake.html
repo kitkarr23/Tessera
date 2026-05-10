@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tessera™ — Document Intake</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --clay: #C4A882; --clay-light: #E8D9C4; --clay-dark: #8B7355;
+      --ink: #1C1A17; --ink-soft: #4A4640; --ink-muted: #8A8480;
+      --surface: #F7F3ED; --surface-raised: #FDFAF6;
+      --tile-1: #C4A882; --tile-2: #7B9E87; --tile-3: #8B7BA8;
+      --tile-4: #C4826A; --tile-5: #4A8FA8;
+      --border: rgba(28,26,23,0.12); --radius: 2px;
+      --risk-high: #C4826A; --risk-high-bg: #FDF2EE;
+      --risk-mod: #C4A840; --risk-mod-bg: #FDFAEE;
+      --risk-low: #7B9E87; --risk-low-bg: #F0F7F2;
+      --conf-high: #7B9E87; --conf-high-bg: #F0F7F2;
+      --conf-mid: #C4A840; --conf-mid-bg: #FDFAEE;
+      --conf-low: #C4826A; --conf-low-bg: #FDF2EE;
+      --research-bg: #F5F0FB; --research-border: #D4C4EF; --research-color: #8B7BA8;
+      --question-bg: #EEF3FB; --question-border: #C4D4EF; --question-color: #4A8FA8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; }
+
+    /* Nav */
+    .t-nav { background: var(--ink); padding: 0 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; flex-wrap: wrap; }
+    .t-nav-brand { font-family: 'DM Serif Display', serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--clay); text-decoration: none; padding: 14px 0; }
+    .t-nav-modules { display: flex; gap: 4px; }
+    .t-nav-pill { padding: 4px 12px; border-radius: 10px; font-size: 11px; color: rgba(255,255,255,.4); border: 1px solid rgba(255,255,255,.1); text-decoration: none; }
+    .t-nav-pill.active { color: var(--clay); border-color: var(--clay); }
+
+    .app { max-width: 1080px; margin: 0 auto; background: var(--surface-raised); min-height: 100vh; box-shadow: 0 0 80px rgba(0,0,0,.07); padding-bottom: 80px; }
+
+    /* Header */
+    .header { padding: 36px 48px 24px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+    .mosaic-accent { position: absolute; top: 0; right: 0; display: grid; grid-template-columns: repeat(10,12px); grid-template-rows: repeat(4,12px); gap: 2px; padding: 10px; opacity: .3; pointer-events: none; }
+    .mosaic-tile { border-radius: 1px; opacity: 0; animation: tileIn .4s forwards; }
+    @keyframes tileIn { from{opacity:0;transform:scale(.3)} to{opacity:1;transform:scale(1)} }
+    .wordmark { font-size: 10px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--clay-dark); margin-bottom: 10px; }
+    .header h1 { font-family: 'DM Serif Display', serif; font-size: 30px; font-weight: 400; color: var(--ink); line-height: 1.15; margin-bottom: 5px; }
+    .header h1 em { font-style: italic; color: var(--clay-dark); }
+    .header p { font-size: 13px; color: var(--ink-muted); font-weight: 300; line-height: 1.7; max-width: 560px; }
+
+    /* Stage tabs */
+    .stage-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
+    .stage-tab { padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+    .stage-tab.active { border-bottom-color: var(--clay); background: var(--surface-raised); }
+    .stage-tab.done .stage-num { background: var(--tile-2); border-color: var(--tile-2); color: white; }
+    .stage-num { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; color: var(--ink-muted); flex-shrink: 0; }
+    .stage-tab.active .stage-num { background: var(--clay); border-color: var(--clay); color: white; }
+    .stage-label { font-size: 12px; color: var(--ink-soft); }
+    .stage-tab.active .stage-label { color: var(--ink); font-weight: 500; }
+
+    .stage { display: none; animation: fadeUp .25s ease forwards; }
+    .stage.active { display: block; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .stage-pad { padding: 28px 48px; }
+
+    /* Upload */
+    .upload-zone { border: 2px dashed var(--border); border-radius: 4px; padding: 40px; text-align: center; background: var(--surface); transition: all .2s; cursor: pointer; }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--clay); background: rgba(196,168,130,.04); }
+    .upload-icon { font-size: 32px; margin-bottom: 12px; opacity: .5; }
+    .upload-title { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--ink); margin-bottom: 8px; }
+    .upload-sub { font-size: 13px; color: var(--ink-muted); font-weight: 300; line-height: 1.6; margin-bottom: 18px; }
+    .upload-btn { padding: 9px 22px; background: var(--clay); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .upload-formats { font-size: 11px; color: var(--ink-muted); margin-top: 10px; font-weight: 300; }
+
+    /* File cards */
+    .file-cards { display: grid; gap: 10px; margin-top: 16px; }
+    .file-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+    .file-card-icon { font-size: 22px; flex-shrink: 0; }
+    .file-card-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .file-card-meta { font-size: 11px; color: var(--ink-muted); font-weight: 300; margin-top: 2px; }
+    .file-card-tag { padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .tag-ready { background: var(--risk-low-bg); color: var(--risk-low); }
+    .tag-processing { background: var(--risk-mod-bg); color: var(--risk-mod); }
+    .file-card-remove { margin-left: auto; background: none; border: none; cursor: pointer; color: var(--ink-muted); font-size: 16px; flex-shrink: 0; }
+    .file-card-remove:hover { color: var(--risk-high); }
+
+    /* Document type badges */
+    .doc-type-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .doc-type-badge { padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 400; cursor: pointer; border: 1px solid var(--border); color: var(--ink-muted); background: var(--surface-raised); transition: all .15s; user-select: none; }
+    .doc-type-badge.selected { border-color: var(--clay); background: var(--clay); color: white; }
+
+    /* Buttons */
+    .btn-primary { padding: 10px 22px; background: var(--clay); color: white; border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; }
+    .btn-primary:hover { background: var(--clay-dark); }
+    .btn-primary:disabled { opacity: .4; cursor: default; }
+    .btn-ghost { padding: 9px 20px; border: 1px solid var(--border); background: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink-soft); cursor: pointer; transition: all .15s; }
+    .btn-ghost:hover { border-color: var(--clay); color: var(--clay-dark); }
+    .btn-row { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+
+    /* Extraction progress */
+    .extraction-progress { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+    .ep-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .ep-spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--clay); border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .ep-bar-wrap { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 12px; }
+    .ep-bar { height: 100%; background: var(--clay); border-radius: 2px; transition: width .5s ease; }
+    .ep-status { font-size: 12px; color: var(--ink-muted); font-weight: 300; }
+
+    /* Extracted field cards */
+    .extracted-section { margin-bottom: 28px; }
+    .extracted-section-title { font-family: 'DM Serif Display', serif; font-size: 19px; font-weight: 400; color: var(--ink); margin-bottom: 4px; }
+    .extracted-section-sub { font-size: 12px; color: var(--ink-muted); font-weight: 300; margin-bottom: 16px; line-height: 1.5; }
+
+    .field-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 12px; overflow: hidden; }
+    .field-card-header { padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px; border-bottom: 1px solid var(--border); }
+    .field-label { font-size: 11px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-muted); flex: 1; }
+    .conf-badge { padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 500; flex-shrink: 0; }
+    .conf-high { background: var(--conf-high-bg); color: var(--conf-high); }
+    .conf-mid { background: var(--conf-mid-bg); color: var(--conf-mid); }
+    .conf-low { background: var(--conf-low-bg); color: var(--conf-low); }
+    .conf-none { background: var(--surface); color: var(--ink-muted); border: 1px solid var(--border); }
+    .source-tag { font-size: 10px; color: var(--ink-muted); font-weight: 300; font-style: italic; }
+
+    .field-card-body { padding: 14px 16px; }
+    .field-value { font-size: 14px; color: var(--ink); font-weight: 300; line-height: 1.7; margin-bottom: 10px; }
+    .field-edit { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: var(--surface-raised); font-weight: 300; resize: vertical; min-height: 60px; }
+    .field-edit:focus { outline: none; border-color: var(--clay); }
+    .field-edit-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .fea-btn { padding: 5px 12px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface-raised); color: var(--ink-muted); transition: all .15s; }
+    .fea-btn:hover { border-color: var(--clay); color: var(--clay-dark); }
+    .fea-btn.confirm { background: var(--tile-2); border-color: var(--tile-2); color: white; }
+    .fea-btn.confirm:hover { opacity: .85; }
+
+    /* Research prompt */
+    .research-prompt { background: var(--research-bg); border: 1px solid var(--research-border); border-left: 3px solid var(--research-color); border-radius: var(--radius); padding: 14px 18px; margin: 10px 0; }
+    .rp-label { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--research-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .rp-text { font-size: 13px; color: var(--ink-soft); font-weight: 300; line-height: 1.7; }
+    .rp-source { font-size: 11px; color: var(--research-color); font-weight: 400; margin-top: 6px; font-style: italic; }
+
+    /* Open question */
+    .open-question { background: var(--question-bg); border: 1px solid var(--question-border); border-left: 3px solid var(--question-color); border-radius: var(--radius); padding: 14px 18px; margin: 10px 0; }
+    .oq-label { font-size: 10px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--question-color); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .oq-question { font-size: 13px; color: var(--ink); font-weight: 400; line-height: 1.6; margin-bottom: 8px; font-style: italic; }
+    .oq-why { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.5; margin-bottom: 8px; }
+    .oq-urgency { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 500; }
+    .oq-critical { background: var(--risk-high-bg); color: var(--risk-high); }
+    .oq-important { background: var(--risk-mod-bg); color: var(--risk-mod); }
+    .oq-useful { background: var(--risk-low-bg); color: var(--risk-low); }
+    .oq-answer-field { width: 100%; margin-top: 10px; padding: 8px 12px; border: 1px solid var(--question-border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink); background: white; font-weight: 300; resize: vertical; min-height: 50px; }
+    .oq-answer-field:focus { outline: none; border-color: var(--question-color); }
+    .oq-resolved { opacity: .6; }
+    .oq-resolve-btn { padding: 4px 10px; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500; cursor: pointer; border: 1px solid var(--question-border); background: white; color: var(--question-color); margin-top: 6px; }
+
+    /* Questions panel */
+    .questions-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .qs-stat { text-align: center; }
+    .qs-num { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--ink); line-height: 1; }
+    .qs-label { font-size: 10px; color: var(--ink-muted); font-weight: 300; text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+    .qs-divider { width: 1px; height: 40px; background: var(--border); flex-shrink: 0; }
+
+    /* Source trail */
+    .source-trail { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .st-chip { padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 400; border: 1px solid var(--border); }
+    .st-data { background: #EEF3FB; color: #2A5DA8; border-color: #C4D4EF; }
+    .st-research { background: var(--research-bg); color: var(--research-color); border-color: var(--research-border); }
+    .st-judgement { background: #FEF8F0; color: var(--clay-dark); border-color: var(--clay-light); }
+
+    /* Intake form fields */
+    .intake-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+    .intake-section-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+    .intake-section-sub { font-size: 12px; color: var(--ink-muted); font-weight: 300; line-height: 1.5; margin-bottom: 14px; }
+    .field-group { margin-bottom: 16px; }
+    label { display: block; font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--ink-soft); margin-bottom: 6px; text-transform: uppercase; }
+    input[type=text], input[type=date], textarea, select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: var(--surface-raised); font-weight: 300; }
+    textarea { resize: vertical; min-height: 70px; }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--clay); }
+    .field-hint { font-size: 11px; color: var(--ink-muted); font-weight: 300; margin-bottom: 8px; line-height: 1.5; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    /* Pill group */
+    .pill-group { display: flex; flex-wrap: wrap; gap: 7px; }
+    .pill { padding: 5px 13px; border-radius: 20px; font-size: 12px; border: 1px solid var(--border); color: var(--ink-muted); cursor: pointer; transition: all .15s; user-select: none; }
+    .pill:hover { border-color: var(--clay); color: var(--clay-dark); }
+    .pill.selected { background: var(--clay); border-color: var(--clay); color: white; }
+
+    /* Change items */
+    .change-item { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; }
+    .ci-num { width: 24px; height: 24px; border-radius: 50%; background: var(--clay); color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .ci-body { flex: 1; }
+    .ci-text { font-size: 13px; color: var(--ink-soft); font-weight: 300; line-height: 1.5; }
+    .ci-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .ci-tag { padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 500; }
+    .ci-process { background: #EEF3FB; color: #2A5DA8; }
+    .ci-role { background: var(--risk-mod-bg); color: #8B5A00; }
+    .ci-system { background: var(--research-bg); color: var(--research-color); }
+    .ci-structure { background: var(--risk-high-bg); color: var(--risk-high); }
+    .ci-remove { background: none; border: none; cursor: pointer; color: var(--ink-muted); font-size: 16px; flex-shrink: 0; }
+    .ci-remove:hover { color: var(--risk-high); }
+
+    /* API status */
+    .api-status { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: var(--radius); font-size: 12px; font-weight: 300; margin-bottom: 16px; }
+    .api-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .api-connected { background: var(--risk-low-bg); border: 1px solid var(--risk-low); color: var(--risk-low); }
+    .api-connected .api-dot { background: var(--risk-low); }
+    .api-demo { background: var(--risk-mod-bg); border: 1px solid var(--risk-mod); color: #8B5A00; }
+    .api-demo .api-dot { background: var(--risk-mod); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.3} }
+
+    @media(max-width:700px) {
+      .t-nav, .stage-pad, .header { padding-left: 20px; padding-right: 20px; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="t-nav">
+  <a href="tessera.html" class="t-nav-brand" style="text-decoration:none;">Tessera™</a>
+  <div class="t-nav-modules">
+    <span class="t-nav-pill">Unit 2</span>
+    <a href="tessera-roster.html" class="t-nav-pill">Roster</a>
+    <span class="t-nav-pill active">Document intake</span>
+  </div>
+</nav>
+
+<div class="app">
+  <div class="header">
+    <div class="mosaic-accent" id="mosaic"></div>
+    <div class="wordmark">Tessera™ &nbsp;·&nbsp; Unit 2 &nbsp;·&nbsp; Document intake</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <div>
+        <h1>Document intake &amp; <em>case for change</em></h1>
+        <p>Upload whatever documents exist — project charter, business case, process maps, sponsor presentations, org charts, anything. Tessera extracts what it can, rates its confidence, flags what it could not determine, and generates open questions for the practitioner and client.</p>
+      </div>
+      <button class="btn-ghost" style="font-size:12px;" onclick="exportIntakeJSON()">Save to engagement →</button>
+    </div>
+  </div>
+
+  <!-- Stage tabs -->
+  <div class="stage-bar">
+    <div class="stage-tab active" id="stage-tab-1" onclick="goToStage(1)">
+      <div class="stage-num" id="stage-num-1">1</div>
+      <div class="stage-label">Upload documents</div>
+    </div>
+    <div class="stage-tab" id="stage-tab-2" onclick="goToStage(2)">
+      <div class="stage-num" id="stage-num-2">2</div>
+      <div class="stage-label">AI extraction</div>
+    </div>
+    <div class="stage-tab" id="stage-tab-3" onclick="goToStage(3)">
+      <div class="stage-num" id="stage-num-3">3</div>
+      <div class="stage-label">Review &amp; confirm</div>
+    </div>
+    <div class="stage-tab" id="stage-tab-4" onclick="goToStage(4)">
+      <div class="stage-num" id="stage-num-4">4</div>
+      <div class="stage-label">Open questions</div>
+    </div>
+    <div class="stage-tab" id="stage-tab-5" onclick="goToStage(5)">
+      <div class="stage-num" id="stage-num-5">5</div>
+      <div class="stage-label">Intake summary</div>
+    </div>
+  </div>
+
+  <!-- ══ STAGE 1: Upload ══ -->
+  <div class="stage active" id="stage-1">
+    <div class="stage-pad">
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--tile-5);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;">
+        <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--tile-5);margin-bottom:5px;">What to bring</div>
+        <div style="font-size:13px;color:var(--ink-soft);font-weight:300;line-height:1.7;">Upload any project documents you have been given — project charter, business case, process maps, sponsor presentations, org charts, previous assessments, anything. You do not need everything. Tessera works with what exists and flags what is missing. More documents produce a more specific first draft of the change impact analysis.</div>
+      </div>
+
+      <div class="upload-zone" id="upload-zone"
+        ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)"
+        onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">📂</div>
+        <div class="upload-title">Drop project documents here</div>
+        <div class="upload-sub">Any format — PDF, Word, PowerPoint, Excel, images of org charts</div>
+        <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('file-input').click()">Browse files</button>
+        <div class="upload-formats">PDF &nbsp;·&nbsp; DOCX &nbsp;·&nbsp; PPTX &nbsp;·&nbsp; XLSX &nbsp;·&nbsp; CSV &nbsp;·&nbsp; TXT &nbsp;·&nbsp; PNG &nbsp;·&nbsp; JPG</div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.xlsx,.xls,.csv,.txt,.png,.jpg,.jpeg" multiple style="display:none" onchange="handleFileSelect(event)">
+
+      <div id="file-cards" class="file-cards" style="margin-top:16px;"></div>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px;">No documents yet? Start with manual intake or load a demo</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-ghost" style="font-size:12px;" onclick="goToStage(3)">Enter manually →</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="loadDemo('meridian')">Demo — Meridian Global</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="loadDemo('fusion')">Demo — Fusion Dynamics</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="loadDemo('nova')">Demo — Nova Energy</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" id="next-1" onclick="startExtraction()" disabled>Extract &amp; analyse →</button>
+        <span style="font-size:12px;color:var(--ink-muted);font-weight:300;font-style:italic;" id="file-count-label"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STAGE 2: Extraction ══ -->
+  <div class="stage" id="stage-2">
+    <div class="stage-pad">
+      <div class="api-status api-demo" id="api-status">
+        <div class="api-dot"></div>
+        <span>Demo mode — extraction simulated from document types. <strong>Connect Claude API</strong> to activate live document reading and extraction.</span>
+      </div>
+
+      <div class="extraction-progress" id="extraction-progress">
+        <div class="ep-title">
+          <div class="ep-spinner" id="ep-spinner"></div>
+          <span id="ep-title-text">Reading documents and extracting structured information...</span>
+        </div>
+        <div class="ep-bar-wrap"><div class="ep-bar" id="ep-bar" style="width:0%"></div></div>
+        <div class="ep-status" id="ep-status">Initialising...</div>
+      </div>
+
+      <div id="extraction-log" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ══ STAGE 3: Review & confirm ══ -->
+  <div class="stage" id="stage-3">
+    <div class="stage-pad">
+
+      <div style="font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.6;margin-bottom:20px;">Review what Tessera extracted from your documents. Confidence ratings show how certain the extraction is. Edit any field directly — the practitioner always has the final word. Fields marked as not found can be filled in manually.</div>
+
+      <!-- Section 1: Case for change -->
+      <div class="extracted-section">
+        <div class="extracted-section-title">Case for change</div>
+        <div class="extracted-section-sub">Why this change, why now, and what happens if the organisation does not act. This is the foundation of every communication and the basis for the sponsor's advocacy.</div>
+
+        <div class="field-card" id="fc-why">
+          <div class="field-card-header">
+            <div class="field-label">Business rationale — why this change</div>
+            <div class="conf-badge" id="conf-why">—</div>
+          </div>
+          <div class="field-card-body">
+            <div class="field-value" id="val-why" style="display:none;"></div>
+            <textarea class="field-edit" id="edit-why" placeholder="What is driving this change? What business problem does it solve? What opportunity does it capture?" rows="3"></textarea>
+            <div class="source-trail" id="source-why"></div>
+          </div>
+        </div>
+
+        <div class="field-card" id="fc-ifnot">
+          <div class="field-card-header">
+            <div class="field-label">Consequence of inaction — what happens if we do not do this</div>
+            <div class="conf-badge" id="conf-ifnot">—</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-ifnot" placeholder="What are the risks or costs of not making this change? This is often the most compelling message for resistant stakeholders."></textarea>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">What success looks like — the stated vision</div>
+            <div class="conf-badge" id="conf-vision">—</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-vision" placeholder="How has the project team described what good looks like at the end? What does the organisation look like when this is done?"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Scope and timeline -->
+      <div class="extracted-section">
+        <div class="extracted-section-title">Scope &amp; timeline</div>
+        <div class="extracted-section-sub">What is explicitly in and out of scope. What phases exist. When things happen. Scope gaps and timeline risks surface as open questions.</div>
+
+        <div class="field-row" style="margin-bottom:12px;">
+          <div class="field-card" style="margin-bottom:0;">
+            <div class="field-card-header">
+              <div class="field-label">Go-live / completion date</div>
+              <div class="conf-badge" id="conf-golive">—</div>
+            </div>
+            <div class="field-card-body">
+              <input type="date" id="edit-golive">
+            </div>
+          </div>
+          <div class="field-card" style="margin-bottom:0;">
+            <div class="field-card-header">
+              <div class="field-label">Project phases</div>
+              <div class="conf-badge" id="conf-phases">—</div>
+            </div>
+            <div class="field-card-body">
+              <input type="text" id="edit-phases" placeholder="e.g. Phase 1: Design (Q1), Phase 2: Build (Q2), Phase 3: Deploy (Q3)">
+            </div>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">What is explicitly in scope</div>
+            <div class="conf-badge" id="conf-inscope">—</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-inscope" placeholder="What has the project team confirmed is included in this engagement?" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">What is explicitly out of scope</div>
+            <div class="conf-badge" id="conf-outscope">—</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-outscope" placeholder="What has been explicitly excluded? Out-of-scope assumptions are a trust risk — name them early."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Named changes -->
+      <div class="extracted-section">
+        <div class="extracted-section-title">Named changes — from the documents</div>
+        <div class="extracted-section-sub">Specific changes named in the project documents. These become the skeleton rows of the change impact analysis. The practitioner adds, edits, and removes. The AI generation layer fills in the detail.</div>
+
+        <div id="named-changes-list"></div>
+
+        <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn-ghost" style="font-size:12px;" onclick="addChangeItem()">+ Add change</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="addChangeItem('process')">+ Process change</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="addChangeItem('role')">+ Role change</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="addChangeItem('system')">+ System change</button>
+          <button class="btn-ghost" style="font-size:12px;" onclick="addChangeItem('structure')">+ Structural change</button>
+        </div>
+      </div>
+
+      <!-- Section 4: Named roles and workstreams -->
+      <div class="extracted-section">
+        <div class="extracted-section-title">Named roles &amp; workstreams</div>
+
+        <div class="field-row" style="margin-bottom:12px;">
+          <div class="field-card" style="margin-bottom:0;">
+            <div class="field-card-header">
+              <div class="field-label">Role types named in documents</div>
+              <div class="conf-badge" id="conf-roles">—</div>
+            </div>
+            <div class="field-card-body">
+              <textarea class="field-edit" id="edit-roles" placeholder="e.g. Finance Managers, Warehouse Supervisors, HR Business Partners, IT Systems Leads..." rows="2"></textarea>
+            </div>
+          </div>
+          <div class="field-card" style="margin-bottom:0;">
+            <div class="field-card-header">
+              <div class="field-label">Project workstreams</div>
+              <div class="conf-badge" id="conf-workstreams">—</div>
+            </div>
+            <div class="field-card-body">
+              <textarea class="field-edit" id="edit-workstreams" placeholder="e.g. Technology, Process, People & Change, Training, Communications..." rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">Systems being implemented, replaced, or modified</div>
+            <div class="conf-badge" id="conf-systems">—</div>
+          </div>
+          <div class="field-card-body">
+            <input type="text" id="edit-systems" placeholder="e.g. SAP S/4HANA, Workday, Salesforce — name and version where available">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Known risks and decisions -->
+      <div class="extracted-section">
+        <div class="extracted-section-title">Known risks &amp; decisions already made</div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">Risks already identified by the project team</div>
+            <div class="conf-badge" id="conf-risks">—</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-risks" placeholder="What is the project team already worried about? Naming these early prevents them becoming surprises." rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">Decisions already made that affect the change experience</div>
+            <div class="conf-badge" id="conf-decisions">—</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-decisions" placeholder="e.g. Training will be delivered online only. No parallel running — hard cutover. Go-live is fixed regardless of readiness." rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="field-card">
+          <div class="field-card-header">
+            <div class="field-label">Practitioner notes — what you know that is not in any document</div>
+            <div class="conf-badge conf-judgement" style="background:#FEF8F0;color:var(--clay-dark);border:1px solid var(--clay-light);">Practitioner judgement</div>
+          </div>
+          <div class="field-card-body">
+            <textarea class="field-edit" id="edit-prac-notes" placeholder="What did you learn in discovery calls, corridor conversations, or pre-engagement briefings that is not captured anywhere? This is practitioner intelligence — it stays in the practitioner view and does not go to the client." rows="3"></textarea>
+            <div style="font-size:11px;color:var(--ink-muted);font-weight:300;margin-top:6px;font-style:italic;">This field is practitioner-only. It does not appear in client-facing exports.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goToStage(2)">← Back</button>
+        <button class="btn-primary" onclick="generateQuestions()">Generate open questions →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STAGE 4: Open questions ══ -->
+  <div class="stage" id="stage-4">
+    <div class="stage-pad">
+
+      <div style="font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;margin-bottom:20px;">These questions were generated from gaps and tensions in the intake data. They are not a sign that something is wrong — they are the honest picture of what is still unknown. Answer what you can now. Flag what needs to go to the client or sponsor. Leave what genuinely cannot be resolved yet.</div>
+
+      <div class="questions-summary" id="questions-summary"></div>
+
+      <div id="questions-list"></div>
+
+      <div style="margin-top:20px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:6px;">Add your own question</div>
+        <div style="display:flex;gap:10px;">
+          <input type="text" id="custom-question" placeholder="What else is unresolved or uncertain about this engagement?" style="flex:1;padding:8px 12px;">
+          <button class="btn-primary" style="font-size:12px;padding:8px 16px;" onclick="addCustomQuestion()">Add →</button>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-ghost" onclick="goToStage(3)">← Back</button>
+        <button class="btn-primary" onclick="goToStage(5)">View intake summary →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STAGE 5: Intake summary ══ -->
+  <div class="stage" id="stage-5">
+    <div class="stage-pad">
+
+      <div style="font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;margin-bottom:20px;">The intake summary is the input layer for the change impact analysis. Everything here feeds the AI-generated first draft. The practitioner has confirmed what is known, flagged what is uncertain, and surfaced what is still open. The change impact analysis builds from this foundation.</div>
+
+      <div id="summary-content"></div>
+
+      <div style="margin-top:24px;padding:20px;background:var(--ink);border-radius:4px;">
+        <div style="font-family:'DM Serif Display',serif;font-size:20px;color:white;font-weight:400;margin-bottom:8px;">Ready for change impact analysis</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.55);font-weight:300;line-height:1.7;margin-bottom:18px;">The intake data is now ready to feed the change impact analysis. The AI generation layer will use this alongside the Unit 1 listening data to produce a first draft change impact table. The practitioner edits. The client reacts. It iterates from there.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="alert('Change impact analysis module — coming next in this build sequence.')">Generate change impact analysis →</button>
+          <button onclick="exportIntakeJSON()" style="padding:9px 18px;border:1px solid rgba(255,255,255,.2);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.6);background:none;cursor:pointer;">Save intake to engagement file</button>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn-ghost" onclick="goToStage(4)">← Back to open questions</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let uploadedFiles = [];
+let extractedData = {};
+let changeItems = [];
+let openQuestions = [];
+let currentStage = 1;
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function goToStage(n) {
+  currentStage = n;
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('stage-' + n).classList.add('active');
+  document.getElementById('stage-tab-' + n).classList.add('active');
+  if (n === 4) renderQuestions();
+  if (n === 5) renderSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function markDone(n) {
+  const num = document.getElementById('stage-num-' + n);
+  if (num) num.textContent = '✓';
+  document.getElementById('stage-tab-' + n)?.classList.add('done');
+}
+
+// ══════════════════════════════════════════
+// FILE HANDLING
+// ══════════════════════════════════════════
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('dragover');
+  processFiles(Array.from(e.dataTransfer.files));
+}
+function handleDragOver(e) { e.preventDefault(); document.getElementById('upload-zone').classList.add('dragover'); }
+function handleDragLeave() { document.getElementById('upload-zone').classList.remove('dragover'); }
+function handleFileSelect(e) { processFiles(Array.from(e.target.files)); }
+
+const FILE_ICONS = { pdf:'📄', doc:'📝', docx:'📝', ppt:'📊', pptx:'📊', xlsx:'📈', xls:'📈', csv:'📋', txt:'📃', png:'🖼', jpg:'🖼', jpeg:'🖼' };
+const DOC_TYPES = ['Project charter','Business case','Process map','Org chart','Previous assessment','Sponsor presentation','Training plan','Communications plan','Risk log','Other'];
+
+function processFiles(files) {
+  files.forEach(f => {
+    if (uploadedFiles.find(u => u.name === f.name)) return;
+    const ext = f.name.split('.').pop().toLowerCase();
+    uploadedFiles.push({ name: f.name, size: f.size, ext, type: '', file: f });
+  });
+  renderFileCards();
+  document.getElementById('next-1').disabled = uploadedFiles.length === 0;
+  document.getElementById('file-count-label').textContent = uploadedFiles.length > 0 ? `${uploadedFiles.length} file${uploadedFiles.length>1?'s':''} ready` : '';
+}
+
+function renderFileCards() {
+  document.getElementById('file-cards').innerHTML = uploadedFiles.map((f,i) => `
+    <div class="file-card">
+      <div class="file-card-icon">${FILE_ICONS[f.ext] || '📁'}</div>
+      <div style="flex:1;">
+        <div class="file-card-name">${f.name}</div>
+        <div class="file-card-meta">${(f.size/1024).toFixed(0)}KB &nbsp;·&nbsp; .${f.ext}</div>
+        <div class="doc-type-row">
+          ${DOC_TYPES.map(t => `<div class="doc-type-badge ${f.type===t?'selected':''}" onclick="setDocType(${i},'${t}',this)">${t}</div>`).join('')}
+        </div>
+      </div>
+      <button class="file-card-remove" onclick="removeFile(${i})">×</button>
+    </div>`).join('');
+}
+
+function setDocType(i, type, el) {
+  uploadedFiles[i].type = type;
+  renderFileCards();
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  renderFileCards();
+  document.getElementById('next-1').disabled = uploadedFiles.length === 0;
+  document.getElementById('file-count-label').textContent = uploadedFiles.length > 0 ? `${uploadedFiles.length} files ready` : '';
+}
+
+// ══════════════════════════════════════════
+// EXTRACTION (simulated + API-ready)
+// ══════════════════════════════════════════
+function startExtraction() {
+  goToStage(2);
+  simulateExtraction();
+}
+
+async function simulateExtraction() {
+  const steps = [
+    { pct: 15, msg: 'Reading document structure and file types...' },
+    { pct: 30, msg: 'Identifying project context and business rationale...' },
+    { pct: 45, msg: 'Extracting scope, timeline, and phase information...' },
+    { pct: 60, msg: 'Identifying named roles, processes, and systems...' },
+    { pct: 75, msg: 'Detecting named changes and impact areas...' },
+    { pct: 88, msg: 'Cross-referencing against change management research framework...' },
+    { pct: 95, msg: 'Generating confidence ratings and flagging gaps...' },
+    { pct: 100, msg: 'Extraction complete.' },
+  ];
+
+  for (const step of steps) {
+    await delay(600 + Math.random() * 400);
+    document.getElementById('ep-bar').style.width = step.pct + '%';
+    document.getElementById('ep-status').textContent = step.msg;
+  }
+
+  await delay(400);
+  document.getElementById('ep-spinner').style.display = 'none';
+  document.getElementById('ep-title-text').textContent = 'Extraction complete — review and confirm below';
+
+  // Determine what was extracted based on file types
+  const hasCharter = uploadedFiles.some(f => f.type === 'Project charter' || f.ext === 'docx' || f.ext === 'doc');
+  const hasBusinessCase = uploadedFiles.some(f => f.type === 'Business case');
+  const hasProcessMap = uploadedFiles.some(f => f.type === 'Process map');
+  const hasPPT = uploadedFiles.some(f => f.ext === 'pptx' || f.ext === 'ppt');
+
+  extractedData = {
+    hasCharter, hasBusinessCase, hasProcessMap, hasPPT,
+    confidence: {
+      why: hasBusinessCase || hasCharter ? 'high' : hasPPT ? 'mid' : 'low',
+      ifnot: hasBusinessCase ? 'mid' : 'low',
+      vision: hasCharter || hasPPT ? 'mid' : 'low',
+      golive: hasCharter ? 'high' : 'low',
+      phases: hasCharter ? 'mid' : 'low',
+      inscope: hasCharter ? 'high' : 'low',
+      outscope: hasCharter ? 'mid' : 'low',
+      roles: hasCharter || hasProcessMap ? 'mid' : 'low',
+      workstreams: hasCharter ? 'mid' : 'low',
+      systems: hasCharter ? 'mid' : 'low',
+      risks: hasCharter ? 'mid' : 'low',
+      decisions: hasCharter ? 'low' : 'low',
+    }
+  };
+
+  await delay(300);
+  markDone(1);
+  markDone(2);
+  goToStage(3);
+  applyConfidenceRatings();
+
+  // Show extraction log
+  const log = document.getElementById('extraction-log');
+  log.style.display = 'block';
+  log.innerHTML = `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-top:16px;">
+    <div style="font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:10px;">What was extracted</div>
+    ${uploadedFiles.map(f=>`<div style="font-size:12px;color:var(--ink-soft);font-weight:300;margin-bottom:4px;">${FILE_ICONS[f.ext]||'📁'} ${f.name} ${f.type?'· '+f.type:''} — <span style="color:${f.type?'var(--tile-2)':'var(--risk-mod)'};">${f.type?'analysed':'no type set — general extraction applied'}</span></div>`).join('')}
+  </div>`;
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function applyConfidenceRatings() {
+  const conf = extractedData.confidence || {};
+  const confClass = { high: 'conf-high', mid: 'conf-mid', low: 'conf-low' };
+  const confLabel = { high: 'High confidence', mid: 'Partial — review', low: 'Not found — enter manually' };
+  Object.entries(conf).forEach(([field, level]) => {
+    const el = document.getElementById('conf-' + field);
+    if (el) {
+      el.textContent = confLabel[level] || '—';
+      el.className = 'conf-badge ' + (confClass[level] || 'conf-none');
+    }
+  });
+}
+
+// ══════════════════════════════════════════
+// CHANGE ITEMS
+// ══════════════════════════════════════════
+let changeItemCounter = 0;
+
+function addChangeItem(type) {
+  const id = ++changeItemCounter;
+  const typeLabels = { process:'Process change', role:'Role change', system:'System change', structure:'Structural change' };
+  changeItems.push({ id, type: type||'', typeLabel: typeLabels[type]||'', text: '', confirmed: false });
+  renderChangeItems();
+}
+
+function renderChangeItems() {
+  const container = document.getElementById('named-changes-list');
+  if (!changeItems.length) {
+    container.innerHTML = '<div style="font-size:13px;color:var(--ink-muted);font-weight:300;font-style:italic;padding:12px 0;">No changes added yet. Add changes from the buttons below or from document extraction.</div>';
+    return;
+  }
+  container.innerHTML = changeItems.map((ci,i) => `
+    <div class="change-item">
+      <div class="ci-num">${i+1}</div>
+      <div class="ci-body">
+        <textarea style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--surface-raised);font-weight:300;resize:none;min-height:50px;" 
+          placeholder="Describe the specific change — be precise. e.g. Monthly reconciliation process moves from manual Excel to system-automated with exceptions routed through new approval workflow."
+          onblur="updateChangeItem(${ci.id},this.value)">${ci.text}</textarea>
+        <div class="ci-tags">
+          ${['process','role','system','structure'].map(t=>`
+            <span class="ci-tag ci-${t}" style="cursor:pointer;opacity:${ci.type===t?1:.4};" onclick="setChangeItemType(${ci.id},'${t}')">
+              ${{process:'Process',role:'Role',system:'System',structure:'Structural'}[t]}
+            </span>`).join('')}
+        </div>
+      </div>
+      <button class="ci-remove" onclick="removeChangeItem(${ci.id})">×</button>
+    </div>`).join('');
+}
+
+function updateChangeItem(id, val) { const ci = changeItems.find(c=>c.id===id); if(ci) ci.text=val; }
+function setChangeItemType(id, type) { const ci = changeItems.find(c=>c.id===id); if(ci) { ci.type=type; renderChangeItems(); } }
+function removeChangeItem(id) { changeItems = changeItems.filter(c=>c.id!==id); renderChangeItems(); }
+
+// ══════════════════════════════════════════
+// OPEN QUESTIONS
+// ══════════════════════════════════════════
+function generateQuestions() {
+  const conf = extractedData.confidence || {};
+  openQuestions = [];
+
+  // Generate from gaps
+  const why = document.getElementById('edit-why')?.value?.trim();
+  const golive = document.getElementById('edit-golive')?.value;
+  const inscope = document.getElementById('edit-inscope')?.value?.trim();
+  const outscope = document.getElementById('edit-outscope')?.value?.trim();
+  const ifnot = document.getElementById('edit-ifnot')?.value?.trim();
+  const decisions = document.getElementById('edit-decisions')?.value?.trim();
+
+  if (!why) openQuestions.push({
+    id: 1, urgency: 'critical', resolved: false, answer: '',
+    question: 'What is the business rationale for this change — in plain language that a frontline employee would understand?',
+    why: 'The business rationale is the foundation of every communication. Without it, communications default to describing what is happening rather than why it matters. Resistant stakeholders need to understand the why before they will engage with the what.',
+    source: 'Prosci research consistently shows that Awareness — understanding why the change is happening and the risk of not changing — is the first and most critical building block. Without it, no subsequent engagement activity will land.',
+    forClient: true,
+  });
+
+  if (!golive) openQuestions.push({
+    id: 2, urgency: 'critical', resolved: false, answer: '',
+    question: 'What is the confirmed go-live or completion date — and how fixed is it?',
+    why: 'The go-live date drives every design decision downstream — training delivery windows, communication cascade timing, leadership visibility scheduling, and adoption measurement points. A hard fixed date creates a very different design than a flexible target.',
+    source: null,
+    forClient: true,
+  });
+
+  if (!outscope) openQuestions.push({
+    id: 3, urgency: 'important', resolved: false, answer: '',
+    question: 'What is explicitly out of scope — and has the sponsor communicated this to the organisation?',
+    why: 'Out-of-scope assumptions are one of the most common sources of trust breakdown in a change engagement. When people believe something is changing and it turns out it is not — or vice versa — they question everything else they have been told.',
+    source: null,
+    forClient: true,
+  });
+
+  if (!ifnot) openQuestions.push({
+    id: 4, urgency: 'important', resolved: false, answer: '',
+    question: 'What is the consequence of not making this change — and is the sponsor willing to say it publicly?',
+    why: 'For resistant stakeholders, the risk of staying still is often more compelling than the vision of moving forward. But it requires the sponsor to be willing to name it honestly, which is not always a comfortable conversation.',
+    source: 'William Bridges identifies the ending — acknowledging what is being left behind and what happens if the organisation does not act — as the necessary starting point of any transition. Without naming the consequence, the case for change feels artificial.',
+    forClient: false,
+  });
+
+  if (changeItems.length < 3) openQuestions.push({
+    id: 5, urgency: 'important', resolved: false, answer: '',
+    question: 'What are the specific process, role, and system changes that each stakeholder group will experience — in operational terms, not strategic language?',
+    why: 'The change impact analysis requires specific, operational change descriptions to be useful. "The system is changing" is not a change item. "The monthly close process moves from a 5-day manual cycle to a 2-day system-assisted cycle with new exception handling steps" is a change item.',
+    source: null,
+    forClient: true,
+  });
+
+  if (!decisions) openQuestions.push({
+    id: 6, urgency: 'useful', resolved: false, answer: '',
+    question: 'What decisions have already been made that the CM team cannot change — and does the project team understand the implications of those decisions for the change experience?',
+    why: 'Fixed decisions — training delivery method, cutover approach, timeline — create design constraints that must be named early. A decision to do online-only training for a population with limited digital access is not just a logistics issue — it is a change risk.',
+    source: null,
+    forClient: false,
+  });
+
+  openQuestions.push({
+    id: 7, urgency: 'useful', resolved: false, answer: '',
+    question: 'Has this organisation attempted a similar change before — and what happened?',
+    why: 'Organisational change history is one of the strongest predictors of how a population will respond to a new change. A previous failed implementation creates trust debt that must be addressed before the current change can be received openly.',
+    source: 'Bridges\' transition model and Prosci research both identify prior change history as a significant factor in change readiness. Populations that have experienced failed changes require explicit trust-rebuilding before new changes can be accepted.',
+    forClient: true,
+  });
+
+  markDone(3);
+  goToStage(4);
+}
+
+function renderQuestions() {
+  const critical = openQuestions.filter(q=>q.urgency==='critical');
+  const important = openQuestions.filter(q=>q.urgency==='important');
+  const useful = openQuestions.filter(q=>q.urgency==='useful');
+  const resolved = openQuestions.filter(q=>q.resolved);
+
+  document.getElementById('questions-summary').innerHTML = `
+    <div class="qs-stat"><div class="qs-num" style="color:var(--risk-high);">${critical.length}</div><div class="qs-label">Critical</div></div>
+    <div class="qs-divider"></div>
+    <div class="qs-stat"><div class="qs-num" style="color:var(--risk-mod);">${important.length}</div><div class="qs-label">Important</div></div>
+    <div class="qs-divider"></div>
+    <div class="qs-stat"><div class="qs-num" style="color:var(--tile-5);">${useful.length}</div><div class="qs-label">Useful</div></div>
+    <div class="qs-divider"></div>
+    <div class="qs-stat"><div class="qs-num" style="color:var(--tile-2);">${resolved.length}</div><div class="qs-label">Resolved</div></div>
+    <div style="flex:1;font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.5;">Answer what you can now. Flag what needs to go to the client. Leave what cannot be resolved yet — they stay visible in the change impact analysis as open items.</div>`;
+
+  document.getElementById('questions-list').innerHTML = openQuestions.map(q => `
+    <div class="open-question ${q.resolved?'oq-resolved':''}" id="oq-${q.id}" style="margin-bottom:12px;">
+      <div class="oq-label">
+        <span class="oq-urgency ${q.urgency==='critical'?'oq-critical':q.urgency==='important'?'oq-important':'oq-useful'}">
+          ${q.urgency.charAt(0).toUpperCase()+q.urgency.slice(1)}
+        </span>
+        ${q.forClient?'<span style="padding:2px 8px;border-radius:8px;font-size:10px;background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);">For client / sponsor</span>':'<span style="padding:2px 8px;border-radius:8px;font-size:10px;background:var(--surface);border:1px solid var(--border);color:var(--ink-muted);">Practitioner</span>'}
+        ${q.resolved?'<span style="padding:2px 8px;border-radius:8px;font-size:10px;background:var(--risk-low-bg);color:var(--risk-low);">Resolved ✓</span>':''}
+      </div>
+      <div class="oq-question">"${q.question}"</div>
+      <div class="oq-why">${q.why}</div>
+      ${q.source?`<div class="research-prompt" style="margin-top:8px;">
+        <div class="rp-label">📚 Research basis</div>
+        <div class="rp-text">${q.source}</div>
+      </div>`:''}
+      <textarea class="oq-answer-field" id="oqa-${q.id}" placeholder="Answer here, or note who needs to answer this and when..." onblur="saveAnswer(${q.id})">${q.answer}</textarea>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <button class="oq-resolve-btn" onclick="resolveQuestion(${q.id})">${q.resolved?'Reopen':'Mark resolved ✓'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function saveAnswer(id) {
+  const q = openQuestions.find(q=>q.id===id);
+  if (q) q.answer = document.getElementById('oqa-'+id)?.value || '';
+}
+
+function resolveQuestion(id) {
+  const q = openQuestions.find(q=>q.id===id);
+  if (q) { q.resolved = !q.resolved; saveAnswer(id); renderQuestions(); }
+}
+
+function addCustomQuestion() {
+  const val = document.getElementById('custom-question').value.trim();
+  if (!val) return;
+  openQuestions.push({ id: Date.now(), urgency:'useful', resolved:false, answer:'', question:val, why:'Added by practitioner.', source:null, forClient:false });
+  document.getElementById('custom-question').value = '';
+  renderQuestions();
+}
+
+// ══════════════════════════════════════════
+// SUMMARY
+// ══════════════════════════════════════════
+function renderSummary() {
+  const why = document.getElementById('edit-why')?.value?.trim();
+  const golive = document.getElementById('edit-golive')?.value;
+  const phases = document.getElementById('edit-phases')?.value?.trim();
+  const inscope = document.getElementById('edit-inscope')?.value?.trim();
+  const roles = document.getElementById('edit-roles')?.value?.trim();
+  const systems = document.getElementById('edit-systems')?.value?.trim();
+  const risks = document.getElementById('edit-risks')?.value?.trim();
+  const resolved = openQuestions.filter(q=>q.resolved).length;
+  const unresolved = openQuestions.filter(q=>!q.resolved).length;
+
+  const fields = [
+    { label:'Business rationale', val:why, required:true },
+    { label:'Go-live date', val:golive, required:true },
+    { label:'Project phases', val:phases, required:false },
+    { label:'In scope', val:inscope, required:true },
+    { label:'Named roles', val:roles, required:false },
+    { label:'Systems', val:systems, required:false },
+    { label:'Known risks', val:risks, required:false },
+  ];
+
+  const complete = fields.filter(f=>f.val).length;
+  const total = fields.length;
+
+  document.getElementById('summary-content').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--ink);">${changeItems.length}</div>
+        <div style="font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em;">Change items</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--tile-2);">${resolved}</div>
+        <div style="font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em;">Questions resolved</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:26px;color:${unresolved>2?'var(--risk-high)':'var(--risk-mod)'};">${unresolved}</div>
+        <div style="font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em;">Still open</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-family:'DM Serif Display',serif;font-size:26px;color:var(--ink);">${Math.round(complete/total*100)}%</div>
+        <div style="font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em;">Intake complete</div>
+      </div>
+    </div>
+
+    ${fields.map(f=>`
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;">
+        <div style="font-size:14px;flex-shrink:0;">${f.val?'✓':'○'}</div>
+        <div style="flex:1;">
+          <div style="font-size:12px;font-weight:500;color:var(--ink);">${f.label}${f.required?' *':''}</div>
+          <div style="font-size:12px;color:${f.val?'var(--ink-soft)':'var(--risk-mod)'};font-weight:300;margin-top:2px;">${f.val?f.val.slice(0,120)+(f.val.length>120?'...':''):(f.required?'Required — enter before generating change impact analysis':'Not captured — can be added later')}</div>
+        </div>
+      </div>`).join('')}
+
+    ${changeItems.length > 0 ? `
+      <div style="margin-top:16px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);">
+        <div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:10px;">${changeItems.length} change item${changeItems.length>1?'s':''} captured</div>
+        ${changeItems.map((ci,i)=>`<div style="font-size:12px;color:var(--ink-soft);font-weight:300;margin-bottom:6px;padding-left:12px;border-left:2px solid ${ci.type==='process'?'#4A8FA8':ci.type==='role'?'#C4A840':ci.type==='system'?'#8B7BA8':'#C4826A'};">${ci.text||'(no description yet)'}</div>`).join('')}
+      </div>` : ''}
+
+    ${unresolved > 0 ? `
+      <div style="margin-top:14px;padding:14px 18px;background:var(--risk-mod-bg);border:1px solid var(--risk-mod);border-radius:var(--radius);">
+        <div style="font-size:12px;font-weight:500;color:#8B5A00;margin-bottom:6px;">${unresolved} open question${unresolved>1?'s':''} travelling into the change impact analysis</div>
+        <div style="font-size:12px;color:#8B5A00;font-weight:300;line-height:1.6;">These remain visible in the change impact analysis as items that need resolution before the relevant recommendations can be finalised. They are not blockers — but they are flags.</div>
+      </div>` : ''}`;
+
+  markDone(4);
+  markDone(5);
+}
+
+// ══════════════════════════════════════════
+// DEMO DATA
+// ══════════════════════════════════════════
+function loadDemo(scenario) {
+  const demos = {
+    meridian: {
+      why: 'Our current ERP system is 14 years old and cannot support cross-border reporting or real-time inventory visibility. We are losing an estimated $4.2M annually in operational inefficiencies that a modern system would eliminate. The restructure creates the right organisational conditions to implement the new system properly.',
+      ifnot: 'If we do not modernise the ERP, we cannot achieve the cross-border operational integration that our 2025 strategy requires. We will continue to lose ground to competitors who have already made this transition. The legacy system goes end-of-support in 18 months.',
+      vision: 'A single integrated system that gives every finance and operations manager real-time visibility of their data, eliminates the monthly close backlog, and enables cross-border reporting without manual reconciliation.',
+      golive: '2026-10-01',
+      phases: 'Phase 1: Design & configure (Jan–Apr 2026), Phase 2: Test & train (May–Aug 2026), Phase 3: Deploy & hypercare (Sep–Dec 2026)',
+      inscope: 'Finance module (AP, AR, GL, reconciliation), Supply Chain module (inventory, procurement), HR data migration, organisational restructure communications',
+      outscope: 'Payroll system (separate project), Customer-facing systems, Legacy data archiving beyond 7 years',
+      roles: 'Finance Managers, Finance Frontline, Supply Chain Supervisors, Warehouse Operators, HR Business Partners, IT Systems Leads, Senior Leadership',
+      workstreams: 'Technology, Process redesign, People & Change, Training & Enablement, Communications, Data Migration',
+      systems: 'SAP S/4HANA (replacing legacy SAP R/3), integrating with existing Workday HRIS',
+      risks: 'Finance Manager resistance based on 2020 ERP failure. Brazil and France language/localisation not yet planned. Q3 close window conflicts with planned go-live.',
+      decisions: 'Hard cutover — no parallel running. Go-live date fixed at October 1 regardless of readiness. Training to be delivered in-system (not classroom). English-only materials unless local teams request translation.',
+      changes: [
+        { type:'process', text:'Monthly financial close process moves from 5-day manual Excel cycle to 2-day system-assisted cycle with automated exception flagging and new approval workflow' },
+        { type:'role', text:'Finance Manager role shifts from hands-on data manipulation to exception review and oversight — approximately 60% of current manual tasks automated' },
+        { type:'system', text:'All finance users move from legacy SAP R/3 to SAP S/4HANA — new interface, new navigation, new reporting structure' },
+        { type:'process', text:'Purchase order and goods receipt process redesigned — Supply Chain frontline will follow new three-step digital approval before physical goods movement' },
+        { type:'structure', text:'Finance reporting lines restructure — regional finance teams consolidate under centralised Finance Operations hub, reducing local autonomy' },
+      ],
+    },
+    fusion: {
+      why: 'The acquisition of Fusion BV creates the opportunity to build a combined organisation with capabilities neither company had independently — advanced product engineering from the Fusion side and US market scale from our side. The integration is designed to capture this opportunity before the window closes.',
+      ifnot: 'Failure to integrate effectively within 18 months will result in significant talent attrition from the acquired team, loss of the product capabilities we paid for, and reputational damage in the European market.',
+      vision: 'One company with a shared identity, a combined product roadmap, and a way of working that draws on the best of both cultures rather than defaulting to the acquirer\'s way.',
+      golive: '2026-09-01',
+      phases: 'Phase 1: Stabilise & listen (Dec 2025–Mar 2026), Phase 2: Integrate & align (Apr–Jul 2026), Phase 3: Embed & sustain (Aug–Dec 2026)',
+      inscope: 'Organisational structure integration, people processes (performance, compensation), product roadmap alignment, brand and identity, ways of working',
+      outscope: 'IT systems integration (separate workstream), Legal entity merger (complete), Physical office consolidation (Phase 2)',
+      roles: 'Legacy US Leadership, Acquired NL/DE Leadership, Combined Middle Management, Product & Engineering Teams, Individual Contributors',
+      workstreams: 'Culture & People, Product Integration, Communications & Engagement, HR Systems, Leadership Alignment',
+      systems: 'Workday (extending to acquired employees), Slack (consolidating two instances), Jira (migrating Fusion projects)',
+      risks: 'Acquired team talent attrition if cultural integration feels like assimilation. Middle management anxiety about role security. Dutch and German communication norms creating misread alignment.',
+      decisions: 'US leadership model retained at executive level. Acquired brand retired — single brand effective Q3 2026. Compensation harmonisation effective January 2027.',
+      changes: [
+        { type:'structure', text:'Acquired NL/DE team integrates into US-led organisational structure — reporting lines, decision rights, and escalation paths all change' },
+        { type:'role', text:'Product leads in NL/DE transition from autonomous product ownership to collaborative roadmap model with US counterparts' },
+        { type:'process', text:'Performance review process moves from Fusion\'s continuous model to US parent\'s annual cycle with mid-year check-in' },
+        { type:'structure', text:'Brand and identity transition — Fusion brand retired, all external communications move to parent brand by Q3 2026' },
+      ],
+    },
+    nova: {
+      why: 'AI tools can handle the routine analytical work that currently consumes 40% of our data and operations workforce capacity. Redesigning roles to move people up the value chain — into interpretation, decision-making, and relationship work — is both a productivity play and a talent retention strategy.',
+      ifnot: 'If we do not make this transition, our competitors who are making it will outpace us on speed and cost within three years. We also risk losing our analytical talent to organisations that offer more interesting work.',
+      vision: 'A workforce where our people spend their time on judgment, relationships, and complex problem-solving — not on tasks that a system can do faster and more accurately.',
+      golive: '2026-12-01',
+      phases: 'Phase 1: Pilot (May–Jul 2026), Phase 2: National rollout (Aug–Oct 2026), Phase 3: Full deployment (Nov–Dec 2026)',
+      inscope: 'Field Operations data analysis roles, Corporate function analytical roles, Data & Analytics team capability uplift, role redesign for all analyst-grade positions',
+      outscope: 'Field technician physical roles (no AI impact), Customer-facing operational roles, Executive level (advisory only)',
+      roles: 'Field Operations Analysts, Field Supervisors, Corporate Function Analysts, Data Scientists, Operations Managers, Senior Leadership',
+      workstreams: 'Technology & Tools, Role Redesign, Learning & Capability, Communications, Change & Engagement, Adoption & Measurement',
+      systems: 'Azure OpenAI (primary AI platform), Power BI (enhanced analytics), existing SCADA systems (unchanged)',
+      risks: 'Job security fears overriding engagement with the programme. 12-state coordination complexity underestimated. Field teams receiving HQ-designed training that does not reflect field reality.',
+      decisions: 'No involuntary redundancies as a result of this programme (committed publicly). Online-first training delivery. Pilot cohort volunteers only. National rollout mandatory for all analyst-grade roles.',
+      changes: [
+        { type:'role', text:'All analyst-grade roles redesigned — routine data pulling and report generation automated, role focus shifts to interpretation, storytelling, and recommendation' },
+        { type:'process', text:'Weekly operations reporting process redesigned — automated dashboard replaces 4-hour manual compilation, analyst role becomes reviewer and narrator' },
+        { type:'system', text:'Azure OpenAI tools deployed to all analyst roles — new interface, new prompting skills required, new data governance protocols' },
+        { type:'role', text:'Field Supervisor role gains new analytical capability requirement — expected to interpret AI-generated field data reports that did not previously exist' },
+      ],
+    },
+  };
+
+  const d = demos[scenario];
+  if (!d) return;
+
+  // Populate all fields
+  const fields = ['why','ifnot','vision','inscope','outscope','roles','workstreams','systems','risks','decisions'];
+  fields.forEach(f => {
+    const el = document.getElementById('edit-' + f);
+    if (el) el.value = d[f] || '';
+  });
+  if (document.getElementById('edit-golive')) document.getElementById('edit-golive').value = d.golive;
+  if (document.getElementById('edit-phases')) document.getElementById('edit-phases').value = d.phases;
+
+  // Add change items
+  changeItems = [];
+  changeItemCounter = 0;
+  d.changes.forEach(c => {
+    const id = ++changeItemCounter;
+    changeItems.push({ id, type: c.type, text: c.text, confirmed: true });
+  });
+
+  // Set confidence ratings
+  extractedData = {
+    confidence: {
+      why:'high', ifnot:'high', vision:'high', golive:'high', phases:'high',
+      inscope:'high', outscope:'mid', roles:'mid', workstreams:'mid',
+      systems:'mid', risks:'mid', decisions:'mid',
+    }
+  };
+
+  // Skip to stage 3 and show as demo
+  uploadedFiles = [{ name:'[Demo data — ' + scenario + ']', size:0, ext:'demo', type:'Project charter' }];
+  markDone(1);
+  markDone(2);
+  applyConfidenceRatings();
+  renderChangeItems();
+  goToStage(3);
+}
+
+// ══════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════
+function exportIntakeJSON() {
+  const intake = {
+    _meta: { version:'1.0', exportedAt:new Date().toISOString(), tool:'Tessera™ — Mosaic Bridge Advisory', unit:'Unit 2 — Document intake' },
+    caseForChange: {
+      businessRationale: document.getElementById('edit-why')?.value?.trim() || '',
+      consequenceOfInaction: document.getElementById('edit-ifnot')?.value?.trim() || '',
+      visionOfSuccess: document.getElementById('edit-vision')?.value?.trim() || '',
+    },
+    scopeAndTimeline: {
+      goLiveDate: document.getElementById('edit-golive')?.value || '',
+      phases: document.getElementById('edit-phases')?.value?.trim() || '',
+      inScope: document.getElementById('edit-inscope')?.value?.trim() || '',
+      outOfScope: document.getElementById('edit-outscope')?.value?.trim() || '',
+    },
+    namedChanges: changeItems,
+    rolesAndWorkstreams: {
+      namedRoles: document.getElementById('edit-roles')?.value?.trim() || '',
+      workstreams: document.getElementById('edit-workstreams')?.value?.trim() || '',
+      systems: document.getElementById('edit-systems')?.value?.trim() || '',
+    },
+    risksAndDecisions: {
+      knownRisks: document.getElementById('edit-risks')?.value?.trim() || '',
+      decisionsMade: document.getElementById('edit-decisions')?.value?.trim() || '',
+    },
+    practitionerNotes: document.getElementById('edit-prac-notes')?.value?.trim() || '',
+    openQuestions: openQuestions,
+    sourceDocuments: uploadedFiles.map(f => ({ name:f.name, type:f.type, ext:f.ext })),
+    extractionConfidence: extractedData.confidence || {},
+  };
+
+  const blob = new Blob([JSON.stringify(intake, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `tessera-intake-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+}
+
+// ══════════════════════════════════════════
+// MOSAIC
+// ══════════════════════════════════════════
+const colors = ['#C4A882','#7B9E87','#8B7BA8','#C4826A','#F7F3ED','#4A8FA8','#E8D9C4'];
+const mosaic = document.getElementById('mosaic');
+for (let i=0;i<40;i++) {
+  const t = document.createElement('div');
+  t.className = 'mosaic-tile';
+  t.style.background = colors[i%colors.length];
+  t.style.animationDelay = (0.02+i*0.012)+'s';
+  mosaic.appendChild(t);
+}
+
+// Init
+renderChangeItems();
+
+// Shell integration — hide own nav when running inside tessera.html shell
+(function(){
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('shell') === '1') {
+    const style = document.createElement('style');
+    style.textContent = '.t-nav{display:none!important;}';
+    document.head.appendChild(style);
+  }
+})();</script>
+<div style="display:none;" id="copyright-meta">&copy; 2026 Mosaic Bridge Advisory. Tessera&trade; is a trademark of Mosaic Bridge Advisory.</div>
+</body>
+</html>
