@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tessera™ — Unit 7: Stakeholder Engagement & Readiness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clay:#C4A882;--clay-dark:#8B7355;--ink:#1C1A17;--ink-muted:#8A8480;--ink-soft:#4A4640;
+  --surface:#F7F3ED;--surface-raised:#FDFAF6;--border:rgba(28,26,23,.12);--radius:3px;
+  --u1:#C4826A;--u2:#4A8FA8;--u3:#4A6FA8;--u4:#2A7A5A;--u5:#8B4A2A;--u6:#5A3A8B;--u7:#2A5A8B;--u8:#6B2A5A;
+  --risk-high-bg:rgba(196,130,106,.08);--risk-high:var(--u1);
+  --risk-mod-bg:rgba(196,168,130,.08);--risk-mod:#8B7355;
+  --risk-man-bg:rgba(42,122,90,.08);--risk-man:var(--u4);
+  --green:#2A7A5A;--amber:#8B6A00;--red:#C4826A;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);}
+
+/* ── Unit nav ── */
+.u-nav{background:var(--ink);border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 32px;min-height:48px;}
+.u-nav-brand{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);cursor:pointer;padding-right:24px;border-right:1px solid rgba(255,255,255,.08);margin-right:8px;white-space:nowrap;}
+.u-nav-brand:hover{color:white;}
+.u-nav-units{display:flex;flex:1;gap:0;overflow-x:auto;}
+.u-nav-unit{display:flex;align-items:center;gap:7px;padding:0 14px;height:48px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;text-decoration:none;flex-shrink:0;}
+.u-nav-unit:hover{background:rgba(255,255,255,.04);}
+.u-nav-unit.active{border-bottom-color:var(--u7);}
+.u-badge{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:white;flex-shrink:0;}
+.u-label{font-size:12px;color:rgba(255,255,255,.45);}
+.u-nav-unit.active .u-label{color:white;font-weight:500;}
+.u-nav-right{display:flex;align-items:center;gap:8px;margin-left:auto;padding-left:16px;}
+.u-home-btn{padding:4px 12px;border:1px solid rgba(255,255,255,.15);border-radius:2px;font-size:11px;color:rgba(255,255,255,.4);cursor:pointer;background:none;font-family:inherit;transition:all .15s;}
+.u-home-btn:hover{color:white;border-color:rgba(255,255,255,.4);}
+.u-scenario-sel{padding:4px 10px;border:1px solid rgba(255,255,255,.12);border-radius:2px;font-family:inherit;font-size:11px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);cursor:pointer;}
+.u-scenario-sel option{color:var(--ink);background:white;}
+
+/* ── Sub nav ── */
+.t-nav{background:var(--ink);border-bottom:1px solid rgba(255,255,255,.06);padding:0 32px;display:flex;align-items:center;gap:2px;min-height:44px;overflow-x:auto;}
+.module-tab{padding:6px 14px;font-size:12px;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;border:none;background:none;font-family:inherit;transition:all .15s;}
+.module-tab:hover{color:white;}
+.module-tab.active{color:var(--clay);border-bottom:2px solid var(--u7);}
+
+/* ── Layout ── */
+.app-shell{min-height:calc(100vh - 92px);}
+.module-view{display:none;}
+.module-view.active{display:block;animation:fadeUp .25s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.view-pad{max-width:1100px;margin:0 auto;padding:32px 40px 60px;}
+
+/* ── Headers ── */
+.section-eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--u7);margin-bottom:8px;}
+.section-title{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:8px;}
+.section-title em{font-style:italic;color:var(--clay-dark);}
+.section-sub{font-size:14px;color:var(--ink-muted);font-weight:300;line-height:1.8;max-width:700px;margin-bottom:28px;}
+.section-head{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+
+/* ── Cards ── */
+.card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;margin-bottom:12px;}
+.card-title{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:8px;}
+
+/* ── Stats row ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;}
+.stat-num{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;color:var(--ink);line-height:1;}
+.stat-label{font-size:11px;color:var(--ink-muted);font-weight:300;margin-top:4px;}
+.stat-sub{font-size:11px;color:var(--u7);font-weight:400;margin-top:2px;}
+
+/* ── Stakeholder register ── */
+.register-table{width:100%;border-collapse:collapse;font-size:13px;}
+.register-table th{text-align:left;padding:8px 12px;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);border-bottom:1px solid var(--border);background:var(--surface);}
+.register-table td{padding:12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.register-table tr:last-child td{border-bottom:none;}
+.register-table tr:hover td{background:rgba(28,26,23,.02);}
+.risk-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;}
+.risk-high{background:var(--risk-high-bg);color:var(--risk-high);}
+.risk-mod{background:var(--risk-mod-bg);color:var(--risk-mod);}
+.risk-man{background:var(--risk-man-bg);color:var(--risk-man);}
+.readiness-bar{height:6px;border-radius:3px;background:var(--border);width:100%;margin-top:4px;}
+.readiness-fill{height:100%;border-radius:3px;transition:width .4s ease;}
+.posture-dots{display:flex;gap:3px;flex-wrap:wrap;margin-top:4px;}
+.posture-dot{width:8px;height:8px;border-radius:50%;}
+.owner-tag{font-size:11px;color:var(--ink-muted);font-weight:300;}
+
+/* ── Resistance tracker ── */
+.resist-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:10px;border-left:4px solid var(--border);}
+.resist-card.high{border-left-color:var(--u1);}
+.resist-card.moderate{border-left-color:#C4A052;}
+.resist-card.manageable{border-left-color:var(--u4);}
+.resist-group{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.resist-type{font-size:11px;color:var(--u7);font-weight:400;margin-bottom:8px;font-style:italic;}
+.resist-evidence{font-size:13px;color:var(--ink-soft);font-weight:300;line-height:1.7;margin-bottom:10px;}
+.resist-signal-quote{font-size:12px;color:var(--ink-muted);font-style:italic;padding:8px 12px;border-left:2px solid var(--border);margin-bottom:10px;line-height:1.6;}
+.resist-actions{display:flex;flex-direction:column;gap:4px;}
+.resist-action{font-size:12px;color:var(--ink-soft);font-weight:300;display:flex;gap:8px;}
+.resist-action::before{content:'→';color:var(--u7);flex-shrink:0;}
+.practitioner-note{background:rgba(42,90,139,.05);border:1px solid rgba(42,90,139,.12);border-radius:2px;padding:10px 14px;margin-top:10px;font-size:12px;color:var(--ink-soft);font-weight:300;font-style:italic;}
+
+/* ── Engagement strategy ── */
+.strat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.strat-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.strat-group{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:4px;}
+.strat-approach{font-size:12px;color:var(--u7);font-weight:400;margin-bottom:10px;}
+.strat-activities{display:flex;flex-direction:column;gap:6px;}
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;background:var(--surface);border-radius:2px;font-size:12px;}
+.activity-type{font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
+.act-network{background:rgba(42,90,139,.08);color:var(--u7);}
+.act-session{background:rgba(42,122,90,.08);color:var(--u4);}
+.act-comms{background:rgba(74,111,168,.08);color:var(--u3);}
+.act-training{background:rgba(196,130,106,.08);color:var(--u1);}
+.act-forum{background:rgba(90,58,139,.08);color:var(--u6);}
+.act-sponsor{background:rgba(139,74,42,.08);color:var(--u5);}
+.activity-text{color:var(--ink-soft);font-weight:300;line-height:1.5;}
+
+/* ── Change network ── */
+.network-section{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;}
+.network-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;}
+.network-desc{font-size:13px;color:var(--ink-muted);font-weight:300;line-height:1.7;margin-bottom:16px;}
+.network-members{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.member-card{background:var(--surface);border:1px solid var(--border);border-radius:2px;padding:12px 14px;}
+.member-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.member-role{font-size:11px;color:var(--ink-muted);font-weight:300;margin-bottom:6px;}
+.member-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.member-tag{font-size:10px;padding:1px 7px;border-radius:8px;background:rgba(42,90,139,.08);color:var(--u7);}
+
+/* ── Pulse ── */
+.pulse-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.pulse-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;}
+.pulse-group{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:12px;}
+.pulse-metric{margin-bottom:10px;}
+.pulse-label{font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:4px;display:flex;justify-content:space-between;}
+.pulse-bar{height:6px;border-radius:3px;background:var(--border);}
+.pulse-fill{height:100%;border-radius:3px;}
+.pulse-trend{font-size:10px;font-weight:500;}
+.trend-up{color:var(--green);}
+.trend-down{color:var(--red);}
+.trend-flat{color:var(--ink-muted);}
+.pulse-note{font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;margin-top:10px;font-style:italic;}
+
+/* ── Readiness dashboard ── */
+.readiness-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.readiness-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.rg-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.rg-group{font-size:15px;font-weight:500;color:var(--ink);}
+.rg-score{font-family:'DM Serif Display',serif;font-size:28px;font-weight:400;line-height:1;}
+.rg-score-label{font-size:10px;color:var(--ink-muted);text-align:right;font-weight:300;}
+.rg-dimensions{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.rg-dim{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);}
+.rg-dim-label{width:120px;flex-shrink:0;font-weight:300;}
+.rg-dim-bar{flex:1;height:5px;border-radius:3px;background:var(--border);}
+.rg-dim-fill{height:100%;border-radius:3px;}
+.rg-dim-val{width:30px;text-align:right;font-size:11px;color:var(--ink-muted);}
+.rg-flag{font-size:11px;padding:6px 10px;border-radius:2px;margin-top:8px;font-weight:300;line-height:1.5;}
+.rg-flag.green{background:rgba(42,122,90,.06);color:var(--green);border-left:2px solid var(--green);}
+.rg-flag.amber{background:rgba(139,106,0,.06);color:var(--amber);border-left:2px solid var(--amber);}
+.rg-flag.red{background:rgba(196,130,106,.06);color:var(--red);border-left:2px solid var(--red);}
+.rag-summary{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px;}
+.rag-title{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:12px;}
+.rag-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.rag-row:last-child{border-bottom:none;}
+.rag-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.rag-group{flex:1;color:var(--ink-soft);}
+.rag-status{font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;}
+.rag-green{background:rgba(42,122,90,.1);color:var(--green);}
+.rag-amber{background:rgba(139,106,0,.1);color:var(--amber);}
+.rag-red{background:rgba(196,130,106,.1);color:var(--red);}
+.rag-note{font-size:11px;color:var(--ink-muted);font-weight:300;}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .view-pad{padding:20px 24px 40px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .strat-grid,.readiness-grid,.network-members{grid-template-columns:1fr;}
+  .pulse-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ UNIT NAVIGATION ══ -->
+<nav class="u-nav" id="u-nav">
+  <div class="u-nav-brand" onclick="goHome()">TESSERA™</div>
+  <div class="u-nav-units">
+    <a class="u-nav-unit" style="--unit-color:var(--u1);" href="tessera-app.html" onclick="goUnit('tessera-app.html','1');return false;">
+      <div class="u-badge" style="background:var(--u1);">1</div><span class="u-label">Discover</span>
+    </a>
+    <a class="u-nav-unit" style="--unit-color:var(--u2);" href="tessera-cia.html" onclick="goUnit('tessera-cia.html','2');return false;">
+      <div class="u-badge" style="background:var(--u2);">2</div><span class="u-label">Analyse</span>
+    </a>
+    <a class="u-nav-unit" style="--unit-color:var(--u3);" href="tessera-comms.html" onclick="goUnit('tessera-comms.html','3');return false;">
+      <div class="u-badge" style="background:var(--u3);">3</div><span class="u-label">Communicate</span>
+    </a>
+    <a class="u-nav-unit" style="--unit-color:var(--u4);" href="tessera-learning.html" onclick="goUnit('tessera-learning.html','4');return false;">
+      <div class="u-badge" style="background:var(--u4);">4</div><span class="u-label">Learn</span>
+    </a>
+    <a class="u-nav-unit" style="--unit-color:var(--u5);" href="tessera-engage.html" onclick="goUnit('tessera-engage.html','5');return false;">
+      <div class="u-badge" style="background:var(--u5);">5</div><span class="u-label">Engage</span>
+    </a>
+    <a class="u-nav-unit" style="--unit-color:var(--u6);" href="tessera-culture.html" onclick="goUnit('tessera-culture.html','6');return false;">
+      <div class="u-badge" style="background:var(--u6);font-size:12px;">✦</div><span class="u-label">Culture</span>
+    </a>
+    <a class="u-nav-unit active" style="--unit-color:var(--u7);" href="tessera-stakeholder.html" onclick="goUnit('tessera-stakeholder.html','7');return false;">
+      <div class="u-badge" style="background:var(--u7);">7</div><span class="u-label">Stakeholders</span>
+    </a>
+    <a class="u-nav-unit" style="--unit-color:var(--u8);" href="tessera-programme.html" onclick="goUnit('tessera-programme.html','8');return false;">
+      <div class="u-badge" style="background:var(--u8);">8</div><span class="u-label">Programme</span>
+    </a>
+  </div>
+  <div class="u-nav-right">
+    <select class="u-scenario-sel" id="u-scenario-sel" onchange="changeUnitScenario(this.value)">
+      <option value="meridian">Meridian Global</option>
+      <option value="fusion">Fusion Dynamics</option>
+      <option value="nova">Nova Energy</option>
+    </select>
+    <button class="u-home-btn" onclick="goHome()">← Home</button>
+  </div>
+</nav>
+
+<!-- ══ MODULE SUB-NAV ══ -->
+<nav class="t-nav">
+  <button class="module-tab active" onclick="showModule(1,this)">1 &nbsp;·&nbsp; Stakeholder register</button>
+  <button class="module-tab" onclick="showModule(2,this)">2 &nbsp;·&nbsp; Resistance tracker</button>
+  <button class="module-tab" onclick="showModule(3,this)">3 &nbsp;·&nbsp; Engagement strategy</button>
+  <button class="module-tab" onclick="showModule(4,this)">4 &nbsp;·&nbsp; Engagement pulse</button>
+  <button class="module-tab" onclick="showModule(5,this)">5 &nbsp;·&nbsp; Readiness dashboard</button>
+</nav>
+
+<div class="app-shell">
+
+  <!-- MODULE 1: STAKEHOLDER REGISTER -->
+  <div class="module-view active" id="module-1">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Unit 7 &nbsp;·&nbsp; Module 1</div>
+        <h2 class="section-title">Who needs to <em>move</em> — and how far</h2>
+        <p class="section-sub">Every stakeholder group in this programme. Their current readiness, risk level, engagement posture, and who is accountable for moving them. Not a contact list. An accountability register.</p>
+      </div>
+      <div class="stats-row" id="reg-stats"></div>
+      <div class="card">
+        <div class="card-title">Stakeholder register</div>
+        <table class="register-table" id="reg-table">
+          <thead>
+            <tr>
+              <th>Group</th>
+              <th>Population</th>
+              <th>Risk</th>
+              <th>Readiness</th>
+              <th>Posture</th>
+              <th>Owner</th>
+              <th>Key concern</th>
+            </tr>
+          </thead>
+          <tbody id="reg-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2: RESISTANCE TRACKER -->
+  <div class="module-view" id="module-2">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Unit 7 &nbsp;·&nbsp; Module 2</div>
+        <h2 class="section-title">Where resistance is <em>forming</em></h2>
+        <p class="section-sub">Resistance is not a problem to be managed away. It is information. This module surfaces where it is coming from, what is driving it, what the signals look like, and what the practitioner response needs to be.</p>
+      </div>
+      <div id="resistance-list"></div>
+    </div>
+  </div>
+
+  <!-- MODULE 3: ENGAGEMENT STRATEGY -->
+  <div class="module-view" id="module-3">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Unit 7 &nbsp;·&nbsp; Module 3</div>
+        <h2 class="section-title">Engagement that <em>reaches everyone</em></h2>
+        <p class="section-sub">Beyond sponsors and senior leaders. Every stakeholder group — managers, frontline, field workers, project team, corporate functions — has a specific engagement approach, a set of activities, and a clear owner. This is not a comms plan. It is a human engagement design.</p>
+      </div>
+      <div id="change-network-section"></div>
+      <div id="engagement-strategy-grid"></div>
+    </div>
+  </div>
+
+  <!-- MODULE 4: ENGAGEMENT PULSE -->
+  <div class="module-view" id="module-4">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Unit 7 &nbsp;·&nbsp; Module 4</div>
+        <h2 class="section-title">Signal <em>movement</em> over time</h2>
+        <p class="section-sub">Where things are improving, where they are deteriorating, and where they are stuck. Tracked across four signals — clarity, commitment, confidence, and concern — for every stakeholder group throughout the programme.</p>
+      </div>
+      <div class="stats-row" id="pulse-summary"></div>
+      <div class="pulse-grid" id="pulse-grid"></div>
+    </div>
+  </div>
+
+  <!-- MODULE 5: READINESS DASHBOARD -->
+  <div class="module-view" id="module-5">
+    <div class="view-pad">
+      <div class="section-head">
+        <div class="section-eyebrow">Unit 7 &nbsp;·&nbsp; Module 5</div>
+        <h2 class="section-title">Programme <em>readiness</em> — the honest view</h2>
+        <p class="section-sub">Where each stakeholder group stands against go-live. Readiness across five dimensions: awareness, understanding, commitment, capability, and reinforcement. The RAG status the programme lead takes to the steering committee.</p>
+      </div>
+      <div class="rag-summary" id="rag-summary"></div>
+      <div class="readiness-grid" id="readiness-grid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// SCENARIO DATA
+// ══════════════════════════════════════════
+const SCENARIOS = {
+
+  meridian: {
+    name: 'Meridian Global',
+    type: 'ERP & Restructure',
+    goLive: 'Q4 2026',
+    groups: [
+      {
+        name: 'Finance Managers', pop: 18, risk: 'High', color: '#C4826A',
+        readiness: 32, clarity: 65, commitment: 28, confidence: 35, concern: 85,
+        posture: { champion:1, cautious:3, uncertain:2, quiet:8, disengaged:4 },
+        owner: 'CFO (Sarah Chen)', ownerRole: 'Sponsor',
+        concern: 'Trust deficit from 2020 ERP failure. Will not commit until they see evidence this time is different.',
+        engagementApproach: 'Peer-led. Voices they trust, not messages from above.',
+        activities: [
+          { type:'session', label:'Peer session', text:'Monthly small-group sessions with Finance Manager peers who have been through successful ERP transitions. Not Meridian leadership — external.' },
+          { type:'sponsor', label:'Sponsor action', text:'CFO Sarah Chen commits to a monthly direct briefing with this group — not delegated. They need to see her face on this.' },
+          { type:'network', label:'Change agent', text:'James K. (UK) is a reluctant but credible voice. Recruit him carefully. If he becomes a visible sceptic it will spread.' },
+          { type:'comms', label:'Targeted comms', text:'What is different this time — specific, evidenced. Not reassurance. Proof points: governance structure, testing window, rollback plan.' },
+        ],
+        changeAgent: 'James K. — Finance Manager, UK',
+        resistance: {
+          level: 'High',
+          type: 'Active resistance — rooted in institutional memory',
+          evidence: 'The 2020 ERP rollout ran 9 months over schedule. Finance Managers carried the operational cost. Listening tour captured this in 11 of 14 interviews with this group. The phrase "last time" appeared in 78% of sessions.',
+          quote: '"Last time they told us the system would make our lives easier. It made everything harder for eighteen months. Why should I believe this time is different?" — Margot D., Finance Manager, France',
+          actions: [
+            'Do not lead with messaging. Lead with evidence. Show them what is different about the governance, testing, and rollback provisions.',
+            'CFO must be personally visible and personally accountable — not delegating this to the programme team.',
+            'James K. (UK Finance Manager) is a credible sceptic. If he can be brought to cautious-positive, others will follow. Do not oversell to him.',
+            'Design hold on Finance Frontline France until trust is rebuilt in this group. They follow Finance Managers.',
+          ],
+          practitionerNote: 'This group is not being difficult. They have lived through what happens when a system goes wrong and leadership disappears. Their resistance is proportionate to their experience. The programme needs to earn their trust, not manage their perception.'
+        },
+        readinessDimensions: { awareness: 72, understanding: 45, commitment: 28, capability: 20, reinforcement: 15 },
+        rag: 'red',
+        ragNote: 'Trust deficit unresolved. Commitment signal at 28% — lowest in the programme. No engagement activity will land until the 2020 experience is addressed directly.'
+      },
+      {
+        name: 'Supply Chain Frontline', pop: 84, risk: 'Moderate', color: '#7B9E87',
+        readiness: 58, clarity: 55, commitment: 62, confidence: 50, concern: 45,
+        posture: { champion:8, cautious:20, uncertain:30, quiet:18, disengaged:8 },
+        owner: 'Supply Chain Director', ownerRole: 'Manager',
+        concern: 'Device access and digital literacy variance. Deskless workers in Brazil have limited system access.',
+        engagementApproach: 'Supervisor-led, site-level. Not email. Visible presence at site.',
+        activities: [
+          { type:'session', label:'Site briefing', text:'Supply Chain Director leads site visit briefings at São Paulo and regional hubs before go-live. Written briefing is insufficient for this group.' },
+          { type:'training', label:'Hands-on pilot', text:'Device access pilot at two Brazil sites from Q2. Frontline workers need system time, not slide decks.' },
+          { type:'network', label:'Site champions', text:'Identify 1-2 per site. Train them first. They become the go-to person for their site — not the project team hotline.' },
+          { type:'comms', label:'Printed materials', text:'For São Paulo site: printed quick reference cards in Portuguese alongside digital. Do not assume device access.' },
+        ],
+        changeAgent: 'Site leads — 3 nominated from supply chain population',
+        resistance: {
+          level: 'Moderate',
+          type: 'Anxiety — practical access concerns, not active resistance',
+          evidence: 'Primary concern is not the change itself but the mechanics of accessing the new system. 42% of Brazil frontline workers do not have a dedicated workstation. Listening tour flagged device access as outstanding issue.',
+          quote: '"I support what they are trying to do but I need to understand how I am supposed to use a system I cannot get to from the floor." — Rafael S., Supply Chain Lead, Brazil',
+          actions: [
+            'Resolve device access before go-live. This is an operational requirement, not a change management nice-to-have.',
+            'Supervisor communication is the primary channel. Email does not reach this group reliably.',
+            'Site champion model — 1 per site trained early, visible, empowered to answer questions without escalating everything.',
+          ],
+          practitionerNote: 'This group will adopt if the practical barriers are removed. The resistance is logistics, not ideology. Fix the device access problem and the change management problem largely resolves itself.'
+        },
+        readinessDimensions: { awareness: 70, understanding: 55, commitment: 62, capability: 40, reinforcement: 30 },
+        rag: 'amber',
+        ragNote: 'Device access resolution outstanding. Commitment signals positive but capability gap remains until system access is confirmed for all Brazil sites.'
+      },
+      {
+        name: 'Finance Frontline France', pop: 42, risk: 'High', color: '#8B7BA8',
+        readiness: 28, clarity: 40, commitment: 35, confidence: 30, concern: 80,
+        posture: { champion:0, cautious:5, uncertain:12, quiet:18, disengaged:7 },
+        owner: 'France Finance Lead (Antoine D.)', ownerRole: 'Local sponsor',
+        concern: 'Works Council consultation required. French labour law compliance. Design hold in place.',
+        engagementApproach: 'Works Council first. Nothing reaches this group until the formal consultation is complete and Antoine D. has personally briefed the group.',
+        activities: [
+          { type:'forum', label:'Works Council', text:'Formal consultation with Works Council is the first engagement activity. No programme communications to this group until complete.' },
+          { type:'sponsor', label:'Antoine D. briefing', text:'Antoine D. leads a separate French-language briefing session. US leadership does not lead this. Antoine D. does.' },
+          { type:'comms', label:'French-language materials', text:'All materials for this group in French. Translated from English is not sufficient — culturally adapted.' },
+          { type:'session', label:'Q&A forum', text:'Structured Q&A session post-Works Council. Questions submitted anonymously in advance. Written answers published within 5 business days.' },
+        ],
+        changeAgent: 'TBD — to be nominated post-Works Council consultation',
+        resistance: {
+          level: 'High',
+          type: 'Structural resistance — regulatory and identity',
+          evidence: 'France Works Council has formal rights over consultation on changes affecting working conditions. Programme is currently on design hold for this group. Cultural profile flags high uncertainty avoidance and strong in-group identity.',
+          quote: '"We need to understand what this means for our working conditions before we can engage with any of the training or communications." — Works Council representative',
+          actions: [
+            'Do not communicate to this group until Works Council consultation is formally complete.',
+            'Antoine D. must personally lead all subsequent engagement. US leadership presence in French communications will read as imposition.',
+            'All engagement materials in French, culturally adapted — not translated.',
+            'Anonymous Q&A channel — this group will not ask questions publicly that they would ask privately.',
+          ],
+          practitionerNote: 'Design hold is correct. Moving before the Works Council consultation is complete is a legal risk and a trust risk. The programme will lose this group permanently if it is seen to bypass the formal process.'
+        },
+        readinessDimensions: { awareness: 40, understanding: 30, commitment: 35, capability: 15, reinforcement: 10 },
+        rag: 'red',
+        ragNote: 'Design hold active. No engagement until Works Council consultation complete. Earliest engagement start: Q3 2026.'
+      },
+      {
+        name: 'HR Partners', pop: 12, risk: 'Manageable', color: '#4A8FA8',
+        readiness: 78, clarity: 80, commitment: 75, confidence: 70, concern: 20,
+        posture: { champion:4, cautious:5, uncertain:2, quiet:1, disengaged:0 },
+        owner: 'CHRO', ownerRole: 'Sponsor',
+        concern: 'Risk of moving too fast. High clarity and commitment means they may be further ahead than the groups they need to support.',
+        engagementApproach: 'Activate early as internal change advocates. Equip them to support other groups.',
+        activities: [
+          { type:'network', label:'Change advocate role', text:'HR Partners serve as the internal change network backbone. Equip them with materials and talking points for each stakeholder group they support.' },
+          { type:'session', label:'Early access briefing', text:'First group to receive system access for testing. Their feedback shapes the configuration for other groups.' },
+          { type:'training', label:'Upskill programme', text:'Train HR Partners on the new system 6 weeks ahead of go-live for all other groups. They become the first line of support.' },
+        ],
+        changeAgent: 'Priya N. — Senior HR Partner, cross-site',
+        resistance: {
+          level: 'Manageable',
+          type: 'Alignment risk — moving faster than others',
+          evidence: 'HR Partners have the highest clarity and commitment scores in the programme. Risk is they become frustrated with other groups\' pace and inadvertently communicate that frustration.',
+          quote: '"We are ready. I am more worried about whether Finance is going to block the whole thing." — Priya N., HR Partner',
+          actions: [
+            'Channel their energy productively — give them a defined change advocate role with clear scope.',
+            'Brief them explicitly on the Finance Managers\' trust deficit so they are not inadvertently dismissive of it.',
+            'Use their system confidence to support other groups but do not let them run ahead of the programme pace.',
+          ],
+          practitionerNote: 'An engaged, able group. The risk is they become impatient with the process rather than resistant to the change. Keep them occupied with meaningful contribution.'
+        },
+        readinessDimensions: { awareness: 90, understanding: 82, commitment: 75, capability: 65, reinforcement: 55 },
+        rag: 'green',
+        ragNote: 'Strong readiness across all dimensions. Risk is pace mismatch with other groups. Activate as change network backbone.'
+      },
+      {
+        name: 'Senior Leadership', pop: 8, risk: 'Moderate', color: '#1A3A5C',
+        readiness: 70, clarity: 88, commitment: 72, confidence: 75, concern: 30,
+        posture: { champion:3, cautious:3, uncertain:1, quiet:1, disengaged:0 },
+        owner: 'CEO / Programme Sponsor', ownerRole: 'Executive sponsor',
+        concern: 'Commitment is vocal but not yet behavioural. Antoine D. (France) has not had the required 1:1 with his Finance team.',
+        engagementApproach: 'Hold them accountable for specific visible behaviours, not just communication endorsement.',
+        activities: [
+          { type:'sponsor', label:'Sponsor accountability', text:'Each senior leader has a named stakeholder group. Monthly accountability check-in against specific behavioural commitments — not just messages sent.' },
+          { type:'session', label:'Leadership alignment', text:'Quarterly senior leadership alignment session. Not a status update — a working session on what the data from the programme is telling them and what they need to do differently.' },
+          { type:'comms', label:'Visible sponsorship', text:'Each leader makes a visible public commitment to their group — site visits, team meetings, video messages. Tracked against the engagement plan.' },
+        ],
+        changeAgent: 'N/A — this group IS the change network backbone',
+        resistance: {
+          level: 'Moderate',
+          type: 'Passive resistance — champion in posture, inconsistent in behaviour',
+          evidence: 'Antoine D. committed to a 1:1 with his Finance Frontline team in Q1. It has not happened. Marcus Webb has attended two of three scheduled visible sponsorship activities. Programme lead has flagged both.',
+          quote: '"I am fully supportive of this. I just have not had the time to do the site visit." — Antoine D.',
+          actions: [
+            'Antoine D.: reschedule the Finance Frontline 1:1 within 30 days. Programme launch cannot proceed for France until this is complete.',
+            'Marcus Webb: visible sponsorship activity schedule needs to be protected — not optional.',
+            'Reframe sponsor activities as programme deliverables, not goodwill gestures. They appear in the programme plan with RAG status.',
+          ],
+          practitionerNote: 'Passive resistance from senior leaders is the most dangerous kind because it is not visible. Champion in public, absent in practice. The programme plan must name the specific behaviours and track them.'
+        },
+        readinessDimensions: { awareness: 88, understanding: 80, commitment: 72, capability: 70, reinforcement: 50 },
+        rag: 'amber',
+        ragNote: 'Champion posture but two specific sponsor actions overdue. Antoine D. 1:1 and Marcus Webb site visit. Readiness will not convert to programme momentum without these.'
+      },
+      {
+        name: 'IT Systems', pop: 22, risk: 'Moderate', color: '#4A6FA8',
+        readiness: 65, clarity: 75, commitment: 60, confidence: 72, concern: 35,
+        posture: { champion:5, cautious:8, uncertain:6, quiet:3, disengaged:0 },
+        owner: 'CTO / IT Programme Lead', ownerRole: 'Technical sponsor',
+        concern: 'Risk of becoming too focused on technical delivery and under-engaging with the people impact. System testing window is tight.',
+        engagementApproach: 'Keep them connected to the change story, not just the technical implementation. Their credibility with end users depends on it.',
+        activities: [
+          { type:'session', label:'Joint testing sessions', text:'IT leads sit alongside Finance Managers and Supply Chain leads during UAT. They see the user experience firsthand, not just the technical performance.' },
+          { type:'comms', label:'Technical confidence comms', text:'IT publish a weekly technical confidence update to the broader programme. One page. Plain language. Not a technical status report.' },
+          { type:'network', label:'IT change agents', text:'Nathan C. is nominated as the IT team\'s link to the change network. He translates between technical and human — a critical role.' },
+        ],
+        changeAgent: 'Nathan C. — IT Systems Lead',
+        resistance: {
+          level: 'Moderate',
+          type: 'Focus risk — technical delivery over human readiness',
+          evidence: 'IT team is on track technically but has attended only 1 of 4 joint change planning sessions. Risk that technical success is defined narrowly — system performance — rather than broadly — people using it well.',
+          quote: '"Our job is to make sure the system works. The change management side is your department." — Nathan C.',
+          actions: [
+            'Reframe: IT readiness includes the people using the system. Nathan C. needs to be in the change network, not just the technical stream.',
+            'Joint testing sessions are mandatory, not optional. User experience data comes from real users, not technical testing alone.',
+            'Technical confidence communication — owned by IT, plain language. Reduces speculation in the programme.',
+          ],
+          practitionerNote: 'Nathan is technically excellent and genuinely cares about the programme succeeding. He is separating "technical" from "change" in a way that will create problems in go-live. The reframe is: a system nobody uses is not a successful system.'
+        },
+        readinessDimensions: { awareness: 80, understanding: 75, commitment: 60, capability: 72, reinforcement: 45 },
+        rag: 'amber',
+        ragNote: 'Technical readiness high. Change readiness moderate. Joint testing participation and change network engagement need to increase before go-live.'
+      },
+    ],
+    changeNetwork: {
+      title: 'Project Meridian Change Network',
+      desc: 'A network of 12 nominated change agents embedded across all stakeholder groups. They are not communicators — they are the people their colleagues ask. Selected for credibility, not seniority. Trained monthly. Connected to the programme team fortnightly.',
+      members: [
+        { name:'James K.', role:'Finance Manager, UK', tags:['Finance Managers','Sceptic-to-advocate track'] },
+        { name:'Priya N.', role:'HR Partner, cross-site', tags:['HR Partners','Change network backbone'] },
+        { name:'Nathan C.', role:'IT Systems Lead', tags:['IT Systems','Technical translator'] },
+        { name:'TBD — post Works Council', role:'Finance Frontline, France', tags:['Finance Frontline France','Pending consultation'] },
+        { name:'3 x Site Leads', role:'Supply Chain, Brazil', tags:['Supply Chain Frontline','Site-level'] },
+        { name:'2 x Regional Leads', role:'Operations, UK & US', tags:['Operations','Cross-site'] },
+      ]
+    }
+  },
+
+  fusion: {
+    name: 'Fusion Dynamics',
+    type: 'M&A Integration',
+    goLive: 'Q2 2026 (combined operating model)',
+    groups: [
+      {
+        name: 'Acquired Team (NL/DE)', pop: 163, risk: 'High', color: '#8B7BA8',
+        readiness: 30, clarity: 45, commitment: 22, confidence: 28, concern: 88,
+        posture: { champion:5, cautious:30, uncertain:50, quiet:55, disengaged:23 },
+        owner: 'European Integration Lead', ownerRole: 'Sponsor',
+        concern: 'Identity threat. Silence in meetings means disagreement, not alignment. US leadership communication style produces false consensus.',
+        engagementApproach: 'Two-way, written, specific, and in-language. Never interpret silence as agreement.',
+        activities: [
+          { type:'forum', label:'Written consultation', text:'All major decisions affecting NL/DE teams communicated in writing first, followed by a structured question-and-answer window before implementation.' },
+          { type:'session', label:'Bi-directional sessions', text:'Joint working sessions where NL/DE teams shape the integrated operating model — not just receive it. Facilitated by a neutral European facilitator, not US leadership.' },
+          { type:'network', label:'NL/DE change agents', text:'Lars V. (NL Operations) and Heike M. (DE Finance) nominated as change network leads for their regions.' },
+          { type:'comms', label:'Dutch and German language materials', text:'All materials available in Dutch and German. Not optional. Cultural adaptation, not literal translation.' },
+          { type:'sponsor', label:'European leadership visibility', text:'European Integration Lead is the visible face of the integration for this group — not the US CEO.' },
+        ],
+        changeAgent: 'Lars V. (NL) and Heike M. (DE)',
+        resistance: {
+          level: 'High',
+          type: 'Identity resistance — acquisition framed as absorption',
+          evidence: 'NL/DE team joined a company with a specific culture and identity. Integration is being experienced as erasure, not expansion. 67% of listening tour participants used language about "becoming invisible" or "losing what made us good".',
+          quote: '"We were told this was a merger of equals. Every decision so far has been made in Austin and handed to us to implement." — Lars V., NL Operations Lead',
+          actions: [
+            'Stop making decisions in Austin and communicating them to NL/DE as faits accomplis. Run a joint design session on at least two integration decisions.',
+            'US leadership communication must be reviewed by the European Integration Lead before it goes to NL/DE teams.',
+            'Name what is being preserved from the acquired culture, specifically. Not "we value what you bring" — what specifically.',
+          ],
+          practitionerNote: 'This is not change resistance. This is a rational response to being absorbed without consent. The integration approach needs to change before the engagement approach can succeed.'
+        },
+        readinessDimensions: { awareness: 60, understanding: 40, commitment: 22, capability: 35, reinforcement: 15 },
+        rag: 'red',
+        ragNote: 'Identity and trust issues unresolved. Integration approach producing resistance, not engagement. Structural change to decision-making process required before engagement activities will land.'
+      },
+      {
+        name: 'Legacy Leadership (US)', pop: 12, risk: 'Moderate', color: '#2D5016',
+        readiness: 65, clarity: 80, commitment: 55, confidence: 70, concern: 30,
+        posture: { champion:4, cautious:5, uncertain:2, quiet:1, disengaged:0 },
+        owner: 'CEO', ownerRole: 'Executive sponsor',
+        concern: 'Communication style mismatch with European counterparts. Interprets silence as agreement. Moving faster than the organisation can follow.',
+        engagementApproach: 'Build European cultural intelligence before every joint communication. Review all cross-border decisions with a cultural lens before they go out.',
+        activities: [
+          { type:'session', label:'Cultural intelligence session', text:'Two-hour facilitated session on Dutch and German communication styles, decision-making norms, and consensus-seeking patterns. Required for all US leadership before Q1 joint sessions.' },
+          { type:'sponsor', label:'Accountability framework', text:'Each US leader has a named European counterpart. Monthly structured check-in using a specific dialogue protocol — not just a catch-up call.' },
+          { type:'comms', label:'Communication review protocol', text:'All cross-border communications reviewed by European Integration Lead before distribution. Not a veto — a sense-check.' },
+        ],
+        changeAgent: 'N/A — source of influence not a network member',
+        resistance: {
+          level: 'Moderate',
+          type: 'Blind-spot resistance — unaware of communication impact',
+          evidence: 'US leadership is genuinely committed to a successful integration. They are not aware that their communication style — direct, efficiency-oriented, interpreting silence as agreement — is systematically producing false consensus signals from the European team.',
+          quote: '"The sessions have been going well. The European team seems aligned." — US VP Operations (on a session where the European team was not aligned)',
+          actions: [
+            'Cultural intelligence session before Q1 joint working sessions. Not optional.',
+            'After every joint session: follow up in writing with a specific question asking for disagreement or pushback. Give the European team the written channel they prefer.',
+            'Stop interpreting smooth sessions as alignment. Ask for written confirmation.',
+          ],
+          practitionerNote: 'This is a genuine blind spot, not malice. The US leadership team is doing what has worked for them in a US context. It does not work in a Dutch-German context. This is a coaching challenge, not a resistance challenge.'
+        },
+        readinessDimensions: { awareness: 85, understanding: 65, commitment: 55, capability: 60, reinforcement: 40 },
+        rag: 'amber',
+        ragNote: 'Commitment present but cultural intelligence gap creating integration risk. Cultural session and communication protocol required before next cross-border working session.'
+      },
+      {
+        name: 'Middle Management (Combined)', pop: 68, risk: 'High', color: '#C4826A',
+        readiness: 38, clarity: 50, commitment: 35, confidence: 32, concern: 72,
+        posture: { champion:3, cautious:15, uncertain:25, quiet:20, disengaged:5 },
+        owner: 'Integration Programme Lead', ownerRole: 'Manager',
+        concern: 'Receiving contradictory signals from US and European leadership simultaneously. Role clarity for the integrated structure not yet confirmed.',
+        engagementApproach: 'Give them a clear mandate and a clear decision-making framework. They cannot lead their teams through ambiguity if they are in ambiguity themselves.',
+        activities: [
+          { type:'session', label:'Manager briefing series', text:'Fortnightly manager briefing (30 minutes, structured agenda). What is confirmed. What is not. When the next update is. Same format every time.' },
+          { type:'comms', label:'Contradiction escalation channel', text:'Managers receive contradictory direction from US and European leadership. Give them a named escalation route that is safe to use and actually gets resolved.' },
+          { type:'network', label:'Peer network', text:'Cross-border manager peer pairs — one US, one European — meet monthly. Not structured. Relationship building at the manager level.' },
+          { type:'session', label:'Role clarity workshop', text:'Integrated structure role clarity workshop for all managers. Cannot be postponed beyond Q1 or the ambiguity will become permanent.' },
+        ],
+        changeAgent: 'Tom R. — Middle Manager, combined team, Austin',
+        resistance: {
+          level: 'High',
+          type: 'Situational resistance — structural ambiguity',
+          evidence: 'Middle managers are managing teams through an integration whose structure is not yet confirmed. They cannot answer basic questions about reporting lines, decision rights, or who owns what. 72% rated their own clarity at under 50%.',
+          quote: '"My team asks me every week what is going to happen to our structure. I tell them I will know more soon. I have been saying that for four months." — Tom R., Middle Manager',
+          actions: [
+            'Role clarity decision must be made and communicated before Q1 ends. This is creating more organisational risk than the delay is protecting against.',
+            'Fortnightly manager briefings with a consistent format. The cadence matters as much as the content.',
+            'Contradiction escalation: if a manager receives contradictory direction, they report it to programme lead within 48 hours. It gets resolved within 5 days.',
+          ],
+          practitionerNote: 'These managers are not resistant to the integration. They are trying to lead their teams through something they themselves cannot navigate. Fix the structural ambiguity and the engagement challenge largely resolves.'
+        },
+        readinessDimensions: { awareness: 65, understanding: 48, commitment: 35, capability: 40, reinforcement: 20 },
+        rag: 'red',
+        ragNote: 'Structural ambiguity unresolved. Managers cannot engage their teams until they have clarity themselves. Role clarity decision required before further engagement activities will land.'
+      },
+      {
+        name: 'Individual Contributors', pop: 105, risk: 'Moderate', color: '#4A8FA8',
+        readiness: 45, clarity: 55, commitment: 40, confidence: 42, concern: 60,
+        posture: { champion:5, cautious:30, uncertain:40, quiet:25, disengaged:5 },
+        owner: 'Line managers (post-clarity)', ownerRole: 'Manager cascade',
+        concern: 'Joined for the acquired company culture. Identity is tied to the organisation being absorbed. Will follow their managers\' lead.',
+        engagementApproach: 'Manager-led, consistent, human. IC engagement is downstream of manager readiness.',
+        activities: [
+          { type:'comms', label:'Direct message from leadership', text:'One specific message from the integration leads that names what is being preserved from both cultures. Not a values statement — specific cultural practices and ways of working.' },
+          { type:'session', label:'Town hall with Q&A', text:'Quarterly town halls with live Q&A. Questions submitted in advance. Anonymous option available. Written answers to all questions published within 5 days.' },
+          { type:'network', label:'Team-level check-ins', text:'Line managers run fortnightly team check-ins with a consistent set of questions. Signal data fed back to programme team monthly.' },
+        ],
+        changeAgent: 'Ana P. — IC, NL team, nominated peer voice',
+        resistance: {
+          level: 'Moderate',
+          type: 'Anxiety — identity and belonging',
+          evidence: 'Individual contributors joined a company with a specific culture, ways of working, and sense of identity. The integration is being experienced as that company ceasing to exist and them being absorbed into something unfamiliar.',
+          quote: '"I did not join Fusion. I joined [acquired company]. I do not know who we are now." — IC, NL team',
+          actions: [
+            'Name what is being preserved from the acquired culture specifically — not in the abstract. Which practices, which ways of working, which rituals.',
+            'Manager readiness is the prerequisite. IC engagement is downstream.',
+            'Anonymous feedback channel — ICs will not raise concerns publicly that they raise privately.',
+          ],
+          practitionerNote: 'This group will follow their managers. Fix the manager layer first. The IC anxiety is real but it will not be resolved by communication alone — it will be resolved by seeing what the integrated culture actually looks like in practice.'
+        },
+        readinessDimensions: { awareness: 68, understanding: 52, commitment: 40, capability: 38, reinforcement: 25 },
+        rag: 'amber',
+        ragNote: 'Readiness is downstream of manager clarity. Amber holding until manager role clarity is resolved and cascaded.'
+      },
+    ],
+    changeNetwork: {
+      title: 'Fusion Integration Change Network',
+      desc: 'A cross-border network of 8 nominated change agents — 4 US, 4 European. Designed to be genuinely bilateral: European members have equal standing and the network is co-facilitated. Monthly meetings alternate between Austin and Amsterdam/Berlin (or virtual with rotating facilitation).',
+      members: [
+        { name:'Lars V.', role:'Operations Lead, NL', tags:['NL team','Change network co-lead'] },
+        { name:'Heike M.', role:'Finance Lead, DE', tags:['DE team','Cultural bridge'] },
+        { name:'Tom R.', role:'Middle Manager, Austin', tags:['US team','Manager cohort'] },
+        { name:'Ana P.', role:'IC, NL team', tags:['NL team','Peer voice'] },
+        { name:'Carol B.', role:'US Operations', tags:['US team','Senior IC'] },
+        { name:'2 x DE ICs', role:'Individual contributors, Germany', tags:['DE team','To be nominated'] },
+      ]
+    }
+  },
+
+  nova: {
+    name: 'Nova Energy',
+    type: 'AI Adoption + Role Redesign',
+    goLive: 'Pilot: Q3 2026 | National: Q1 2027',
+    groups: [
+      {
+        name: 'Field Operations', pop: 210, risk: 'High', color: '#C4826A',
+        readiness: 28, clarity: 35, commitment: 25, confidence: 22, concern: 90,
+        posture: { champion:8, cautious:35, uncertain:60, quiet:80, disengaged:27 },
+        owner: 'Field Operations Director', ownerRole: 'Operational sponsor',
+        concern: 'AI seen as job replacement. Deskless. Device access variable by state. Texas field culture very different from Colorado/Illinois.',
+        engagementApproach: 'Supervisor-led, in-person, specific, and state-aware. Corporate communications do not reach this group. Their supervisor does.',
+        activities: [
+          { type:'session', label:'Supervisor-led site sessions', text:'Field supervisors lead 20-minute briefing sessions at site level. Scripted talking points provided. Regional Field Lead present for first session in each state.' },
+          { type:'sponsor', label:'Regional Field Lead visibility', text:'Each Regional Field Lead makes a site visit in their region before go-live. Not a town hall — a working day alongside the team.' },
+          { type:'network', label:'Site champions', text:'1-2 per site. Selected by the site team, not assigned by programme. Trained 6 weeks ahead of go-live. The person the site goes to first.' },
+          { type:'training', label:'Hands-on device time', text:'Field workers get system time on the actual device they will use, at their site, before go-live. No exceptions. Learning in the classroom does not transfer to the field.' },
+          { type:'comms', label:'State-specific materials', text:'Texas, Colorado, Illinois briefing materials adapted for regional context. Same message, different framing. Texas energy sector identity matters.' },
+        ],
+        changeAgent: 'Marcus T. (TX), Sandra K. (CO) — Regional Field Champions',
+        resistance: {
+          level: 'High',
+          type: 'Fear-based resistance — existential threat to role',
+          evidence: '"No involuntary redundancies" commitment has been stated but not yet evidenced behaviourally. Field Operations has heard corporate reassurance before. 84% of listening tour participants cited job security as their primary concern.',
+          quote: '"They say no one is losing their job. But they also said the system would learn from us. What happens when it has learned enough?" — Field Supervisor, Texas',
+          actions: [
+            'The "no involuntary redundancies" commitment must be demonstrated, not just stated. What specific investments in people are being made? Role redesign documents. Training commitments. These are the evidence.',
+            'Supervisor briefings are the primary channel. Do not rely on company-wide communications.',
+            'State-specific — Texas field identity is different from Colorado. Same message, adapted framing.',
+            'Pilot cohort workers become visible proof points. If they are visibly better off after go-live, it moves the national group more than any communication will.',
+          ],
+          practitionerNote: 'This group is not being irrational. The history of "efficiency technology" in their sector is layoffs. They are applying pattern recognition, not catastrophising. The programme needs to provide specific, visible, behavioural evidence that this time is different — not more reassurance.'
+        },
+        readinessDimensions: { awareness: 45, understanding: 30, commitment: 25, capability: 18, reinforcement: 10 },
+        rag: 'red',
+        ragNote: '"No involuntary redundancies" not yet evidenced behaviourally. Clarity and commitment at lowest levels in programme. Pilot cohort visible outcomes are the critical proof point.'
+      },
+      {
+        name: 'Data & Analytics', pop: 80, risk: 'Manageable', color: '#00A896',
+        readiness: 82, clarity: 85, commitment: 75, confidence: 88, concern: 15,
+        posture: { champion:35, cautious:25, uncertain:15, quiet:5, disengaged:0 },
+        owner: 'Chief Data Officer', ownerRole: 'Technical sponsor',
+        concern: 'Risk of moving faster than the organisation can follow. Enthusiasm without patience for the slower-moving groups.',
+        engagementApproach: 'Channel their energy. Give them a defined role in bringing others along. Manage their pace expectations.',
+        activities: [
+          { type:'network', label:'Technical change agents', text:'D&A team members become the technical bridge to other groups. They translate AI capability into practical field language.' },
+          { type:'session', label:'Pilot co-design', text:'D&A leads co-design the pilot programme with field supervisors. Their technical knowledge plus field context produces better outcomes than either alone.' },
+          { type:'comms', label:'Peer translation role', text:'D&A members write the plain-language "what this means for you" sections of field briefing materials. Not the programme team — the people who know the tech.' },
+        ],
+        changeAgent: 'Yuki L. — Data Analyst, national pilot co-lead',
+        resistance: {
+          level: 'Manageable',
+          type: 'Pace mismatch — enthusiasm creating inadvertent exclusion',
+          evidence: 'D&A team is technically ready and genuinely excited. Risk is they communicate in terms that alienate field workers, creating an us/them dynamic that undermines the programme.',
+          quote: '"I cannot understand why everyone is not excited about what this can do. The data is incredible." — Yuki L., Data Analyst',
+          actions: [
+            'Give Yuki L. and team a defined translation role. They are most valuable as bridges, not enthusiasts.',
+            'Brief them on the Field Operations resistance. Ask them to be patient and specific, not evangelical.',
+            'Co-design sessions with field supervisors — their enthusiasm becomes useful when it is grounded in real field context.',
+          ],
+          practitionerNote: 'Not a resistance issue. A pace management issue. These people are your best change agents if they can be patient and specific. The risk is they talk past the people they need to bring along.'
+        },
+        readinessDimensions: { awareness: 95, understanding: 88, commitment: 75, capability: 90, reinforcement: 65 },
+        rag: 'green',
+        ragNote: 'Technically and motivationally ready. Role as bridge to Field Operations is the critical contribution. Pace management briefing required.'
+      },
+      {
+        name: 'Corporate Functions', pop: 145, risk: 'Moderate', color: '#8B7BA8',
+        readiness: 55, clarity: 60, commitment: 45, confidence: 50, concern: 45,
+        posture: { champion:10, cautious:50, uncertain:55, quiet:25, disengaged:5 },
+        owner: 'Function heads (delegated)', ownerRole: 'Manager cascade',
+        concern: 'Pragmatic group. Need specificity, not vision. "What does this mean for my role on Tuesday morning" — not answered yet.',
+        engagementApproach: 'Function-specific briefings. Concrete, practical, role-specific. The generic "AI will transform how we work" message does not move this group.',
+        activities: [
+          { type:'session', label:'Function-specific briefings', text:'Each function head leads a team briefing with a function-specific impact summary. What changes. What stays the same. What the new process looks like on day one.' },
+          { type:'comms', label:'Role-specific impact cards', text:'One-page role-specific impact summary for each function. What is being automated. What requires judgment and stays with you. What the new workflow looks like.' },
+          { type:'training', label:'Process walkthrough', text:'Hands-on process walkthrough for each function — not generic system training. The specific new process for their specific tasks.' },
+        ],
+        changeAgent: 'Diana F. — Corporate Functions coordinator, cross-function',
+        resistance: {
+          level: 'Moderate',
+          type: 'Pragmatic scepticism — specificity gap',
+          evidence: 'Corporate Functions are not ideologically resistant to AI. They are waiting for specific information about what it means for their roles. The generic "no involuntary redundancies" message is not specific enough to move them to engagement.',
+          quote: '"I support the direction. I just need to know what I am supposed to do differently on Monday." — Diana F., Corporate Functions',
+          actions: [
+            'Role-specific impact documents — not generic. What changes for HR. What changes for Finance. What changes for Operations support. Different documents.',
+            'Function head briefings: they lead this, not the programme team. Give them the tools.',
+            'The "what does this mean for my role" question must be answered before any other engagement activity will land.',
+          ],
+          practitionerNote: 'This group will engage when they have specificity. They are not resistant — they are waiting. The programme has not yet given them enough information to respond to. That is a programme gap, not a people gap.'
+        },
+        readinessDimensions: { awareness: 72, understanding: 58, commitment: 45, capability: 40, reinforcement: 30 },
+        rag: 'amber',
+        ragNote: 'Engagement waiting on role-specific impact documentation. Amber until function-specific briefings are complete and role impact questions answered.'
+      },
+      {
+        name: 'Senior Leadership', pop: 12, risk: 'Moderate', color: '#1A2E4A',
+        readiness: 72, clarity: 88, commitment: 70, confidence: 75, concern: 25,
+        posture: { champion:5, cautious:5, uncertain:2, quiet:0, disengaged:0 },
+        owner: 'CEO', ownerRole: 'Executive sponsor',
+        concern: 'Champion posture but operational blind spot on 12-state coordination complexity. Underestimating the Field Operations trust gap.',
+        engagementApproach: 'Reality check, not reassurance. Leadership needs accurate signal data, not managed updates.',
+        activities: [
+          { type:'session', label:'Quarterly programme reality check', text:'Quarterly session with the programme change team — not a status report. A working session on what the signal data is showing and what it means leadership needs to do differently.' },
+          { type:'sponsor', label:'State-level visibility', text:'CEO or COO makes a site visit to the pilot state before national rollout. Visible, informal, listening — not a launch event.' },
+          { type:'comms', label:'Unfiltered signal data', text:'Leadership receives the unfiltered signal data from the pulse surveys — not a summarised version. They need to see where the programme actually stands.' },
+        ],
+        changeAgent: 'N/A — source of accountability',
+        resistance: {
+          level: 'Moderate',
+          type: 'Blind-spot resistance — operational complexity underestimated',
+          evidence: 'Leadership correctly understands the technology case and the business case. They are underestimating the 12-state operational complexity and the depth of the Field Operations trust gap. Programme updates are being filtered before they reach the executive level.',
+          quote: '"The pilot is going well. I think we are on track for national rollout on schedule." — COO (on a programme where Field Operations commitment is at 25%)',
+          actions: [
+            'Unfiltered signal data to leadership — not a summarised version. If Field Operations commitment is at 25%, leadership sees 25%.',
+            'Pilot cohort results as the decision gate for national rollout timeline — not the original schedule.',
+            '12-state coordination briefing: leadership needs to understand that what works in the Texas pilot may not work in Colorado or Illinois.',
+          ],
+          practitionerNote: 'Leadership is not failing. They are receiving filtered information. The programme needs to be willing to give leadership accurate bad news, not just good news shaped to match the existing plan.'
+        },
+        readinessDimensions: { awareness: 90, understanding: 78, commitment: 70, capability: 72, reinforcement: 55 },
+        rag: 'amber',
+        ragNote: 'Champion posture with information gap. Leadership confidence is based on filtered programme updates. Unfiltered signal data briefing required before national rollout decision.'
+      },
+    ],
+    changeNetwork: {
+      title: 'Nova Energy Change Network — State and Function Model',
+      desc: 'A 16-person network structured by state (pilot states first) and by function. Field champions are selected by their site teams, not assigned by the programme. Function coordinators are nominated by function heads. All trained 6 weeks before their cohort\'s go-live date.',
+      members: [
+        { name:'Marcus T.', role:'Field Champion, Texas (pilot)', tags:['Field Operations','Pilot state'] },
+        { name:'Sandra K.', role:'Field Champion, Colorado (pilot)', tags:['Field Operations','Pilot state'] },
+        { name:'Yuki L.', role:'D&A, national pilot co-lead', tags:['Data & Analytics','Technical bridge'] },
+        { name:'Diana F.', role:'Corporate Functions coordinator', tags:['Corporate Functions','Cross-function'] },
+        { name:'Robert A.', role:'Sr Leadership liaison', tags:['Senior Leadership','Programme bridge'] },
+        { name:'8 x State Champions', role:'Field Operations, remaining states', tags:['Field Operations','To be nominated post-pilot'] },
+      ]
+    }
+  }
+};
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let currentScenario = 'meridian';
+let currentModule = 1;
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function showModule(n, el) {
+  document.querySelectorAll('.module-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.module-tab').forEach((t, i) => t.classList.toggle('active', i === n - 1));
+  const target = document.getElementById('module-' + n);
+  if (target) target.classList.add('active');
+  currentModule = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════════
+// RENDER: MODULE 1 — STAKEHOLDER REGISTER
+// ══════════════════════════════════════════
+function renderRegister() {
+  const s = SCENARIOS[currentScenario];
+  if (!s) return;
+  const groups = s.groups;
+  const total = groups.reduce((a, g) => a + g.pop, 0);
+  const highRisk = groups.filter(g => g.risk === 'High').length;
+  const avgReadiness = Math.round(groups.reduce((a, g) => a + g.readiness, 0) / groups.length);
+  const redCount = groups.filter(g => g.rag === 'red').length;
+
+  document.getElementById('reg-stats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total population</div><div class="stat-sub">${groups.length} stakeholder groups</div></div>
+    <div class="stat-card"><div class="stat-num">${highRisk}</div><div class="stat-label">High-risk groups</div><div class="stat-sub">Require elevated engagement</div></div>
+    <div class="stat-card"><div class="stat-num">${avgReadiness}%</div><div class="stat-label">Average readiness</div><div class="stat-sub">Across all groups</div></div>
+    <div class="stat-card"><div class="stat-num">${redCount}</div><div class="stat-label">Red status groups</div><div class="stat-sub">Require immediate action</div></div>
+  `;
+
+  const riskClass = r => r === 'High' ? 'risk-high' : r === 'Moderate' ? 'risk-mod' : 'risk-man';
+  const readinessColor = r => r >= 70 ? 'var(--u4)' : r >= 45 ? '#C4A052' : 'var(--u1)';
+
+  document.getElementById('reg-tbody').innerHTML = groups.map(g => {
+    const champions = g.posture.champion || 0;
+    const cautious = g.posture.cautious || 0;
+    const uncertain = g.posture.uncertain || 0;
+    const quiet = g.posture.quiet || 0;
+    const disengaged = g.posture.disengaged || 0;
+    return `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:10px;height:10px;border-radius:50%;background:${g.color};flex-shrink:0;"></div>
+            <span style="font-weight:500;">${g.name}</span>
+          </div>
+        </td>
+        <td>${g.pop}</td>
+        <td><span class="risk-badge ${riskClass(g.risk)}">${g.risk}</span></td>
+        <td>
+          <div style="font-size:12px;font-weight:500;color:${readinessColor(g.readiness)};">${g.readiness}%</div>
+          <div class="readiness-bar"><div class="readiness-fill" style="width:${g.readiness}%;background:${readinessColor(g.readiness)};"></div></div>
+        </td>
+        <td>
+          <div class="posture-dots">
+            ${Array(champions).fill('<div class="posture-dot" style="background:var(--u4);" title="Champion"></div>').join('')}
+            ${Array(cautious).fill('<div class="posture-dot" style="background:#C4A052;" title="Cautious"></div>').join('')}
+            ${Array(Math.min(uncertain, 8)).fill('<div class="posture-dot" style="background:var(--ink-muted);" title="Uncertain"></div>').join('')}
+            ${Array(Math.min(quiet, 6)).fill('<div class="posture-dot" style="background:var(--border-dark,#ccc);" title="Quiet"></div>').join('')}
+            ${Array(Math.min(disengaged, 4)).fill('<div class="posture-dot" style="background:var(--u1);" title="Disengaged"></div>').join('')}
+          </div>
+          <div style="font-size:10px;color:var(--ink-muted);margin-top:3px;">${champions} champion · ${disengaged} disengaged</div>
+        </td>
+        <td><div class="owner-tag">${g.owner}</div><div style="font-size:10px;color:var(--u7);margin-top:2px;">${g.ownerRole}</div></td>
+        <td style="font-size:12px;color:var(--ink-soft);font-weight:300;max-width:200px;line-height:1.5;">${g.concern}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// RENDER: MODULE 2 — RESISTANCE TRACKER
+// ══════════════════════════════════════════
+function renderResistance() {
+  const s = SCENARIOS[currentScenario];
+  if (!s) return;
+  const levelClass = l => l === 'High' ? 'high' : l === 'Moderate' ? 'moderate' : 'manageable';
+
+  document.getElementById('resistance-list').innerHTML = s.groups.map(g => {
+    const r = g.resistance;
+    return `
+      <div class="resist-card ${levelClass(r.level)}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;">
+          <div class="resist-group">${g.name} <span style="font-size:11px;color:var(--ink-muted);font-weight:300;">(${g.pop} people)</span></div>
+          <span class="risk-badge ${r.level === 'High' ? 'risk-high' : r.level === 'Moderate' ? 'risk-mod' : 'risk-man'}">${r.level}</span>
+        </div>
+        <div class="resist-type">${r.type}</div>
+        <div class="resist-evidence">${r.evidence}</div>
+        <div class="resist-signal-quote">${r.quote}</div>
+        <div class="resist-actions">
+          ${r.actions.map(a => `<div class="resist-action">${a}</div>`).join('')}
+        </div>
+        <div class="practitioner-note">Practitioner note: ${r.practitionerNote}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// RENDER: MODULE 3 — ENGAGEMENT STRATEGY
+// ══════════════════════════════════════════
+function renderEngagementStrategy() {
+  const s = SCENARIOS[currentScenario];
+  if (!s) return;
+  const actClass = t => ({ network:'act-network', session:'act-session', comms:'act-comms', training:'act-training', forum:'act-forum', sponsor:'act-sponsor' }[t] || 'act-session');
+  const actLabel = t => ({ network:'Change network', session:'Session', comms:'Communication', training:'Training', forum:'Formal forum', sponsor:'Sponsor action' }[t] || t);
+
+  // Change network
+  const cn = s.changeNetwork;
+  document.getElementById('change-network-section').innerHTML = `
+    <div class="network-section" style="margin-bottom:24px;">
+      <div class="card-title">Change network</div>
+      <div class="network-title">${cn.title}</div>
+      <div class="network-desc">${cn.desc}</div>
+      <div class="network-members">
+        ${cn.members.map(m => `
+          <div class="member-card">
+            <div class="member-name">${m.name}</div>
+            <div class="member-role">${m.role}</div>
+            <div class="member-tags">${m.tags.map(t => `<span class="member-tag">${t}</span>`).join('')}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  // Engagement activities per group
+  document.getElementById('engagement-strategy-grid').innerHTML = `
+    <div class="strat-grid">
+      ${s.groups.map(g => `
+        <div class="strat-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:${g.color};flex-shrink:0;"></div>
+            <div class="strat-group">${g.name}</div>
+          </div>
+          <div class="strat-approach">${g.engagementApproach}</div>
+          <div class="strat-activities">
+            ${(g.activities || []).map(a => `
+              <div class="activity-item">
+                <span class="activity-type ${actClass(a.type)}">${actLabel(a.type)}</span>
+                <span class="activity-text">${a.text}</span>
+              </div>
+            `).join('')}
+          </div>
+          ${g.changeAgent && g.changeAgent !== 'N/A — source of influence not a network member' && g.changeAgent !== 'N/A — source of accountability' ? `<div style="margin-top:10px;font-size:11px;color:var(--u7);font-weight:400;">Change agent: ${g.changeAgent}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════
+// RENDER: MODULE 4 — ENGAGEMENT PULSE
+// ══════════════════════════════════════════
+function renderPulse() {
+  const s = SCENARIOS[currentScenario];
+  if (!s) return;
+
+  const avgClarity = Math.round(s.groups.reduce((a, g) => a + g.clarity, 0) / s.groups.length);
+  const avgCommit = Math.round(s.groups.reduce((a, g) => a + g.commitment, 0) / s.groups.length);
+  const avgConfidence = Math.round(s.groups.reduce((a, g) => a + g.confidence, 0) / s.groups.length);
+  const avgConcern = Math.round(s.groups.reduce((a, g) => a + g.concern, 0) / s.groups.length);
+
+  document.getElementById('pulse-summary').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${avgClarity}%</div><div class="stat-label">Clarity (avg)</div><div class="stat-sub">Do they understand what is changing?</div></div>
+    <div class="stat-card"><div class="stat-num">${avgCommit}%</div><div class="stat-label">Commitment (avg)</div><div class="stat-sub">Are they prepared to engage?</div></div>
+    <div class="stat-card"><div class="stat-num">${avgConfidence}%</div><div class="stat-label">Confidence (avg)</div><div class="stat-sub">Do they believe they can succeed?</div></div>
+    <div class="stat-card"><div class="stat-num">${avgConcern}%</div><div class="stat-label">Concern (avg)</div><div class="stat-sub">Active worry about the change</div></div>
+  `;
+
+  const fillColor = v => v >= 70 ? 'var(--u4)' : v >= 45 ? '#C4A052' : 'var(--u1)';
+  const concernColor = v => v >= 70 ? 'var(--u1)' : v >= 45 ? '#C4A052' : 'var(--u4)';
+  const trend = (v, type) => {
+    if (type === 'concern') return v > 60 ? '<span class="pulse-trend trend-down">↑ elevated</span>' : '<span class="pulse-trend trend-up">↓ easing</span>';
+    return v >= 65 ? '<span class="pulse-trend trend-up">↑</span>' : v >= 45 ? '<span class="pulse-trend trend-flat">→</span>' : '<span class="pulse-trend trend-down">↓</span>';
+  };
+
+  document.getElementById('pulse-grid').innerHTML = s.groups.map(g => `
+    <div class="pulse-card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:${g.color};flex-shrink:0;"></div>
+        <div class="pulse-group">${g.name} <span style="font-size:11px;color:var(--ink-muted);font-weight:300;">(${g.pop})</span></div>
+      </div>
+      <div class="pulse-metric">
+        <div class="pulse-label"><span>Clarity</span><span style="color:${fillColor(g.clarity)};">${g.clarity}% ${trend(g.clarity,'clarity')}</span></div>
+        <div class="pulse-bar"><div class="pulse-fill" style="width:${g.clarity}%;background:${fillColor(g.clarity)};"></div></div>
+      </div>
+      <div class="pulse-metric">
+        <div class="pulse-label"><span>Commitment</span><span style="color:${fillColor(g.commitment)};">${g.commitment}% ${trend(g.commitment,'commitment')}</span></div>
+        <div class="pulse-bar"><div class="pulse-fill" style="width:${g.commitment}%;background:${fillColor(g.commitment)};"></div></div>
+      </div>
+      <div class="pulse-metric">
+        <div class="pulse-label"><span>Confidence</span><span style="color:${fillColor(g.confidence)};">${g.confidence}% ${trend(g.confidence,'confidence')}</span></div>
+        <div class="pulse-bar"><div class="pulse-fill" style="width:${g.confidence}%;background:${fillColor(g.confidence)};"></div></div>
+      </div>
+      <div class="pulse-metric">
+        <div class="pulse-label"><span>Concern</span><span style="color:${concernColor(g.concern)};">${g.concern}% ${trend(g.concern,'concern')}</span></div>
+        <div class="pulse-bar"><div class="pulse-fill" style="width:${g.concern}%;background:${concernColor(g.concern)};"></div></div>
+      </div>
+      <div class="pulse-note">${g.concern}</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════════════════
+// RENDER: MODULE 5 — READINESS DASHBOARD
+// ══════════════════════════════════════════
+function renderReadiness() {
+  const s = SCENARIOS[currentScenario];
+  if (!s) return;
+
+  const ragClass = r => r === 'green' ? 'rag-green' : r === 'amber' ? 'rag-amber' : 'rag-red';
+  const ragDotColor = r => r === 'green' ? 'var(--green)' : r === 'amber' ? 'var(--amber)' : 'var(--red)';
+  const ragLabel = r => r === 'green' ? 'On track' : r === 'amber' ? 'At risk' : 'Off track';
+  const dimColor = v => v >= 70 ? 'var(--u4)' : v >= 45 ? '#C4A052' : 'var(--u1)';
+
+  document.getElementById('rag-summary').innerHTML = `
+    <div class="rag-title">Programme RAG — ${s.name} · Go-live: ${s.goLive}</div>
+    ${s.groups.map(g => `
+      <div class="rag-row">
+        <div class="rag-dot" style="background:${ragDotColor(g.rag)};"></div>
+        <div class="rag-group">${g.name} <span style="font-size:11px;color:var(--ink-muted);">(${g.pop})</span></div>
+        <span class="rag-status ${ragClass(g.rag)}">${ragLabel(g.rag)}</span>
+        <div class="rag-note">${g.ragNote}</div>
+      </div>
+    `).join('')}
+  `;
+
+  document.getElementById('readiness-grid').innerHTML = s.groups.map(g => {
+    const d = g.readinessDimensions;
+    const scoreColor = g.readiness >= 70 ? 'var(--u4)' : g.readiness >= 45 ? '#C4A052' : 'var(--u1)';
+    return `
+      <div class="readiness-card">
+        <div class="rg-header">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:${g.color};"></div>
+              <div class="rg-group">${g.name}</div>
+            </div>
+            <div style="font-size:11px;color:var(--ink-muted);font-weight:300;">${g.pop} people · ${g.risk} risk</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="rg-score" style="color:${scoreColor};">${g.readiness}%</div>
+            <div class="rg-score-label">overall readiness</div>
+          </div>
+        </div>
+        <div class="rg-dimensions">
+          ${[['Awareness', d.awareness],['Understanding', d.understanding],['Commitment', d.commitment],['Capability', d.capability],['Reinforcement', d.reinforcement]].map(([label, val]) => `
+            <div class="rg-dim">
+              <span class="rg-dim-label">${label}</span>
+              <div class="rg-dim-bar"><div class="rg-dim-fill" style="width:${val}%;background:${dimColor(val)};"></div></div>
+              <span class="rg-dim-val">${val}%</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="rg-flag ${g.rag}">${g.ragNote}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// SCENARIO LOADING
+// ══════════════════════════════════════════
+function loadScenario(key) {
+  currentScenario = key;
+  renderRegister();
+  renderResistance();
+  renderEngagementStrategy();
+  renderPulse();
+  renderReadiness();
+}
+
+// ══════════════════════════════════════════
+// UNIT NAV FUNCTIONS
+// ══════════════════════════════════════════
+function goUnit(file, unitNum) {
+  const sel = document.getElementById('u-scenario-sel');
+  const scenario = sel ? sel.value : currentScenario;
+  try {
+    sessionStorage.setItem('tessera_mode', 'demo');
+    sessionStorage.setItem('tessera_scenario', scenario);
+  } catch(e) {}
+  window.location.href = file + '?mode=demo&scenario=' + scenario;
+}
+
+function changeUnitScenario(key) {
+  currentScenario = key;
+  try { sessionStorage.setItem('tessera_scenario', key); } catch(e) {}
+  loadScenario(key);
+}
+
+function goHome() {
+  window.location.href = 'tessera.html';
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  const p = new URLSearchParams(window.location.search);
+  let scenario = p.get('scenario');
+  if (!scenario) { try { scenario = sessionStorage.getItem('tessera_scenario'); } catch(e) {} }
+  if (!scenario) scenario = 'meridian';
+  const sel = document.getElementById('u-scenario-sel');
+  if (sel) sel.value = scenario;
+  loadScenario(scenario);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tessera™ — Mosaic Bridge Advisory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --clay:#C4A882;--clay-dark:#8B7355;--ink:#1C1A17;
+  --ink-muted:#8A8480;--surface:#F7F3ED;--surface-raised:#FDFAF6;
+  --u1:#C4826A;--u2:#4A8FA8;--u3:#4A6FA8;--u4:#2A7A5A;--u5:#8B4A2A;--u6:#5A3A8B;--u7:#2A5A8B;--u8:#6B2A5A;
+  --border:rgba(28,26,23,0.12);--radius:3px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:white;}
+
+/* ── HERO ── */
+.hero{min-height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.mosaic-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(24,1fr);grid-template-rows:repeat(16,1fr);gap:2px;padding:2px;opacity:.06;pointer-events:none;}
+.mt{border-radius:1px;opacity:0;animation:tileIn .6s forwards;}
+@keyframes tileIn{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+.hero-inner{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;max-width:960px;margin:0 auto;width:100%;padding:80px 48px 60px;}
+.wordmark{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--clay);margin-bottom:28px;}
+.hero-title{font-family:'DM Serif Display',serif;font-size:58px;font-weight:400;line-height:1.08;margin-bottom:16px;}
+.hero-title em{font-style:italic;color:var(--clay);}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.5);font-weight:300;line-height:1.8;max-width:520px;margin-bottom:20px;}
+.hero-principle{font-family:'DM Serif Display',serif;font-size:18px;color:#A8D8EA;font-style:italic;font-weight:400;margin-bottom:8px;}
+
+/* ── ENTRY SECTION ── */
+.entry-section{background:var(--surface);padding:72px 48px;}
+.entry-inner{max-width:960px;margin:0 auto;}
+.entry-eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-dark);margin-bottom:12px;}
+.entry-title{font-family:'DM Serif Display',serif;font-size:34px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:8px;}
+.entry-title em{font-style:italic;color:var(--clay-dark);}
+.entry-sub{font-size:15px;color:var(--ink-muted);font-weight:300;line-height:1.8;max-width:600px;margin-bottom:40px;}
+.entry-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* Entry card styles */
+.entry-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:28px 28px 24px;position:relative;overflow:hidden;}
+.entry-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--card-accent,var(--clay));}
+.ec-label{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:12px;}
+.ec-title{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;color:var(--ink);margin-bottom:8px;}
+.ec-title em{font-style:italic;color:var(--clay-dark);}
+.ec-desc{font-size:14px;color:var(--ink-muted);font-weight:300;line-height:1.75;margin-bottom:20px;}
+
+/* Scenario picker inside demo card */
+.scenario-list{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.sc-card{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;text-decoration:none;transition:all .18s;}
+.sc-card:hover{border-color:var(--u1);transform:translateX(3px);}
+.sc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sc-name{font-size:13px;font-weight:500;color:var(--ink);flex:1;}
+.sc-type{font-size:11px;color:var(--ink-muted);font-weight:300;}
+.sc-arr{font-size:13px;color:var(--ink-muted);}
+.sc-card:hover .sc-arr{color:var(--u1);}
+
+/* Use the tool card */
+.tool-steps{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.tool-step{display:flex;align-items:flex-start;gap:10px;}
+.ts-num{width:20px;height:20px;border-radius:50%;background:var(--ink);color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ts-text{font-size:13px;color:var(--ink-soft,#4A4640);font-weight:300;line-height:1.6;}
+
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--ink);color:white;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;transition:all .2s;}
+.btn-primary:hover{background:var(--clay-dark);}
+
+/* ── ABOUT SECTION ── */
+.about-section{background:var(--ink);padding:72px 48px;}
+.about-inner{max-width:960px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.about-eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);margin-bottom:12px;}
+.about-title{font-family:'DM Serif Display',serif;font-size:34px;font-weight:400;color:white;line-height:1.2;margin-bottom:16px;}
+.about-title em{font-style:italic;color:var(--clay);}
+.about-text{font-size:15px;color:rgba(255,255,255,.5);font-weight:300;line-height:1.85;margin-bottom:14px;}
+.tessera-def{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-left:4px solid var(--clay);border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;}
+.def-word{font-family:'DM Serif Display',serif;font-size:32px;color:var(--clay);font-style:italic;margin-bottom:4px;}
+.def-origin{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;}
+.def-text{font-size:13px;color:rgba(255,255,255,.5);font-weight:300;line-height:1.7;}
+
+/* ── AREAS SECTION ── */
+.areas-section{background:var(--surface);padding:72px 48px;}
+.areas-inner{max-width:960px;margin:0 auto;}
+.areas-eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay-dark);margin-bottom:12px;}
+.areas-title{font-family:'DM Serif Display',serif;font-size:34px;font-weight:400;color:var(--ink);line-height:1.2;margin-bottom:8px;}
+.areas-title em{font-style:italic;color:var(--clay-dark);}
+.areas-sub{font-size:15px;color:var(--ink-muted);font-weight:300;line-height:1.8;margin-bottom:36px;}
+.areas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.area-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;}
+.area-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--ac,var(--clay));}
+.ac-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:white;margin-bottom:10px;background:var(--ac,var(--clay));}
+.ac-name{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:6px;}
+.ac-modules{font-size:12px;color:var(--ink-muted);font-weight:300;line-height:1.7;}
+
+/* ── RESEARCH SECTION ── */
+.research-section{background:var(--ink);padding:72px 48px;}
+.research-inner{max-width:960px;margin:0 auto;}
+.research-eyebrow{font-size:10px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);margin-bottom:12px;}
+.research-title{font-family:'DM Serif Display',serif;font-size:34px;font-weight:400;color:white;line-height:1.2;margin-bottom:8px;}
+.research-title em{font-style:italic;color:var(--clay);}
+.research-sub{font-size:15px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.8;max-width:600px;margin-bottom:32px;}
+.src-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.src-card{padding:14px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);}
+.src-author{font-size:13px;font-weight:500;color:white;margin-bottom:2px;}
+.src-work{font-size:12px;color:var(--clay);font-style:italic;font-weight:300;margin-bottom:6px;}
+.src-tag{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:500;}
+.tag-cm{background:rgba(74,111,168,.2);color:#8AB0D8;}
+.tag-cu{background:rgba(196,130,106,.2);color:#D4A090;}
+.tag-al{background:rgba(123,158,135,.2);color:#9ABFAA;}
+.tag-hd{background:rgba(139,123,168,.2);color:#B8A8D8;}
+.tag-eq{background:rgba(196,168,130,.2);color:#D4B890;}
+
+/* Footer */
+.footer{background:rgba(0,0,0,.3);border-top:1px solid rgba(255,255,255,.06);padding:20px 48px;text-align:center;}
+.fw{font-family:'DM Serif Display',serif;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;}
+.ft{font-size:11px;color:rgba(255,255,255,.2);font-weight:300;}
+
+@media(max-width:640px){
+  .hero-inner,.entry-section,.about-section,.areas-section,.research-section,.footer{padding-left:24px;padding-right:24px;}
+  .hero-title{font-size:38px;}
+  .entry-cards,.about-inner,.areas-grid,.src-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="mosaic-bg" id="mosaic"></div>
+  <div class="hero-inner">
+    <div class="wordmark">Tessera™ &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+    <h1 class="hero-title">Built for <em>people,</em><br>not projects.</h1>
+    <p class="hero-sub">A human-centered change intelligence platform. Six areas of practice, grounded in established research, designed around the people experiencing the change — not the project.</p>
+    <p class="hero-principle">"The project is the context. The person is the center."</p>
+  </div>
+</div>
+
+<!-- ── ENTRY POINT ── -->
+<div class="entry-section">
+  <div class="entry-inner">
+    <div class="entry-eyebrow">Get started</div>
+    <h2 class="entry-title">Choose how you want to <em>explore.</em></h2>
+    <p class="entry-sub">See Tessera™ in action with a fully populated scenario, or open the tool and build your own engagement from scratch.</p>
+    <div class="entry-cards">
+
+      <!-- Demo card -->
+      <div class="entry-card" style="--card-accent:var(--u1);">
+        <div class="ec-label">For exploration</div>
+        <h3 class="ec-title">Explore the <em>demo</em></h3>
+        <p class="ec-desc">Three fully populated scenarios. Every unit — Discover, Analyse, Communicate, Learn, Engage, and Cultural Intelligence — loaded with scenario-specific data. Navigate freely between all six areas using the unit bar at the top.</p>
+        <div class="scenario-list">
+          <a class="sc-card" href="tessera-app.html?mode=demo&scenario=meridian" onclick="go('tessera-app.html','demo','meridian');return false;">
+            <div class="sc-dot" style="background:var(--u1);"></div>
+            <div style="flex:1;">
+              <div class="sc-name">Meridian Global</div>
+              <div class="sc-type">ERP &amp; Restructure &nbsp;·&nbsp; 340 people &nbsp;·&nbsp; US, UK, France, Brazil &nbsp;·&nbsp; Works council active</div>
+            </div>
+            <div class="sc-arr">→</div>
+          </a>
+          <a class="sc-card" href="tessera-app.html?mode=demo&scenario=fusion" onclick="go('tessera-app.html','demo','fusion');return false;">
+            <div class="sc-dot" style="background:var(--u2);"></div>
+            <div style="flex:1;">
+              <div class="sc-name">Fusion Dynamics</div>
+              <div class="sc-type">M&amp;A Integration &nbsp;·&nbsp; 280 people &nbsp;·&nbsp; US, Netherlands, Germany &nbsp;·&nbsp; Brand retirement</div>
+            </div>
+            <div class="sc-arr">→</div>
+          </a>
+          <a class="sc-card" href="tessera-app.html?mode=demo&scenario=nova" onclick="go('tessera-app.html','demo','nova');return false;">
+            <div class="sc-dot" style="background:var(--u4);"></div>
+            <div style="flex:1;">
+              <div class="sc-name">Nova Energy</div>
+              <div class="sc-type">AI Workforce Transformation &nbsp;·&nbsp; 520 people &nbsp;·&nbsp; 12 US states &nbsp;·&nbsp; Deskless workforce</div>
+            </div>
+            <div class="sc-arr">→</div>
+          </a>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:var(--surface);border-radius:var(--radius);font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.6;">
+          Each scenario opens in Project context. Use the numbered unit tabs at the top to move between all six areas. The scenario selector in the nav lets you switch scenarios at any point.
+        </div>
+      </div>
+
+      <!-- Use the tool card -->
+      <div class="entry-card" style="--card-accent:var(--clay-dark);">
+        <div class="ec-label">For practitioners</div>
+        <h3 class="ec-title">Use the <em>tool</em></h3>
+        <p class="ec-desc">Open Tessera™ with blank input forms. Work through a real engagement — your project, your people, your data. Every field you complete feeds the modules that follow.</p>
+        <div class="tool-steps">
+          <div class="tool-step">
+            <div class="ts-num">1</div>
+            <div class="ts-text">Enter your project context — name, organisation, population, countries, change type, and strategic intent</div>
+          </div>
+          <div class="tool-step">
+            <div class="ts-num">2</div>
+            <div class="ts-text">Build your listening tour — capture signals, add person profiles, document the practitioner's human read of the room</div>
+          </div>
+          <div class="tool-step">
+            <div class="ts-num">3</div>
+            <div class="ts-text">Navigate across all six areas using the unit bar — Analyse, Communicate, Learn, Engage, and Cultural Intelligence all draw from what you enter</div>
+          </div>
+        </div>
+        <a class="btn-primary" href="tessera-app.html?mode=manual" onclick="go('tessera-app.html','manual',null);return false;">Open the tool →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── WHAT IT IS ── -->
+<div class="about-section">
+  <div class="about-inner">
+    <div>
+      <div class="about-eyebrow">What this is</div>
+      <h2 class="about-title">A consulting <em>delivery engine.</em></h2>
+      <p class="about-text">Most change management tools are built around the project. Tessera™ flips that. Every recommendation — every communication, every training experience, every leadership action — starts with a specific human being and their full context, and works outward from there.</p>
+      <p class="about-text">The practitioner is always in the room. Tessera™ handles the analytical, generative, and synthesis work so they have the time and headspace to be fully human in the moments that require it.</p>
+      <p class="about-text">Not mass personalisation. Designed dignity.</p>
+    </div>
+    <div>
+      <div class="tessera-def">
+        <div class="def-word">Tessera</div>
+        <div class="def-origin">Latin &nbsp;·&nbsp; noun &nbsp;·&nbsp; from Greek tessares</div>
+        <div class="def-text">A single tile in a mosaic — complete in itself and essential to the whole. Every person in an organisation is a distinct piece. The job of change management is to understand each one and design an experience that honours that.</div>
+      </div>
+      <div style="padding:18px 20px;background:rgba(168,216,234,.08);border:1px solid rgba(168,216,234,.15);border-radius:var(--radius);">
+        <div style="font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(168,216,234,.6);margin-bottom:8px;">The organising principle</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:19px;color:#A8D8EA;font-style:italic;line-height:1.5;">"The project is the context.<br>The person is the center.<br>Every recommendation this system generates starts with a specific human being and works outward from there."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── AREAS ── -->
+<div class="areas-section">
+  <div class="areas-inner">
+    <div class="areas-eyebrow">Six areas of practice</div>
+    <h2 class="areas-title">Everything a change practitioner <em>needs.</em></h2>
+    <p class="areas-sub">From the first listening conversation to the final adoption measure — eight areas built, all connected. Every recommendation in every unit draws from the same scenario data and the same cultural intelligence layer.</p>
+    <div class="areas-grid">
+
+      <div class="area-card" style="--ac:var(--u1);">
+        <div class="ac-num" style="background:var(--u1);">1</div>
+        <div class="ac-name">Discover</div>
+        <div class="ac-modules" style="margin-bottom:8px;">What is changing, for whom, and what the conditions are before a single conversation happens.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">5 modules:</strong> Project context &nbsp;·&nbsp; Listening tour with whole-person context &nbsp;·&nbsp; Stakeholder signal map &nbsp;·&nbsp; Experience design &nbsp;·&nbsp; Diagnostic output with narrative and programme plan</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(196,130,106,.06);border-left:2px solid var(--u1);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">In the Meridian demo: 28 interviews across 5 groups. Design hold active on Finance Frontline France — 196 people, insufficient listening data to proceed.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u2);">
+        <div class="ac-num" style="background:var(--u2);">2</div>
+        <div class="ac-name">Analyse</div>
+        <div class="ac-modules" style="margin-bottom:8px;">The data picture — who is affected, how significantly, what the project documents tell you, and what they don't.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">4 modules:</strong> Employee roster &nbsp;·&nbsp; Project team directory &nbsp;·&nbsp; Document intake &amp; case for change &nbsp;·&nbsp; Change impact analysis with heat map and pivot views</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(74,143,168,.06);border-left:2px solid var(--u2);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">The CIA flags what the project has not yet answered and flows directly into training needs. Every flagged item carries through to Unit 4.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u3);">
+        <div class="ac-num" style="background:var(--u3);">3</div>
+        <div class="ac-name">Communicate</div>
+        <div class="ac-modules" style="margin-bottom:8px;">Strategy through to tracking. Channel and message calibrated to cultural context, not one cascade for everyone.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">7 modules:</strong> Comms strategy &nbsp;·&nbsp; Message architecture with WIIFM by group &nbsp;·&nbsp; Cascade model &nbsp;·&nbsp; Plan &amp; calendar &nbsp;·&nbsp; Draft editor &nbsp;·&nbsp; Tracking &nbsp;·&nbsp; Content library with shared blocks</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(74,111,168,.06);border-left:2px solid var(--u3);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">Different answers for a deskless worker in Brazil versus a senior leader in France. Shared blocks cascade updates across all deliverables automatically when something changes.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u4);">
+        <div class="ac-num" style="background:var(--u4);">4</div>
+        <div class="ac-name">Learn</div>
+        <div class="ac-modules" style="margin-bottom:8px;">Culturally designed training. Completion is not adoption. Every learning decision tied to a specific person in a specific context.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">6 modules:</strong> Training needs analysis &nbsp;·&nbsp; Cohort design with language, device access and union flags &nbsp;·&nbsp; Learning journeys by role &nbsp;·&nbsp; Curriculum &amp; scheduling &nbsp;·&nbsp; Adoption measurement across 5 tiers</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(42,122,90,.06);border-left:2px solid var(--u4);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">In the Meridian demo: Finance Frontline France (42 people) flagged for separate French-language cohort. Works Council consultation requirement surfaces before a single learning asset is built.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u5);">
+        <div class="ac-num" style="background:var(--u5);">5</div>
+        <div class="ac-name">Engage</div>
+        <div class="ac-modules" style="margin-bottom:8px;">What leadership needs to do, not just say. Sponsor readiness is not assumed. The people brief puts the whole person in the room.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">5 modules:</strong> Sponsor map with readiness and gap flags &nbsp;·&nbsp; Coalition design &nbsp;·&nbsp; People brief with whole-person context &nbsp;·&nbsp; Visibility plan &nbsp;·&nbsp; Action plan tracked against signal movement</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(139,74,42,.06);border-left:2px solid var(--u5);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">In the Meridian demo: CFO Sarah Chen flagged — has not had the required 1:1 with Antoine D. in France before comms launch. The people brief surfaces what Marcus Webb needs to know about Rafael S. before walking into that conversation.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u6);">
+        <div class="ac-num" style="background:var(--u6);font-size:14px;">✦</div>
+        <div class="ac-name" style="color:var(--u6);">Cultural intelligence</div>
+        <div class="ac-modules" style="margin-bottom:8px;">The foundation every other design decision is built on. Not a separate module — the lens through which every recommendation is made.</div>
+        <div class="ac-modules"><strong style="color:var(--u6);font-weight:500;">Six frameworks integrated:</strong> Meyer &nbsp;·&nbsp; Hofstede &nbsp;·&nbsp; Schwartz &nbsp;·&nbsp; Trompenaars &nbsp;·&nbsp; GLOBE &nbsp;·&nbsp; Lewis &nbsp;·&nbsp; Plus an inclusion and intersectionality layer across 7 categories</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(90,58,139,.06);border-left:2px solid var(--u6);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">Inclusion categories from listening data: generational context, disability &amp; access, gender dynamics, race &amp; ethnicity, socioeconomic context, language &amp; literacy, caregiving &amp; life context. Design parameters, not demographic checkboxes.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u7);">
+        <div class="ac-num" style="background:var(--u7);">7</div>
+        <div class="ac-name">Stakeholder Engagement &amp; Readiness</div>
+        <div class="ac-modules" style="margin-bottom:8px;">Who specifically needs to move, how ready they are, where resistance is forming, and what the engagement plan is for every group — leaders, managers, frontline, field, project team, and all others.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">5 modules:</strong> Stakeholder register with readiness scoring &nbsp;·&nbsp; Resistance tracker &nbsp;·&nbsp; Engagement strategy by group &nbsp;·&nbsp; Engagement pulse with signal movement &nbsp;·&nbsp; Readiness dashboard with RAG status</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(42,90,139,.06);border-left:2px solid var(--u7);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">In the Meridian demo: Finance Frontline France flagged at 28% readiness with design hold active. Finance Managers resistance rooted in 2020 ERP failure — engagement strategy includes a peer-led session model, not top-down messaging. Change network of 12 agents named and assigned.</div>
+      </div>
+
+      <div class="area-card" style="--ac:var(--u8);">
+        <div class="ac-num" style="background:var(--u8);">8</div>
+        <div class="ac-name">Programme Management &amp; Reporting</div>
+        <div class="ac-modules" style="margin-bottom:8px;">The view the programme lead needs before every steering committee. Not a status update — the honest picture of where the programme stands and what needs a decision.</div>
+        <div class="ac-modules"><strong style="color:var(--ink-soft);font-weight:500;">5 modules:</strong> Programme dashboard with workstream RAG &nbsp;·&nbsp; Risk &amp; issues log &nbsp;·&nbsp; Milestone tracker &nbsp;·&nbsp; Readiness pulse &nbsp;·&nbsp; Status report generator</div>
+        <div style="margin-top:10px;padding:8px 10px;background:rgba(107,42,90,.06);border-left:2px solid var(--u8);border-radius:1px;font-size:11px;color:var(--ink-muted);font-weight:300;line-height:1.5;">In the Meridian demo: Overall RAG amber. Two workstreams off track. Three decisions required this week — Works Council consultation, Brazil device access, and Finance Manager peer session sign-off. Status report generated from live programme data, not written from scratch.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── RESEARCH ── -->
+<div class="research-section">
+  <div class="research-inner">
+    <div class="research-eyebrow">The foundation</div>
+    <h2 class="research-title">Grounded in <em>credible research.</em></h2>
+    <p class="research-sub">Every diagnostic question, cultural dimension, and design recommendation is traceable to established research — not window dressing, the intellectual architecture of the system.</p>
+    <div class="src-grid">
+      <div class="src-card"><div class="src-author">Prosci / Jeff Hiatt</div><div class="src-work">ADKAR Model</div><span class="src-tag tag-cm">Change management</span></div>
+      <div class="src-card"><div class="src-author">William Bridges</div><div class="src-work">Managing Transitions</div><span class="src-tag tag-cm">Change management</span></div>
+      <div class="src-card"><div class="src-author">John Kotter</div><div class="src-work">Leading Change</div><span class="src-tag tag-cm">Change management</span></div>
+      <div class="src-card"><div class="src-author">Erin Meyer</div><div class="src-work">The Culture Map</div><span class="src-tag tag-cu">Culture</span></div>
+      <div class="src-card"><div class="src-author">Geert Hofstede</div><div class="src-work">Culture's Consequences</div><span class="src-tag tag-cu">Culture</span></div>
+      <div class="src-card"><div class="src-author">Shalom Schwartz</div><div class="src-work">Basic Human Values</div><span class="src-tag tag-cu">Culture</span></div>
+      <div class="src-card"><div class="src-author">Fons Trompenaars</div><div class="src-work">Riding the Waves of Culture</div><span class="src-tag tag-cu">Culture</span></div>
+      <div class="src-card"><div class="src-author">GLOBE Study</div><div class="src-work">House et al. — 62 societies</div><span class="src-tag tag-cu">Culture</span></div>
+      <div class="src-card"><div class="src-author">Malcolm Knowles</div><div class="src-work">Andragogy</div><span class="src-tag tag-al">Adult learning</span></div>
+      <div class="src-card"><div class="src-author">David Kolb</div><div class="src-work">Experiential Learning Cycle</div><span class="src-tag tag-al">Adult learning</span></div>
+      <div class="src-card"><div class="src-author">Amy Edmondson</div><div class="src-work">The Fearless Organisation</div><span class="src-tag tag-hd">Human dynamics</span></div>
+      <div class="src-card"><div class="src-author">Lily Zheng</div><div class="src-work">DEI Deconstructed</div><span class="src-tag tag-eq">Equity &amp; inclusion</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="fw">Tessera™ &nbsp;·&nbsp; Mosaic Bridge Advisory</div>
+  <div class="ft">&copy; 2026 Mosaic Bridge Advisory &nbsp;&middot;&nbsp; Tessera&trade; is a trademark of Mosaic Bridge Advisory &nbsp;&middot;&nbsp; All rights reserved</div>
+</div>
+
+<script>
+// Mosaic background
+var COLORS = ['#C4A882','#7B9E87','#8B7BA8','#C4826A','#4A8FA8','#1C1A17','#E8D9C4','#2A7A5A','#5A3A8B'];
+var mosaic = document.getElementById('mosaic');
+for (var i = 0; i < 384; i++) {
+  var t = document.createElement('div');
+  t.className = 'mt';
+  t.style.background = COLORS[i % COLORS.length];
+  t.style.animationDelay = (i * 0.004) + 's';
+  mosaic.appendChild(t);
+}
+
+// Navigation with sessionStorage fallback for local file:// protocol
+function go(file, mode, scenario) {
+  try {
+    sessionStorage.setItem('tessera_mode', mode || 'demo');
+    if (scenario) {
+      sessionStorage.setItem('tessera_scenario', scenario);
+    } else {
+      sessionStorage.removeItem('tessera_scenario');
+    }
+  } catch(e) {}
+  var url = file + '?mode=' + (mode || 'demo');
+  if (scenario) url += '&scenario=' + scenario;
+  window.location.href = url;
+}
+</script>
+</body>
+</html>
