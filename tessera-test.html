@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tessera™ — Pre-Upload Test</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root{--clay:#C4A882;--ink:#1C1A17;--green:#2A7A5A;--red:#C4826A;--surface:#F7F3ED;--border:rgba(28,26,23,.12);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--surface);color:var(--ink);padding:40px 48px;}
+h1{font-family:'DM Serif Display',serif;font-size:32px;font-weight:400;margin-bottom:4px;}
+h1 em{font-style:italic;color:var(--clay);}
+.sub{font-size:14px;color:#8A8480;font-weight:300;margin-bottom:32px;}
+.section-title{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#8A8480;margin-bottom:12px;margin-top:28px;}
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.test-card{background:white;border:1px solid var(--border);border-radius:3px;padding:16px 18px;display:flex;align-items:flex-start;gap:12px;}
+.tc-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.tc-info{flex:1;}
+.tc-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.tc-desc{font-size:12px;color:#8A8480;font-weight:300;margin-bottom:8px;line-height:1.5;}
+.tc-expect{font-size:11px;color:#4A6FA8;font-weight:400;padding:6px 10px;background:#F0F4FC;border-radius:2px;line-height:1.5;}
+.tc-links{display:flex;gap:8px;margin-top:8px;}
+.btn-open{padding:6px 14px;background:var(--ink);color:white;border:none;border-radius:2px;font-family:inherit;font-size:12px;cursor:pointer;text-decoration:none;display:inline-block;}
+.btn-open:hover{background:#3A3835;}
+.btn-open.secondary{background:transparent;color:var(--ink);border:1px solid var(--border);}
+.btn-open.secondary:hover{background:var(--surface);}
+.status{font-size:11px;font-weight:500;padding:2px 8px;border-radius:8px;}
+.status.pass{background:#F0F7F2;color:#2A7A5A;}
+.status.warn{background:#FDF9EE;color:#8B5A00;}
+.checklist{background:white;border:1px solid var(--border);border-radius:3px;padding:20px 24px;margin-bottom:12px;}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.check-item:last-child{border-bottom:none;}
+.ci-num{width:20px;height:20px;border-radius:50%;background:var(--ink);color:white;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ci-text{line-height:1.6;}
+.ci-text strong{display:block;font-weight:500;}
+.ci-text span{color:#8A8480;font-weight:300;}
+.notice{padding:14px 18px;background:#FDF9EE;border:1px solid #E8D09A;border-radius:3px;font-size:13px;color:#5A3A00;line-height:1.7;margin-bottom:24px;}
+</style>
+</head>
+<body>
+
+<h1>Tessera™ <em>Pre-upload test</em></h1>
+<p class="sub">Run these tests locally before uploading to GitHub. All 12 files must be in the same folder as this test page.</p>
+
+<div class="notice">
+  <strong>How this works:</strong> Click "Open" on each test below. A new tab will open. Check that what you see matches the description. Close the tab and mark it off. If something is wrong, note what you see and we fix it before uploading.
+</div>
+
+<div class="section-title">Step 1 — Landing page</div>
+<div class="test-grid">
+  <div class="test-card">
+    <div class="tc-icon" style="background:#1C1A17;color:#C4A882;">🏠</div>
+    <div class="tc-info">
+      <div class="tc-name">tessera.html — Landing page</div>
+      <div class="tc-desc">The entry point. Dark hero with animated mosaic tiles, then cream sections below.</div>
+      <div class="tc-expect">✓ Dark background with animated tiles<br>✓ "Built for people, not projects" heading<br>✓ Two cards: Explore the demo + Use the tool<br>✓ Three scenario cards (Meridian, Fusion, Nova)<br>✓ Research section at the bottom</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera.html" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Step 2 — Demo mode (click each scenario)</div>
+<div class="test-grid">
+  <div class="test-card">
+    <div class="tc-icon" style="background:#C4826A;color:white;">M</div>
+    <div class="tc-info">
+      <div class="tc-name">Meridian Global — ERP &amp; Restructure</div>
+      <div class="tc-desc">340 people, 4 countries. The most complex scenario.</div>
+      <div class="tc-expect">✓ Full unit nav at top (1–6 + Culture)<br>✓ Project context fills in with Meridian data<br>✓ All 5 Discover module tabs work<br>✓ Clicking other units navigates there</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-app.html?mode=demo&scenario=meridian" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#4A8FA8;color:white;">F</div>
+    <div class="tc-info">
+      <div class="tc-name">Fusion Dynamics — M&amp;A Integration</div>
+      <div class="tc-desc">280 people, US + Netherlands + Germany.</div>
+      <div class="tc-expect">✓ Different project data loads<br>✓ Scenario selector shows Fusion Dynamics<br>✓ Nav units all clickable</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-app.html?mode=demo&scenario=fusion" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#2A7A5A;color:white;">N</div>
+    <div class="tc-info">
+      <div class="tc-name">Nova Energy — Workforce Transformation</div>
+      <div class="tc-desc">520 people, 12 US states.</div>
+      <div class="tc-expect">✓ Nova data loads<br>✓ Different risk profiles visible<br>✓ Nav units all clickable</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-app.html?mode=demo&scenario=nova" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#8A8480;color:white;">✏</div>
+    <div class="tc-info">
+      <div class="tc-name">Manual mode — Use the tool</div>
+      <div class="tc-desc">Blank input forms for a practitioner building their own engagement.</div>
+      <div class="tc-expect">✓ Project context shows blank input fields<br>✓ Fields: Project name, Organisation, Population, Countries, Change type<br>✓ No demo data pre-filled</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-app.html?mode=manual" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-title">Step 3 — All units (open with Meridian data)</div>
+<div class="test-grid">
+  <div class="test-card">
+    <div class="tc-icon" style="background:#4A8FA8;color:white;">2</div>
+    <div class="tc-info">
+      <div class="tc-name">Analyse — Change impact analysis</div>
+      <div class="tc-desc">CIA heat map, employee roster, team directory, document intake.</div>
+      <div class="tc-expect">✓ Unit nav shows "2 Analyse" as active<br>✓ CIA content loads for Meridian<br>✓ Heat map visible</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-cia.html?mode=demo&scenario=meridian" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#4A6FA8;color:white;">3</div>
+    <div class="tc-info">
+      <div class="tc-name">Communicate — Full comms module</div>
+      <div class="tc-desc">Strategy, message architecture, cascade, calendar, drafts, tracking.</div>
+      <div class="tc-expect">✓ Unit nav shows "3 Communicate" as active<br>✓ Comms content loads<br>✓ Sub-module tabs work</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-comms.html?mode=demo&scenario=meridian" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#2A7A5A;color:white;">4</div>
+    <div class="tc-info">
+      <div class="tc-name">Learn — Training needs through adoption</div>
+      <div class="tc-desc">TNA, cohort design, learning journeys, curriculum, scheduling, adoption measurement.</div>
+      <div class="tc-expect">✓ Unit nav shows "4 Learn" as active<br>✓ Training needs populated for Meridian roles<br>✓ All 6 sub-module tabs work</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-learning.html?mode=demo&scenario=meridian" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#8B4A2A;color:white;">5</div>
+    <div class="tc-info">
+      <div class="tc-name">Engage — Leadership engagement</div>
+      <div class="tc-desc">Sponsor map, coalition design, people brief, visibility plan, action plan.</div>
+      <div class="tc-expect">✓ Unit nav shows "5 Engage" as active<br>✓ Sponsor map loads for Meridian<br>✓ People brief shows individual leader cards</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-engage.html?mode=demo&scenario=meridian" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#5A3A8B;color:white;">✦</div>
+    <div class="tc-info">
+      <div class="tc-name">Cultural intelligence — System level</div>
+      <div class="tc-desc">Six frameworks, inclusion layer, cross-group comparison, intelligence input.</div>
+      <div class="tc-expect">✓ Unit nav shows "Culture" as active<br>✓ Group profiles load for Meridian<br>✓ Framework views toggle correctly</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-culture.html?mode=demo&scenario=meridian" target="_blank">Open →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#4A8FA8;color:white;">R</div>
+    <div class="tc-info">
+      <div class="tc-name">Roster, Team &amp; Intake</div>
+      <div class="tc-desc">Employee data, project team directory, document intake.</div>
+      <div class="tc-expect">✓ Roster opens with table view<br>✓ Team directory shows project roles<br>✓ Intake shows upload areas</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-roster.html" target="_blank">Roster →</a>
+        <a class="btn-open secondary" href="tessera-team.html" target="_blank">Team →</a>
+        <a class="btn-open secondary" href="tessera-intake.html" target="_blank">Intake →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#2A5A8B;color:white;">7</div>
+    <div class="tc-info">
+      <div class="tc-name">Stakeholder Engagement &amp; Readiness — Unit 7</div>
+      <div class="tc-desc">Stakeholder register, resistance tracker, engagement strategy, pulse, and readiness dashboard.</div>
+      <div class="tc-expect">✓ Unit nav shows "7 Stakeholders" as active<br>✓ Stakeholder register loads with all groups<br>✓ Resistance tracker shows resistance data<br>✓ Engagement strategy shows activities per group<br>✓ Pulse shows signal scores<br>✓ Readiness dashboard shows RAG status</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-stakeholder.html?mode=demo&scenario=meridian" target="_blank">Meridian →</a>
+        <a class="btn-open secondary" href="tessera-stakeholder.html?mode=demo&scenario=fusion" target="_blank">Fusion →</a>
+        <a class="btn-open secondary" href="tessera-stakeholder.html?mode=demo&scenario=nova" target="_blank">Nova →</a>
+      </div>
+    </div>
+  </div>
+  <div class="test-card">
+    <div class="tc-icon" style="background:#6B2A5A;color:white;">8</div>
+    <div class="tc-info">
+      <div class="tc-name">Programme Management &amp; Reporting — Unit 8</div>
+      <div class="tc-desc">Dashboard, risk &amp; issues log, milestone tracker, readiness pulse, and status report.</div>
+      <div class="tc-expect">✓ Unit nav shows "8 Programme" as active<br>✓ Dashboard loads with workstream progress<br>✓ Risk table populated<br>✓ Milestones show with correct status<br>✓ Status report generates for scenario</div>
+      <div class="tc-links">
+        <a class="btn-open" href="tessera-programme.html?mode=demo&scenario=meridian" target="_blank">Meridian →</a>
+        <a class="btn-open secondary" href="tessera-programme.html?mode=demo&scenario=fusion" target="_blank">Fusion →</a>
+        <a class="btn-open secondary" href="tessera-programme.html?mode=demo&scenario=nova" target="_blank">Nova →</a>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<div class="section-title">Step 4 — Navigation checks</div>
+<div class="checklist">
+  <div class="check-item">
+    <div class="ci-num">A</div>
+    <div class="ci-text"><strong>Home button works</strong><span>Open tessera-app.html, click "← Home" or "TESSERA™" — should return to tessera.html landing page</span></div>
+  </div>
+  <div class="check-item">
+    <div class="ci-num">B</div>
+    <div class="ci-text"><strong>Scenario switcher works</strong><span>In any unit, change the dropdown from Meridian to Fusion — content should update to Fusion data</span></div>
+  </div>
+  <div class="check-item">
+    <div class="ci-num">C</div>
+    <div class="ci-text"><strong>Unit nav carries scenario</strong><span>On Meridian in Discover, click "4 Learn" — should open tessera-learning.html still showing Meridian scenario. Click "7 Stakeholders" — should open tessera-stakeholder.html with Meridian data.</span></div>
+  </div>
+  <div class="check-item">
+    <div class="ci-num">D</div>
+    <div class="ci-text"><strong>Module sub-nav works</strong><span>In Discover, click "2 · Listening tour" — should show listening tour content, not project context</span></div>
+  </div>
+  <div class="check-item">
+    <div class="ci-num">E</div>
+    <div class="ci-text"><strong>No console errors</strong><span>Open browser developer tools (F12), go to Console tab — should show no red errors on any page</span></div>
+  </div>
+</div>
+
+<p style="font-size:12px;color:#8A8480;margin-top:24px;">Once all tests pass locally → upload to GitHub → verify again at kitkarr23.github.io/Tessera/ &nbsp;·&nbsp; © 2026 Mosaic Bridge Advisory</p>
+
+</body>
+</html>
